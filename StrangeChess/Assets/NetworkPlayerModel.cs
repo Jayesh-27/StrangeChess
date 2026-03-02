@@ -17,6 +17,13 @@ public class NetworkPlayerModel : NetworkBehaviour
         CenterEyeAnchor = GameObject.Find("CenterEyeAnchor").transform;
         LeftHandAnchor = GameObject.Find("LeftHandAnchor").transform;
         RightHandAnchor = GameObject.Find("RightHandAnchor").transform;
+
+        if(IsOwner)
+        {
+            head.gameObject.GetComponent<MeshRenderer>().enabled = false;
+            leftHand.gameObject.GetComponent<MeshRenderer>().enabled = false;
+            rightHand.gameObject.GetComponent<MeshRenderer>().enabled = false;
+        }
     }
 
     private void Update()
