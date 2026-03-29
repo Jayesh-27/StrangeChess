@@ -9,6 +9,9 @@ public class NetworkPlayerModel : NetworkBehaviour
     [SerializeField] private Transform LeftHandAnchor;
     [SerializeField] private Transform RightHandAnchor;
     [SerializeField] private Transform head;
+    [SerializeField] private GameObject headMesh1;
+
+    [SerializeField] private GameObject headMesh2;
     [SerializeField] private Transform leftHand;
     [SerializeField] private Transform rightHand;
 
@@ -20,7 +23,9 @@ public class NetworkPlayerModel : NetworkBehaviour
 
         if(IsOwner)
         {
-            head.gameObject.GetComponent<MeshRenderer>().enabled = false;
+            head.gameObject.GetComponent<BoxCollider>().enabled = false;
+            headMesh1.gameObject.GetComponent<MeshRenderer>().enabled = false;
+            headMesh2.gameObject.GetComponent<MeshRenderer>().enabled = false;
             leftHand.gameObject.GetComponent<MeshRenderer>().enabled = false;
             rightHand.gameObject.GetComponent<MeshRenderer>().enabled = false;
         }
@@ -31,5 +36,9 @@ public class NetworkPlayerModel : NetworkBehaviour
         head.position = CenterEyeAnchor.position;
         leftHand.position = LeftHandAnchor.position;
         rightHand.position = RightHandAnchor.position;
+
+        head.rotation = CenterEyeAnchor.rotation;
+        leftHand.rotation = LeftHandAnchor.rotation;
+        rightHand.rotation = RightHandAnchor.rotation;        
     }
 }
