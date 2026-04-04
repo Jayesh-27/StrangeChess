@@ -121,15 +121,10 @@ public class ChessManager : MonoBehaviour
     private void pawnMoves(XRGrabInteractable grab)
     {
         Debug.Log("PawnMoves");
-        //  grab = interactable/piece
-        //  lastUnsnap = socket
 
-        // Get exactly where the piece is right now
         int currentSquare = lastUnsnap.Square;
         int currentRow = currentSquare / 8;
-        // Calculate the current file (column) from 0 to 7 to prevent board wrapping
         int currentFile = currentSquare % 8;
-        Debug.Log(currentRow);
 
         disableAllSockets(lastUnsnap.GetComponent<XRSocketInteractor>());
         if(currentRow == 1 || currentRow == 6)        
@@ -151,7 +146,14 @@ public class ChessManager : MonoBehaviour
     }
     private void rookMoves()
     {
+        Debug.Log("RookMoves");
 
+        disableAllSockets(lastUnsnap.GetComponent<XRSocketInteractor>());
+        dir[0] = 8;
+        dir[1] = 8;
+        dir[2] = 8;
+        dir[3] = 8;
+        verticalMoves();
     }
     private void queenMoves()
     {
@@ -174,6 +176,7 @@ public class ChessManager : MonoBehaviour
         // --- UP (+8) ---
         for (int i = 1; i <= dir[0]; i++)
         {
+            Debug.Log("Calculating Up");
             int target = currentSquare + (i * 8);
             
             // 1. Check if we went off the top of the board BEFORE checking the socket
@@ -187,6 +190,7 @@ public class ChessManager : MonoBehaviour
         // --- DOWN (-8) ---
         for (int i = 1; i <= dir[1]; i++)
         {
+            Debug.Log("Calculating Down");
             int target = currentSquare - (i * 8);
             
             // 1. Check if we went off the bottom of the board
@@ -199,6 +203,7 @@ public class ChessManager : MonoBehaviour
         // --- RIGHT (+1) ---
         for (int i = 1; i <= dir[2]; i++)
         {
+            Debug.Log("Calculating Right");
             int target = currentSquare + i;
             
             // 1. Check if moving right pushes us past the right edge (File 7)
@@ -212,6 +217,7 @@ public class ChessManager : MonoBehaviour
         // --- LEFT (-1) ---
         for (int i = 1; i <= dir[3]; i++)
         {
+            Debug.Log("Calculating Left");
             int target = currentSquare - i;
             
             // 1. Check if moving left pushes us past the left edge (File 0)
