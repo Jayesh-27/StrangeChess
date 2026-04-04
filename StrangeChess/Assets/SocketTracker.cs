@@ -36,6 +36,7 @@ public class SocketTracker : MonoBehaviour
     {
         Debug.Log(args.interactableObject.transform.name + " Snapped");
         chessManager.shouldSnapBack = false;
+        chessManager.enableAllSockets();
     }
 
     void OnUnsnap(SelectExitEventArgs args)

@@ -17,6 +17,7 @@ public class ChessManager : MonoBehaviour
     [SerializeField] public SocketTracker lastUnsnap = null;
     [SerializeField] private float pieceSnapTimer = 0.5f;
     [SerializeField] public bool shouldSnapBack = true;
+    [SerializeField] private int[] dir = new int[4];
 
     private void Start()
     {
@@ -49,6 +50,13 @@ public class ChessManager : MonoBehaviour
         {
             if (interactor != correctInteractor)
                 interactor.enabled = false;
+        }
+    }
+    public void disableOtherDirectInteractor()
+    {
+        foreach (XRDirectInteractor interactor in interactors)
+        {
+            interactor.enabled = false;
         }
     }
     public void enableDirectInteractor()
@@ -95,17 +103,19 @@ public class ChessManager : MonoBehaviour
     {
         Debug.Log("Released: " + args.interactableObject.transform.name);
         StartCoroutine(snapPieceBack(args.interactableObject as XRGrabInteractable));
+        // enableAllSockets();
     }
     IEnumerator snapPieceBack(XRGrabInteractable grab)
     {
+        disableOtherDirectInteractor();
         yield return new WaitForSeconds(pieceSnapTimer);
         if(shouldSnapBack)
         {
             if(!lastUnsnap.enabled)
                 lastUnsnap.enabled = true;
-            lastUnsnap.GetComponent<XRSocketInteractor>().StartManualInteraction((IXRSelectInteractable)grab);
-            enableDirectInteractor();
+            lastUnsnap.GetComponent<XRSocketInteractor>().StartManualInteraction((IXRSelectInteractable)grab);            
         }
+        enableDirectInteractor();
     }
 
     private void pawnMoves(XRGrabInteractable grab)
@@ -113,7 +123,22 @@ public class ChessManager : MonoBehaviour
         Debug.Log("PawnMoves");
         //  grab = interactable/piece
         //  lastUnsnap = socket
+
+        // Get exactly where the piece is right now
+        int currentSquare = lastUnsnap.Square;
+        int currentRow = currentSquare / 8;
+        // Calculate the current file (column) from 0 to 7 to prevent board wrapping
+        int currentFile = currentSquare % 8;
+        Debug.Log(currentRow);
+
         disableAllSockets(lastUnsnap.GetComponent<XRSocketInteractor>());
+        if(currentRow == 1 || currentRow == 6)        
+            dir[0] = 2;
+        else
+            dir[0] = 1;
+        dir[1] = 0;
+        dir[2] = 0;
+        dir[3] = 0;
         verticalMoves();
     }
     private void knightMoves()
@@ -137,14 +162,64 @@ public class ChessManager : MonoBehaviour
 
     }
     private void verticalMoves()
-    {
+    {    
         Debug.Log("verticalMoves");
-        for (int i = 0; i < 64; i += 8)
-        {
-            if (sockets[lastUnsnap.Square + i].hasSelection)
-                break;
 
-            sockets[lastUnsnap.Square + i].enabled = true;
+        // Get exactly where the piece is right now
+        int currentSquare = lastUnsnap.Square;
+        
+        // Calculate the current file (column) from 0 to 7 to prevent board wrapping
+        int currentFile = currentSquare % 8;
+
+        // --- UP (+8) ---
+        for (int i = 1; i <= dir[0]; i++)
+        {
+            int target = currentSquare + (i * 8);
+            
+            // 1. Check if we went off the top of the board BEFORE checking the socket
+            if (target >= 64) break; 
+            // 2. Check if the socket is empty/valid
+            if (sockets[target] == null || sockets[target].hasSelection) break;
+
+            sockets[target].GetComponent<BoxCollider>().enabled = true;
+        }
+        
+        // --- DOWN (-8) ---
+        for (int i = 1; i <= dir[1]; i++)
+        {
+            int target = currentSquare - (i * 8);
+            
+            // 1. Check if we went off the bottom of the board
+            if (target < 0) break;
+            if (sockets[target] == null || sockets[target].hasSelection) break;
+
+            sockets[target].GetComponent<BoxCollider>().enabled = true;
+        }
+        
+        // --- RIGHT (+1) ---
+        for (int i = 1; i <= dir[2]; i++)
+        {
+            int target = currentSquare + i;
+            
+            // 1. Check if moving right pushes us past the right edge (File 7)
+            if (currentFile + i > 7) break; 
+            // 2. Standard bounds and socket check
+            if (target >= 64 || sockets[target] == null || sockets[target].hasSelection) break;
+
+            sockets[target].GetComponent<BoxCollider>().enabled = true;
+        }
+
+        // --- LEFT (-1) ---
+        for (int i = 1; i <= dir[3]; i++)
+        {
+            int target = currentSquare - i;
+            
+            // 1. Check if moving left pushes us past the left edge (File 0)
+            if (currentFile - i < 0) break;
+            // 2. Standard bounds and socket check
+            if (target < 0 || sockets[target] == null || sockets[target].hasSelection) break;
+
+            sockets[target].GetComponent<BoxCollider>().enabled = true;
         }
     }
     private void disableAllSockets(XRSocketInteractor lastUnsnapSocket)
@@ -153,9 +228,17 @@ public class ChessManager : MonoBehaviour
         foreach(XRSocketInteractor socket in sockets)
         {
             if(lastUnsnapSocket == socket)
-                //socket.enabled = true;
+                socket.GetComponent<BoxCollider>().enabled = true;
             else
-                //socket.enabled = false;
+                socket.GetComponent<BoxCollider>().enabled = false;
+        }
+    }
+    public void enableAllSockets()
+    {
+        Debug.Log("DisableAllSockets");
+        foreach(XRSocketInteractor socket in sockets)
+        {
+                socket.GetComponent<BoxCollider>().enabled = true;
         }
     }
 }
