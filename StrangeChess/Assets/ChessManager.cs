@@ -138,7 +138,43 @@ public class ChessManager : MonoBehaviour
     }
     private void knightMoves()
     {
+        Debug.Log("KnightMoves");
+        disableAllSockets(lastUnsnap.GetComponent<XRSocketInteractor>());
 
+        int currentSquare = lastUnsnap.Square;
+        int currentFile = currentSquare % 8;
+        int currentRow = currentSquare / 8;
+
+        // The 8 possible index offsets for a knight moving on a 1D board
+        // Up-Left(+15), Up-Right(+17), Right-Up(+10), Right-Down(-6)
+        // Down-Right(-15), Down-Left(-17), Left-Down(-10), Left-Up(+6)
+        int[] knightOffsets = { 15, 17, 10, -6, -15, -17, -10, 6 };
+
+        foreach (int offset in knightOffsets)
+        {
+            int target = currentSquare + offset;
+
+            // 1. Board Bounds Check: Is it between 0 and 63?
+            if (target >= 0 && target < 64)
+            {
+                int targetFile = target % 8;
+                int targetRow = target / 8;
+
+                // 2. Wrap Prevention: Check the distance moved in rows and files
+                int fileDiff = Mathf.Abs(currentFile - targetFile);
+                int rowDiff = Mathf.Abs(currentRow - targetRow);
+
+                // A knight's move is ONLY valid if it moves 1x2 or 2x1 
+                if ((fileDiff == 1 && rowDiff == 2) || (fileDiff == 2 && rowDiff == 1))
+                {
+                    // 3. Occupied Check
+                    if (sockets[target] != null && !sockets[target].hasSelection)
+                    {
+                        sockets[target].GetComponent<BoxCollider>().enabled = true;
+                    }
+                }
+            }
+        }
     }
     private void bishopMoves()
     {
