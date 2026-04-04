@@ -134,7 +134,7 @@ public class ChessManager : MonoBehaviour
         dir[1] = 0;
         dir[2] = 0;
         dir[3] = 0;
-        verticalMoves();
+        straightMoves();
     }
     private void knightMoves()
     {
@@ -142,7 +142,15 @@ public class ChessManager : MonoBehaviour
     }
     private void bishopMoves()
     {
-
+        Debug.Log("BishopMoves");
+        disableAllSockets(lastUnsnap.GetComponent<XRSocketInteractor>());
+        
+        dir[0] = 8;
+        dir[1] = 8;
+        dir[2] = 8;
+        dir[3] = 8;
+        
+        diagonalMoves();
     }
     private void rookMoves()
     {
@@ -153,19 +161,31 @@ public class ChessManager : MonoBehaviour
         dir[1] = 8;
         dir[2] = 8;
         dir[3] = 8;
-        verticalMoves();
+        straightMoves();
     }
     private void queenMoves()
     {
-
+        Debug.Log("QueenMoves");
+        disableAllSockets(lastUnsnap.GetComponent<XRSocketInteractor>());
+        
+        dir[0] = 8; dir[1] = 8; dir[2] = 8; dir[3] = 8;
+        
+        straightMoves();
+        diagonalMoves(); // The Queen uses all 8 directions!
     }
     private void kingMoves()
     {
-
+        Debug.Log("KingMoves");
+        disableAllSockets(lastUnsnap.GetComponent<XRSocketInteractor>());
+        
+        dir[0] = 1; dir[1] = 1; dir[2] = 1; dir[3] = 1;
+        
+        straightMoves();
+        diagonalMoves();
     }
-    private void verticalMoves()
+    private void straightMoves()
     {    
-        Debug.Log("verticalMoves");
+        Debug.Log("straightMoves");
 
         // Get exactly where the piece is right now
         int currentSquare = lastUnsnap.Square;
@@ -228,6 +248,79 @@ public class ChessManager : MonoBehaviour
             sockets[target].GetComponent<BoxCollider>().enabled = true;
         }
     }
+
+    private void diagonalMoves()
+    {    
+        Debug.Log("diagonalMoves");
+
+        int currentSquare = lastUnsnap.Square;
+        int currentFile = currentSquare % 8;
+
+        // --- UP-LEFT (+7) | dir[0] ---
+        for (int i = 1; i <= dir[0]; i++)
+        {
+            Debug.Log("Calculating Up-Left");
+            int target = currentSquare + (i * 7);
+            
+            // 1. Edge Check: Moving left means the file decreases. Stop if it drops below 0 (A-file).
+            if (currentFile - i < 0) break; 
+            
+            // 2. Bounds Check: Stop if we go off the top of the board.
+            if (target >= 64) break; 
+            
+            // 3. Occupied Check
+            if (sockets[target] == null || sockets[target].hasSelection) break;
+
+            sockets[target].GetComponent<BoxCollider>().enabled = true;
+        }
+        
+        // --- UP-RIGHT (+9) | dir[1] ---
+        for (int i = 1; i <= dir[1]; i++)
+        {
+            Debug.Log("Calculating Up-Right");
+            int target = currentSquare + (i * 9);
+            
+            // 1. Edge Check: Moving right means the file increases. Stop if it passes 7 (H-file).
+            if (currentFile + i > 7) break; 
+            
+            if (target >= 64) break;
+            if (sockets[target] == null || sockets[target].hasSelection) break;
+
+            sockets[target].GetComponent<BoxCollider>().enabled = true;
+        }
+        
+        // --- DOWN-LEFT (-9) | dir[2] ---
+        for (int i = 1; i <= dir[2]; i++)
+        {
+            Debug.Log("Calculating Down-Left");
+            int target = currentSquare - (i * 9);
+            
+            // 1. Edge Check: Moving left, stop if file drops below 0.
+            if (currentFile - i < 0) break;
+            
+            // 2. Bounds Check: Stop if we go off the bottom of the board.
+            if (target < 0) break;
+            
+            if (sockets[target] == null || sockets[target].hasSelection) break;
+
+            sockets[target].GetComponent<BoxCollider>().enabled = true;
+        }
+
+        // --- DOWN-RIGHT (-7) | dir[3] ---
+        for (int i = 1; i <= dir[3]; i++)
+        {
+            Debug.Log("Calculating Down-Right");
+            int target = currentSquare - (i * 7);
+            
+            // 1. Edge Check: Moving right, stop if file passes 7.
+            if (currentFile + i > 7) break;
+            
+            if (target < 0) break;
+            if (sockets[target] == null || sockets[target].hasSelection) break;
+
+            sockets[target].GetComponent<BoxCollider>().enabled = true;
+        }
+    }    
     private void disableAllSockets(XRSocketInteractor lastUnsnapSocket)
     {
         Debug.Log("DisableAllSockets");
