@@ -1107,8 +1107,7 @@ MonoBehaviour:
   NetworkConfig:
     ProtocolVersion: 0
     NetworkTransport: {fileID: 318141609}
-    PlayerPrefab: {fileID: 7710577391268660612, guid: cf5e76a61e91b444bbc03321eccf993e,
-      type: 3}
+    PlayerPrefab: {fileID: 0}
     Prefabs:
       NetworkPrefabsLists:
       - {fileID: 11400000, guid: 539c8a64e8c1c0c49a2a6805436a6384, type: 2}
@@ -1142,6 +1141,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69b33a9daa274a24582bf918676a867b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoConnect: 1
   statusText: {fileID: 1399881634}
   startGameButton: {fileID: 1426717868}
 --- !u!1 &476065479
