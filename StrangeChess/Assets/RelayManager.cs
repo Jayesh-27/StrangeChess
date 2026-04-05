@@ -14,11 +14,13 @@ using TMPro;
 
 public class RelayManager : MonoBehaviour
 {
+    [Header("Matchmaking Settings")]
+    [Tooltip("If true, the game will automatically find a room or create one on startup.")]
+    public bool autoConnect = true;
+
     [Header("UI References")]
-    public TMP_Text statusText; // Replaces your old codeDisplayText
-    public GameObject startGameButton; 
-    
-    // We no longer need the InputField!
+    public TMP_Text statusText; 
+    public GameObject startGameButton; // You can leave this unassigned or delete it from the Canvas now
 
     private Lobby currentLobby;
     private float heartbeatTimer;
@@ -46,14 +48,22 @@ public class RelayManager : MonoBehaviour
         if (!AuthenticationService.Instance.IsSignedIn)
         {
             await AuthenticationService.Instance.SignInAnonymouslyAsync();
-            statusText.text = "Ready to play!";
+            
+            // If AutoConnect is checked in the Inspector, start matchmaking immediately!
+            if (autoConnect)
+            {
+                AutoJoinOrHost();
+            }
+            else
+            {
+                statusText.text = "Ready to play! Select Host or Join.";
+            }
         }
     }
 
     private void Update()
     {
         // Lobbies shut down if the host doesn't ping them every 30 seconds.
-        // We will send a heartbeat ping every 15 seconds to keep it alive.
         if (currentLobby != null && currentLobby.HostId == AuthenticationService.Instance.PlayerId)
         {
             heartbeatTimer += Time.deltaTime;
@@ -65,21 +75,52 @@ public class RelayManager : MonoBehaviour
         }
     }
 
+    // --- AUTOMATIC MATCHMAKING ---
+
+    public async void AutoJoinOrHost()
+    {
+        statusText.text = "Looking for an opponent...";
+        
+        try
+        {
+            // 1. Try to find any open lobby first
+            currentLobby = await LobbyService.Instance.QuickJoinLobbyAsync();
+
+            // If we succeed, extract the code and join as a Client
+            string relayCode = currentLobby.Data["RelayCode"].Value;
+            
+            JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(relayCode);
+            RelayServerData relayServerData = new RelayServerData(joinAllocation, "dtls");
+            NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
+
+            NetworkManager.Singleton.StartClient();
+            statusText.text = "Match found! Joining game...";
+        }
+        catch (LobbyServiceException)
+        {
+            // 2. If QuickJoin fails (no lobbies found), we become the Host instead!
+            Debug.Log("No open rooms found. Automatically hosting a new room...");
+            StartHost();
+        }
+    }
+
+    // --- MANUAL MATCHMAKING (Fallback) ---
+
     public async void StartHost()
     {
         try
         {
             statusText.text = "Creating room...";
 
-            // 1. Create Relay Allocation
+            // Create Relay Allocation
             Allocation allocation = await RelayService.Instance.CreateAllocationAsync(1);
             string joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
 
-            // 2. Configure Transport
+            // Configure Transport
             RelayServerData relayServerData = new RelayServerData(allocation, "dtls");
             NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
 
-            // 3. Create Lobby and hide the Relay Code inside it
+            // Create Lobby and hide the Relay Code inside it
             CreateLobbyOptions lobbyOptions = new CreateLobbyOptions
             {
                 IsPrivate = false,
@@ -91,11 +132,11 @@ public class RelayManager : MonoBehaviour
             
             currentLobby = await LobbyService.Instance.CreateLobbyAsync("VR Chess Room", 2, lobbyOptions);
             
-            // 4. Start Host
+            // Start Host
             NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
             NetworkManager.Singleton.StartHost();
             
-            statusText.text = "Waiting for an opponent...";
+            statusText.text = "Waiting for an opponent to join...";
         }
         catch (System.Exception e)
         {
@@ -109,14 +150,9 @@ public class RelayManager : MonoBehaviour
         try
         {
             statusText.text = "Searching for a room...";
-
-            // 1. Find any open lobby
             currentLobby = await LobbyService.Instance.QuickJoinLobbyAsync();
-
-            // 2. Extract the Relay code
             string relayCode = currentLobby.Data["RelayCode"].Value;
             
-            // 3. Join Relay
             JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(relayCode);
             RelayServerData relayServerData = new RelayServerData(joinAllocation, "dtls");
             NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
@@ -131,12 +167,15 @@ public class RelayManager : MonoBehaviour
         }
     }
 
+    // --- GAME START LOGIC ---
+
     private void OnClientConnected(ulong clientId)
     {
+        // When the Host detects exactly 2 people in the server, start immediately!
         if (NetworkManager.Singleton.IsServer && NetworkManager.Singleton.ConnectedClientsList.Count == 2)
         {
-            statusText.text = "Opponent joined!";
-            startGameButton.SetActive(true);
+            statusText.text = "Opponent joined! Loading Chess Board...";
+            LoadGameScene();
         }
     }
 
@@ -144,12 +183,13 @@ public class RelayManager : MonoBehaviour
     {
         if (NetworkManager.Singleton.IsServer)
         {
-            // Lock or delete the lobby so no one else tries to join while you are playing
+            // Delete the lobby so no one else tries to join while you are playing
             if (currentLobby != null)
             {
                 await LobbyService.Instance.DeleteLobbyAsync(currentLobby.Id);
             }
 
+            // Load the actual gameplay scene
             NetworkManager.Singleton.SceneManager.LoadScene("Chess", UnityEngine.SceneManagement.LoadSceneMode.Single);
         }
     }
