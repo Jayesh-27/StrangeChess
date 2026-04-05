@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
+using Unity.Netcode;
 
 public class SocketTracker : MonoBehaviour
 {
@@ -25,6 +26,16 @@ public class SocketTracker : MonoBehaviour
         Debug.Log(args.interactableObject.transform.name + " Snapped to square: " + Square);
         chessManager.shouldSnapBack = false;
         chessManager.enableAllSockets();
+
+        // --- NEW NETWORK SYNC ---
+        // Tell the opponent to snap this piece into this exact square!
+        NetworkObject netObj = args.interactableObject.transform.GetComponent<NetworkObject>();
+        
+        // We only send the network message if WE are the one holding the piece.
+        if (netObj != null && netObj.IsOwner)
+        {
+            chessManager.SyncSnapServerRpc(netObj.NetworkObjectId, Square);
+        }
     }
 
     void OnUnsnap(SelectExitEventArgs args)
