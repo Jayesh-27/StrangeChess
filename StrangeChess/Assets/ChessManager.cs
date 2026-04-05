@@ -60,7 +60,8 @@ public class ChessManager : NetworkBehaviour
         }
         else
         {
-            XRRig.transform.position = BlackRigSpawnPoint.transform.position;
+            XRRig.transform.position = BlackRigSpawnPoint.transform.position;            
+            XRRig.transform.Rotate(0f, 180f, 0f);
             Debug.Log("[ChessManager] Positioned rig at Black Spawn Point.");
         }
     }
