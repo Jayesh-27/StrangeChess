@@ -213,7 +213,7 @@ Transform:
   m_GameObject: {fileID: 21863631}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.11930008, y: -0.0163, z: 0.010099981}
+  m_LocalPosition: {x: 0.11930002, y: -0.0163, z: 0.010099981}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -315,7 +315,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 24
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &41515631
 GameObject:
   m_ObjectHideFlags: 0
@@ -344,7 +344,7 @@ Transform:
   m_GameObject: {fileID: 41515631}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.08380006, y: 0.017000044, z: 0.010099976}
+  m_LocalPosition: {x: -0.08380003, y: 0.017000044, z: 0.010099976}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -446,7 +446,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 38
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &56346027
 GameObject:
   m_ObjectHideFlags: 0
@@ -522,8 +522,8 @@ GameObject:
   - component: {fileID: 58725940}
   - component: {fileID: 58725939}
   - component: {fileID: 58725938}
-  - component: {fileID: 58725942}
   - component: {fileID: 58725943}
+  - component: {fileID: 58725942}
   - component: {fileID: 58725944}
   m_Layer: 0
   m_Name: E King
@@ -540,13 +540,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 58725936}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -1.13686824e-13, w: 1}
-  m_LocalPosition: {x: 0.121601164, y: 0.76620024, z: 0.50179994}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalRotation: {x: 0.000002078712, y: 0.70710796, z: 0.7071057, w: 0.0000021234155}
+  m_LocalPosition: {x: -0.016299957, y: 0.10490008, z: 0.025099844}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1760680039183070740}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 640078941}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &58725938
 MonoBehaviour:
@@ -689,7 +689,7 @@ MonoBehaviour:
   m_SmoothScale: 0
   m_SmoothScaleAmount: 8
   m_TightenScale: 0.1
-  m_ThrowOnDetach: 0
+  m_ThrowOnDetach: 1
   m_ThrowSmoothingDuration: 0.25
   m_ThrowSmoothingCurve:
     serializedVersion: 2
@@ -709,7 +709,7 @@ MonoBehaviour:
   m_ThrowVelocityScale: 1.5
   m_ThrowAngularVelocityScale: 1
   m_ForceGravityOnDetach: 0
-  m_RetainTransformParent: 0
+  m_RetainTransformParent: 1
   m_AttachPointCompatibilityMode: 0
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
@@ -1086,8 +1086,8 @@ GameObject:
   - component: {fileID: 91707236}
   - component: {fileID: 91707235}
   - component: {fileID: 91707234}
-  - component: {fileID: 91707239}
   - component: {fileID: 91707238}
+  - component: {fileID: 91707239}
   - component: {fileID: 91707240}
   m_Layer: 0
   m_Name: H Pawn
@@ -1104,13 +1104,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 91707232}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -1.13686824e-13, w: 1}
-  m_LocalPosition: {x: 0.32760158, y: 0.7662003, z: 0.4301985}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalRotation: {x: 0.000002078712, y: 0.70710796, z: 0.7071057, w: 0.0000021234155}
+  m_LocalPosition: {x: -0.11930023, y: 0.06910004, z: 0.025099907}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1725032585}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 640078941}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &91707234
 MonoBehaviour:
@@ -1253,7 +1253,7 @@ MonoBehaviour:
   m_SmoothScale: 0
   m_SmoothScaleAmount: 8
   m_TightenScale: 0.1
-  m_ThrowOnDetach: 0
+  m_ThrowOnDetach: 1
   m_ThrowSmoothingDuration: 0.25
   m_ThrowSmoothingCurve:
     serializedVersion: 2
@@ -1273,7 +1273,7 @@ MonoBehaviour:
   m_ThrowVelocityScale: 1.5
   m_ThrowAngularVelocityScale: 1
   m_ForceGravityOnDetach: 0
-  m_RetainTransformParent: 0
+  m_RetainTransformParent: 1
   m_AttachPointCompatibilityMode: 0
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
@@ -1480,7 +1480,7 @@ Transform:
   m_GameObject: {fileID: 136228256}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.08380014, y: -0.016300015, z: 0.010099998}
+  m_LocalPosition: {x: -0.08380009, y: -0.016300015, z: 0.010099998}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1582,7 +1582,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 30
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &136261153
 GameObject:
   m_ObjectHideFlags: 0
@@ -1611,7 +1611,7 @@ Transform:
   m_GameObject: {fileID: 136261153}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.084800154, y: -0.01629999, z: 0.010099979}
+  m_LocalPosition: {x: 0.084800124, y: -0.01629999, z: 0.010099979}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1713,7 +1713,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 25
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &148184198
 GameObject:
   m_ObjectHideFlags: 0
@@ -1882,13 +1882,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 185379231}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -1.13686824e-13, w: 1}
-  m_LocalPosition: {x: -0.08460811, y: 0.7661909, z: 0.430202}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalRotation: {x: 0.000002078712, y: 0.70710796, z: 0.7071057, w: 0.0000021234155}
+  m_LocalPosition: {x: 0.08680439, y: 0.06910057, z: 0.025095213}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1267835946}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 640078941}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &185379233
 MonoBehaviour:
@@ -2031,7 +2031,7 @@ MonoBehaviour:
   m_SmoothScale: 0
   m_SmoothScaleAmount: 8
   m_TightenScale: 0.1
-  m_ThrowOnDetach: 0
+  m_ThrowOnDetach: 1
   m_ThrowSmoothingDuration: 0.25
   m_ThrowSmoothingCurve:
     serializedVersion: 2
@@ -2051,7 +2051,7 @@ MonoBehaviour:
   m_ThrowVelocityScale: 1.5
   m_ThrowAngularVelocityScale: 1
   m_ForceGravityOnDetach: 0
-  m_RetainTransformParent: 0
+  m_RetainTransformParent: 1
   m_AttachPointCompatibilityMode: 0
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
@@ -2196,7 +2196,7 @@ Transform:
   m_GameObject: {fileID: 201559222}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.11830018, y: -0.049900014, z: 0.010100018}
+  m_LocalPosition: {x: -0.11830013, y: -0.04989999, z: 0.010099988}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2298,7 +2298,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 23
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &207091184
 GameObject:
   m_ObjectHideFlags: 0
@@ -2441,7 +2441,7 @@ Transform:
   m_GameObject: {fileID: 242417234}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.11930006, y: -0.04990001, z: 0.010100033}
+  m_LocalPosition: {x: 0.11929999, y: -0.049899995, z: 0.010100003}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2543,7 +2543,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 16
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &263147986
 GameObject:
   m_ObjectHideFlags: 0
@@ -2603,7 +2603,7 @@ Transform:
   m_GameObject: {fileID: 263499895}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.015799949, y: 0.050600078, z: 0.010099929}
+  m_LocalPosition: {x: -0.015799949, y: 0.050600063, z: 0.010099959}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2705,7 +2705,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 44
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &291195523
 GameObject:
   m_ObjectHideFlags: 0
@@ -2737,13 +2737,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 291195523}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -1.13686824e-13, w: 1}
-  m_LocalPosition: {x: -0.01619947, y: 0.7662003, z: 0.43020058}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalRotation: {x: 0.000002078712, y: 0.70710796, z: 0.7071057, w: 0.0000021234155}
+  m_LocalPosition: {x: 0.05260007, y: 0.06910006, z: 0.025099915}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 696696144}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 640078941}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &291195525
 MonoBehaviour:
@@ -2886,7 +2886,7 @@ MonoBehaviour:
   m_SmoothScale: 0
   m_SmoothScaleAmount: 8
   m_TightenScale: 0.1
-  m_ThrowOnDetach: 0
+  m_ThrowOnDetach: 1
   m_ThrowSmoothingDuration: 0.25
   m_ThrowSmoothingCurve:
     serializedVersion: 2
@@ -2906,7 +2906,7 @@ MonoBehaviour:
   m_ThrowVelocityScale: 1.5
   m_ThrowAngularVelocityScale: 1
   m_ForceGravityOnDetach: 0
-  m_RetainTransformParent: 0
+  m_RetainTransformParent: 1
   m_AttachPointCompatibilityMode: 0
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
@@ -3134,7 +3134,7 @@ Transform:
   m_GameObject: {fileID: 296984478}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.08480016, y: -0.11780003, z: 0.010100059}
+  m_LocalPosition: {x: 0.08480013, y: -0.1178, z: 0.010100022}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3236,7 +3236,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 1
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &306780228
 GameObject:
   m_ObjectHideFlags: 0
@@ -3392,13 +3392,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 348522663}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -1.13686824e-13, w: 1}
-  m_LocalPosition: {x: 0.32760158, y: 0.76620066, z: 0.50179857}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalRotation: {x: 0.000002078712, y: 0.70710796, z: 0.7071057, w: 0.0000021234155}
+  m_LocalPosition: {x: -0.1193, y: 0.1049, z: 0.0251}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3776179527004910382}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 640078941}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &348522665
 MonoBehaviour:
@@ -3541,7 +3541,7 @@ MonoBehaviour:
   m_SmoothScale: 0
   m_SmoothScaleAmount: 8
   m_TightenScale: 0.1
-  m_ThrowOnDetach: 0
+  m_ThrowOnDetach: 1
   m_ThrowSmoothingDuration: 0.25
   m_ThrowSmoothingCurve:
     serializedVersion: 2
@@ -3561,7 +3561,7 @@ MonoBehaviour:
   m_ThrowVelocityScale: 1.5
   m_ThrowAngularVelocityScale: 1
   m_ForceGravityOnDetach: 0
-  m_RetainTransformParent: 0
+  m_RetainTransformParent: 1
   m_AttachPointCompatibilityMode: 0
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
@@ -3706,7 +3706,7 @@ Transform:
   m_GameObject: {fileID: 348864247}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.051300082, y: 0.08490008, z: 0.010099903}
+  m_LocalPosition: {x: 0.05130005, y: 0.084900066, z: 0.010099933}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3808,7 +3808,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 50
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &351115151
 GameObject:
   m_ObjectHideFlags: 0
@@ -3871,13 +3871,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 377754165}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -1.13686824e-13, w: 1}
-  m_LocalPosition: {x: 0.32759872, y: 0.7661996, z: 0.023198187}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalRotation: {x: 0.000002078712, y: 0.70710796, z: 0.7071057, w: 0.0000021234155}
+  m_LocalPosition: {x: -0.1193, y: -0.13440001, z: 0.02510003}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3341288980329957223}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1236520545}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &377754167
 MonoBehaviour:
@@ -4006,7 +4006,7 @@ MonoBehaviour:
   m_SmoothScale: 0
   m_SmoothScaleAmount: 8
   m_TightenScale: 0.1
-  m_ThrowOnDetach: 0
+  m_ThrowOnDetach: 1
   m_ThrowSmoothingDuration: 0.25
   m_ThrowSmoothingCurve:
     serializedVersion: 2
@@ -4026,7 +4026,7 @@ MonoBehaviour:
   m_ThrowVelocityScale: 1.5
   m_ThrowAngularVelocityScale: 1
   m_ForceGravityOnDetach: 0
-  m_RetainTransformParent: 0
+  m_RetainTransformParent: 1
   m_AttachPointCompatibilityMode: 0
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
@@ -4185,7 +4185,7 @@ Transform:
   m_GameObject: {fileID: 392610849}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.015800005, y: -0.084200054, z: 0.010100052}
+  m_LocalPosition: {x: -0.015800005, y: -0.084200025, z: 0.010100022}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -4287,7 +4287,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 12
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &393703935
 GameObject:
   m_ObjectHideFlags: 0
@@ -4301,8 +4301,8 @@ GameObject:
   - component: {fileID: 393703939}
   - component: {fileID: 393703938}
   - component: {fileID: 393703937}
-  - component: {fileID: 393703942}
   - component: {fileID: 393703941}
+  - component: {fileID: 393703942}
   - component: {fileID: 393703943}
   m_Layer: 0
   m_Name: B Knight
@@ -4319,13 +4319,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 393703935}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -1.13686824e-13, w: 1}
-  m_LocalPosition: {x: -0.08460781, y: 0.766191, z: 0.5018022}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalRotation: {x: 0.000002078712, y: 0.70710796, z: 0.7071057, w: 0.0000021234155}
+  m_LocalPosition: {x: 0.08680444, y: 0.10490058, z: 0.025095195}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 532245522264229850}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 640078941}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &393703937
 MonoBehaviour:
@@ -4468,7 +4468,7 @@ MonoBehaviour:
   m_SmoothScale: 0
   m_SmoothScaleAmount: 8
   m_TightenScale: 0.1
-  m_ThrowOnDetach: 0
+  m_ThrowOnDetach: 1
   m_ThrowSmoothingDuration: 0.25
   m_ThrowSmoothingCurve:
     serializedVersion: 2
@@ -4488,7 +4488,7 @@ MonoBehaviour:
   m_ThrowVelocityScale: 1.5
   m_ThrowAngularVelocityScale: 1
   m_ForceGravityOnDetach: 0
-  m_RetainTransformParent: 0
+  m_RetainTransformParent: 1
   m_AttachPointCompatibilityMode: 0
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
@@ -4747,7 +4747,7 @@ Transform:
   m_GameObject: {fileID: 408401035}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.05029993, y: 0.05060009, z: 0.010099925}
+  m_LocalPosition: {x: -0.05029991, y: 0.050600074, z: 0.010099925}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -4849,7 +4849,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 45
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &445053776
 GameObject:
   m_ObjectHideFlags: 0
@@ -4961,8 +4961,8 @@ GameObject:
   - component: {fileID: 449793339}
   - component: {fileID: 449793338}
   - component: {fileID: 449793337}
-  - component: {fileID: 449793342}
   - component: {fileID: 449793341}
+  - component: {fileID: 449793342}
   - component: {fileID: 449793343}
   m_Layer: 0
   m_Name: D Queen
@@ -4979,13 +4979,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 449793335}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -1.13686824e-13, w: 1}
-  m_LocalPosition: {x: 0.052401066, y: 0.7662003, z: 0.5018004}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalRotation: {x: 0.000002078712, y: 0.70710796, z: 0.7071057, w: 0.0000021234155}
+  m_LocalPosition: {x: 0.018300058, y: 0.10490009, z: 0.025099844}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5704997861937034342}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 640078941}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &449793337
 MonoBehaviour:
@@ -5128,7 +5128,7 @@ MonoBehaviour:
   m_SmoothScale: 0
   m_SmoothScaleAmount: 8
   m_TightenScale: 0.1
-  m_ThrowOnDetach: 0
+  m_ThrowOnDetach: 1
   m_ThrowSmoothingDuration: 0.25
   m_ThrowSmoothingCurve:
     serializedVersion: 2
@@ -5148,7 +5148,7 @@ MonoBehaviour:
   m_ThrowVelocityScale: 1.5
   m_ThrowAngularVelocityScale: 1
   m_ForceGravityOnDetach: 0
-  m_RetainTransformParent: 0
+  m_RetainTransformParent: 1
   m_AttachPointCompatibilityMode: 0
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
@@ -5293,7 +5293,7 @@ Transform:
   m_GameObject: {fileID: 450614841}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.0503, y: 0.08490012, z: 0.010099873}
+  m_LocalPosition: {x: -0.050299983, y: 0.0849001, z: 0.010099903}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5395,7 +5395,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 53
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &454971165
 GameObject:
   m_ObjectHideFlags: 0
@@ -5424,7 +5424,7 @@ Transform:
   m_GameObject: {fileID: 454971165}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.11930012, y: 0.08490011, z: 0.01009991}
+  m_LocalPosition: {x: 0.11930005, y: 0.084900096, z: 0.01009994}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5526,7 +5526,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 48
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &460274078
 GameObject:
   m_ObjectHideFlags: 0
@@ -5555,7 +5555,7 @@ Transform:
   m_GameObject: {fileID: 460274078}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.01680009, y: 0.11850012, z: 0.01009991}
+  m_LocalPosition: {x: 0.016800096, y: 0.11850009, z: 0.01009994}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5657,7 +5657,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 59
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &461861459
 GameObject:
   m_ObjectHideFlags: 0
@@ -5686,7 +5686,7 @@ Transform:
   m_GameObject: {fileID: 461861459}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.11930009, y: -0.117800035, z: 0.010100089}
+  m_LocalPosition: {x: 0.11930003, y: -0.117800005, z: 0.010100022}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5788,7 +5788,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 0
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &479136736
 GameObject:
   m_ObjectHideFlags: 0
@@ -5817,7 +5817,7 @@ Transform:
   m_GameObject: {fileID: 479136736}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.050299976, y: 0.11850013, z: 0.010099851}
+  m_LocalPosition: {x: -0.050299946, y: 0.1185001, z: 0.01009988}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5919,7 +5919,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 61
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &479383835
 GameObject:
   m_ObjectHideFlags: 0
@@ -5979,7 +5979,7 @@ Transform:
   m_GameObject: {fileID: 484150377}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.11830008, y: 0.01700007, z: 0.010099974}
+  m_LocalPosition: {x: -0.118300036, y: 0.01700007, z: 0.010099974}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -6081,7 +6081,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 39
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &497234279
 GameObject:
   m_ObjectHideFlags: 0
@@ -6110,7 +6110,7 @@ Transform:
   m_GameObject: {fileID: 497234279}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.051300105, y: 0.11850009, z: 0.01009991}
+  m_LocalPosition: {x: 0.051300082, y: 0.11850006, z: 0.01009994}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -6212,7 +6212,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 58
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &535194016
 GameObject:
   m_ObjectHideFlags: 0
@@ -6241,7 +6241,7 @@ Transform:
   m_GameObject: {fileID: 535194016}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.08380004, y: 0.050600052, z: 0.010099985}
+  m_LocalPosition: {x: -0.083799995, y: 0.050600037, z: 0.010099985}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -6343,7 +6343,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 46
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &569706839
 GameObject:
   m_ObjectHideFlags: 0
@@ -6490,7 +6490,7 @@ Transform:
   m_GameObject: {fileID: 574344425}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.016800134, y: 0.050600063, z: 0.010099929}
+  m_LocalPosition: {x: 0.016800132, y: 0.05060005, z: 0.010099959}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -6592,7 +6592,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 43
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &588265714
 GameObject:
   m_ObjectHideFlags: 0
@@ -6621,7 +6621,7 @@ Transform:
   m_GameObject: {fileID: 588265714}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.015800048, y: -0.016300019, z: 0.0101000015}
+  m_LocalPosition: {x: -0.01580004, y: -0.016300004, z: 0.0101000015}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -6723,7 +6723,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 28
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &592895014
 GameObject:
   m_ObjectHideFlags: 0
@@ -6752,7 +6752,7 @@ Transform:
   m_GameObject: {fileID: 592895014}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.08480019, y: 0.08490009, z: 0.01009988}
+  m_LocalPosition: {x: 0.084800154, y: 0.08490009, z: 0.01009991}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -6854,7 +6854,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 49
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &598963912
 GameObject:
   m_ObjectHideFlags: 0
@@ -6914,7 +6914,7 @@ Transform:
   m_GameObject: {fileID: 602961338}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.119300134, y: 0.118500106, z: 0.010099888}
+  m_LocalPosition: {x: 0.11930008, y: 0.118500076, z: 0.010099918}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -7016,7 +7016,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 56
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &612186126
 GameObject:
   m_ObjectHideFlags: 0
@@ -7030,8 +7030,8 @@ GameObject:
   - component: {fileID: 612186130}
   - component: {fileID: 612186129}
   - component: {fileID: 612186128}
-  - component: {fileID: 612186133}
   - component: {fileID: 612186132}
+  - component: {fileID: 612186133}
   - component: {fileID: 612186134}
   m_Layer: 0
   m_Name: C Bishop
@@ -7048,13 +7048,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 612186126}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -1.13686824e-13, w: 1}
-  m_LocalPosition: {x: -0.016199142, y: 0.7662004, z: 0.5018008}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalRotation: {x: 0.000002078712, y: 0.70710796, z: 0.7071057, w: 0.0000021234155}
+  m_LocalPosition: {x: 0.052600123, y: 0.10490008, z: 0.025099903}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7781989816745538045}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 640078941}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &612186128
 MonoBehaviour:
@@ -7197,7 +7197,7 @@ MonoBehaviour:
   m_SmoothScale: 0
   m_SmoothScaleAmount: 8
   m_TightenScale: 0.1
-  m_ThrowOnDetach: 0
+  m_ThrowOnDetach: 1
   m_ThrowSmoothingDuration: 0.25
   m_ThrowSmoothingCurve:
     serializedVersion: 2
@@ -7217,7 +7217,7 @@ MonoBehaviour:
   m_ThrowVelocityScale: 1.5
   m_ThrowAngularVelocityScale: 1
   m_ForceGravityOnDetach: 0
-  m_RetainTransformParent: 0
+  m_RetainTransformParent: 1
   m_AttachPointCompatibilityMode: 0
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
@@ -7393,7 +7393,7 @@ Transform:
   m_GameObject: {fileID: 623132425}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.08480025, y: 0.050600093, z: 0.010099933}
+  m_LocalPosition: {x: 0.08480022, y: 0.050600078, z: 0.010099933}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -7495,7 +7495,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 41
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &640078940
 GameObject:
   m_ObjectHideFlags: 0
@@ -7512,7 +7512,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &640078941
 Transform:
   m_ObjectHideFlags: 0
@@ -7525,7 +7525,23 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1287255508}
+  - {fileID: 393703936}
+  - {fileID: 612186127}
+  - {fileID: 449793336}
+  - {fileID: 58725937}
+  - {fileID: 1236378494}
+  - {fileID: 1880526262}
+  - {fileID: 348522664}
+  - {fileID: 1555582555}
+  - {fileID: 185379232}
+  - {fileID: 291195524}
+  - {fileID: 1305588126}
+  - {fileID: 1847255036}
+  - {fileID: 2110702819}
+  - {fileID: 734097355}
+  - {fileID: 91707233}
   m_Father: {fileID: 543450652658442121}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &640078942
@@ -7608,7 +7624,7 @@ Transform:
   m_GameObject: {fileID: 654667666}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.08380016, y: -0.04990004, z: 0.010100022}
+  m_LocalPosition: {x: -0.08380013, y: -0.049900025, z: 0.010100022}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -7710,7 +7726,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 22
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &668749871
 GameObject:
   m_ObjectHideFlags: 0
@@ -7773,13 +7789,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 670118516}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -1.13686824e-13, w: 1}
-  m_LocalPosition: {x: 0.11999887, y: 0.76619965, z: 0.09359932}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalRotation: {x: 0.000002078712, y: 0.70710796, z: 0.7071057, w: 0.0000021234155}
+  m_LocalPosition: {x: -0.015500016, y: -0.09920008, z: 0.02510006}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1914623090}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1236520545}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &670118518
 MonoBehaviour:
@@ -7908,7 +7924,7 @@ MonoBehaviour:
   m_SmoothScale: 0
   m_SmoothScaleAmount: 8
   m_TightenScale: 0.1
-  m_ThrowOnDetach: 0
+  m_ThrowOnDetach: 1
   m_ThrowSmoothingDuration: 0.25
   m_ThrowSmoothingCurve:
     serializedVersion: 2
@@ -7928,7 +7944,7 @@ MonoBehaviour:
   m_ThrowVelocityScale: 1.5
   m_ThrowAngularVelocityScale: 1
   m_ForceGravityOnDetach: 0
-  m_RetainTransformParent: 0
+  m_RetainTransformParent: 1
   m_AttachPointCompatibilityMode: 0
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
@@ -8090,13 +8106,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 680647657}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -1.13686824e-13, w: 1}
-  m_LocalPosition: {x: 0.18819854, y: 0.76619947, z: 0.023199022}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalRotation: {x: 0.000002078712, y: 0.70710796, z: 0.7071057, w: 0.0000021234155}
+  m_LocalPosition: {x: -0.0496, y: -0.13440001, z: 0.02510003}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1518790975658708947}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1236520545}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &680647659
 MonoBehaviour:
@@ -8225,7 +8241,7 @@ MonoBehaviour:
   m_SmoothScale: 0
   m_SmoothScaleAmount: 8
   m_TightenScale: 0.1
-  m_ThrowOnDetach: 0
+  m_ThrowOnDetach: 1
   m_ThrowSmoothingDuration: 0.25
   m_ThrowSmoothingCurve:
     serializedVersion: 2
@@ -8245,7 +8261,7 @@ MonoBehaviour:
   m_ThrowVelocityScale: 1.5
   m_ThrowAngularVelocityScale: 1
   m_ForceGravityOnDetach: 0
-  m_RetainTransformParent: 0
+  m_RetainTransformParent: 1
   m_AttachPointCompatibilityMode: 0
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
@@ -8518,7 +8534,7 @@ Transform:
   m_GameObject: {fileID: 723967602}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.08380009, y: -0.084200054, z: 0.010100074}
+  m_LocalPosition: {x: -0.08380006, y: -0.08420004, z: 0.010100044}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -8620,7 +8636,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 14
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &734097354
 GameObject:
   m_ObjectHideFlags: 0
@@ -8652,13 +8668,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 734097354}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -1.13686824e-13, w: 1}
-  m_LocalPosition: {x: 0.25660995, y: 0.7662097, z: 0.4301979}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalRotation: {x: 0.000002078712, y: 0.70710796, z: 0.7071057, w: 0.0000021234155}
+  m_LocalPosition: {x: -0.08380447, y: 0.06909953, z: 0.025104616}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 207091185}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 640078941}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &734097356
 MonoBehaviour:
@@ -8801,7 +8817,7 @@ MonoBehaviour:
   m_SmoothScale: 0
   m_SmoothScaleAmount: 8
   m_TightenScale: 0.1
-  m_ThrowOnDetach: 0
+  m_ThrowOnDetach: 1
   m_ThrowSmoothingDuration: 0.25
   m_ThrowSmoothingCurve:
     serializedVersion: 2
@@ -8821,7 +8837,7 @@ MonoBehaviour:
   m_ThrowVelocityScale: 1.5
   m_ThrowAngularVelocityScale: 1
   m_ForceGravityOnDetach: 0
-  m_RetainTransformParent: 0
+  m_RetainTransformParent: 1
   m_AttachPointCompatibilityMode: 0
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
@@ -9080,7 +9096,7 @@ Transform:
   m_GameObject: {fileID: 747499318}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.050300032, y: -0.016299993, z: 0.01009997}
+  m_LocalPosition: {x: -0.050300002, y: -0.016299993, z: 0.01009997}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -9182,7 +9198,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 29
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &749484330
 GameObject:
   m_ObjectHideFlags: 0
@@ -9211,7 +9227,7 @@ Transform:
   m_GameObject: {fileID: 749484330}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.050300084, y: -0.049899988, z: 0.010099962}
+  m_LocalPosition: {x: -0.05030004, y: -0.049899973, z: 0.010099962}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -9313,7 +9329,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 21
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &766044630
 GameObject:
   m_ObjectHideFlags: 0
@@ -9342,7 +9358,7 @@ Transform:
   m_GameObject: {fileID: 766044630}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.11930016, y: 0.017000059, z: 0.01009996}
+  m_LocalPosition: {x: 0.11930009, y: 0.017000059, z: 0.01009996}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -9444,7 +9460,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 32
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &790371815
 GameObject:
   m_ObjectHideFlags: 0
@@ -9504,7 +9520,7 @@ Transform:
   m_GameObject: {fileID: 793950264}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.0838001, y: 0.084900066, z: 0.010099895}
+  m_LocalPosition: {x: -0.08380007, y: 0.08490005, z: 0.010099925}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -9606,7 +9622,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 54
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &807822914
 GameObject:
   m_ObjectHideFlags: 0
@@ -9655,8 +9671,8 @@ MonoBehaviour:
   m_Camera: {fileID: 67759578}
   m_OriginBaseGameObject: {fileID: 807822914}
   m_CameraFloorOffsetObject: {fileID: 2142195325}
-  m_RequestedTrackingOriginMode: 1
-  m_CameraYOffset: 0
+  m_RequestedTrackingOriginMode: 2
+  m_CameraYOffset: 1.1176
 --- !u!4 &807822917
 Transform:
   m_ObjectHideFlags: 0
@@ -9666,7 +9682,7 @@ Transform:
   m_GameObject: {fileID: 807822914}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.3, y: 0.997, z: -0.042}
+  m_LocalPosition: {x: 0, y: 0.997, z: -0.042}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -9748,7 +9764,7 @@ Transform:
   m_GameObject: {fileID: 815519615}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.05130015, y: 0.050600052, z: 0.010099992}
+  m_LocalPosition: {x: 0.05130012, y: 0.050600037, z: 0.010099992}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -9850,7 +9866,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 42
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &819763257
 GameObject:
   m_ObjectHideFlags: 0
@@ -9882,13 +9898,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 819763257}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -1.13686824e-13, w: 1}
-  m_LocalPosition: {x: -0.016201824, y: 0.7661996, z: 0.023200244}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalRotation: {x: 0.000002078712, y: 0.70710796, z: 0.7071057, w: 0.0000021234155}
+  m_LocalPosition: {x: 0.05260004, y: -0.1344, z: 0.025100054}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1485349005485445487}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1236520545}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &819763259
 MonoBehaviour:
@@ -10017,7 +10033,7 @@ MonoBehaviour:
   m_SmoothScale: 0
   m_SmoothScaleAmount: 8
   m_TightenScale: 0.1
-  m_ThrowOnDetach: 0
+  m_ThrowOnDetach: 1
   m_ThrowSmoothingDuration: 0.25
   m_ThrowSmoothingCurve:
     serializedVersion: 2
@@ -10037,7 +10053,7 @@ MonoBehaviour:
   m_ThrowVelocityScale: 1.5
   m_ThrowAngularVelocityScale: 1
   m_ForceGravityOnDetach: 0
-  m_RetainTransformParent: 0
+  m_RetainTransformParent: 1
   m_AttachPointCompatibilityMode: 0
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
@@ -10279,7 +10295,7 @@ Transform:
   m_GameObject: {fileID: 858751456}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.051300094, y: -0.08420007, z: 0.010100082}
+  m_LocalPosition: {x: 0.051300064, y: -0.08420005, z: 0.010100052}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -10381,7 +10397,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 10
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &872029005
 GameObject:
   m_ObjectHideFlags: 0
@@ -10524,7 +10540,7 @@ Transform:
   m_GameObject: {fileID: 900896566}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.051300112, y: 0.017000046, z: 0.010099956}
+  m_LocalPosition: {x: 0.051300086, y: 0.017000046, z: 0.010099956}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -10626,7 +10642,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 34
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &916837867
 GameObject:
   m_ObjectHideFlags: 0
@@ -10686,7 +10702,7 @@ Transform:
   m_GameObject: {fileID: 935226478}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.015800055, y: -0.117800035, z: 0.010100052}
+  m_LocalPosition: {x: -0.01580004, y: -0.117800005, z: 0.0101000145}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -10788,7 +10804,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 4
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &954227548
 GameObject:
   m_ObjectHideFlags: 0
@@ -10820,13 +10836,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 954227548}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -1.13686824e-13, w: 1}
-  m_LocalPosition: {x: 0.25660774, y: 0.76620907, z: 0.0935975}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalRotation: {x: 0.000002078712, y: 0.70710796, z: 0.7071057, w: 0.0000021234155}
+  m_LocalPosition: {x: -0.083804384, y: -0.099200584, z: 0.025104754}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5447743985191925739}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1236520545}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &954227550
 BoxCollider:
@@ -10976,7 +10992,7 @@ MonoBehaviour:
   m_SmoothScale: 0
   m_SmoothScaleAmount: 8
   m_TightenScale: 0.1
-  m_ThrowOnDetach: 0
+  m_ThrowOnDetach: 1
   m_ThrowSmoothingDuration: 0.25
   m_ThrowSmoothingCurve:
     serializedVersion: 2
@@ -10996,7 +11012,7 @@ MonoBehaviour:
   m_ThrowVelocityScale: 1.5
   m_ThrowAngularVelocityScale: 1
   m_ForceGravityOnDetach: 0
-  m_RetainTransformParent: 0
+  m_RetainTransformParent: 1
   m_AttachPointCompatibilityMode: 0
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
@@ -11258,7 +11274,7 @@ Transform:
   m_GameObject: {fileID: 1024967095}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.11830014, y: -0.08420005, z: 0.010100044}
+  m_LocalPosition: {x: -0.118300065, y: -0.084200025, z: 0.0101000145}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -11360,7 +11376,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 15
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &1026852928
 GameObject:
   m_ObjectHideFlags: 0
@@ -11596,7 +11612,7 @@ Transform:
   m_GameObject: {fileID: 1126414701}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.050299983, y: 0.017000083, z: 0.010099948}
+  m_LocalPosition: {x: -0.05029994, y: 0.017000083, z: 0.010099948}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -11698,7 +11714,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 37
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &1149041501
 GameObject:
   m_ObjectHideFlags: 0
@@ -11844,13 +11860,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1191074129}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -1.13686824e-13, w: 1}
-  m_LocalPosition: {x: 0.05479002, y: 0.76619035, z: 0.09360075}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalRotation: {x: 0.000002078712, y: 0.70710796, z: 0.7071057, w: 0.0000021234155}
+  m_LocalPosition: {x: 0.01710438, y: -0.099199556, z: 0.02509541}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 736111509}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1236520545}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1191074131
 MonoBehaviour:
@@ -11979,7 +11995,7 @@ MonoBehaviour:
   m_SmoothScale: 0
   m_SmoothScaleAmount: 8
   m_TightenScale: 0.1
-  m_ThrowOnDetach: 0
+  m_ThrowOnDetach: 1
   m_ThrowSmoothingDuration: 0.25
   m_ThrowSmoothingCurve:
     serializedVersion: 2
@@ -11999,7 +12015,7 @@ MonoBehaviour:
   m_ThrowVelocityScale: 1.5
   m_ThrowAngularVelocityScale: 1
   m_ForceGravityOnDetach: 0
-  m_RetainTransformParent: 0
+  m_RetainTransformParent: 1
   m_AttachPointCompatibilityMode: 0
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
@@ -12330,13 +12346,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1200662543}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -1.13686824e-13, w: 1}
-  m_LocalPosition: {x: 0.052398384, y: 0.76619947, z: 0.023199856}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalRotation: {x: 0.000002078712, y: 0.70710796, z: 0.7071057, w: 0.0000021234155}
+  m_LocalPosition: {x: 0.0183, y: -0.1344, z: 0.0251}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 147498088605523976}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1236520545}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1200662545
 MonoBehaviour:
@@ -12465,7 +12481,7 @@ MonoBehaviour:
   m_SmoothScale: 0
   m_SmoothScaleAmount: 8
   m_TightenScale: 0.1
-  m_ThrowOnDetach: 0
+  m_ThrowOnDetach: 1
   m_ThrowSmoothingDuration: 0.25
   m_ThrowSmoothingCurve:
     serializedVersion: 2
@@ -12485,7 +12501,7 @@ MonoBehaviour:
   m_ThrowVelocityScale: 1.5
   m_ThrowAngularVelocityScale: 1
   m_ForceGravityOnDetach: 0
-  m_RetainTransformParent: 0
+  m_RetainTransformParent: 1
   m_AttachPointCompatibilityMode: 0
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
@@ -12647,13 +12663,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1236378493}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -1.13686824e-13, w: 1}
-  m_LocalPosition: {x: 0.18820134, y: 0.7662004, z: 0.5017996}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalRotation: {x: 0.000002078712, y: 0.70710796, z: 0.7071057, w: 0.0000021234155}
+  m_LocalPosition: {x: -0.04959998, y: 0.10490008, z: 0.025099874}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 9027713508153800601}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 640078941}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1236378495
 MonoBehaviour:
@@ -12796,7 +12812,7 @@ MonoBehaviour:
   m_SmoothScale: 0
   m_SmoothScaleAmount: 8
   m_TightenScale: 0.1
-  m_ThrowOnDetach: 0
+  m_ThrowOnDetach: 1
   m_ThrowSmoothingDuration: 0.25
   m_ThrowSmoothingCurve:
     serializedVersion: 2
@@ -12816,7 +12832,7 @@ MonoBehaviour:
   m_ThrowVelocityScale: 1.5
   m_ThrowAngularVelocityScale: 1
   m_ForceGravityOnDetach: 0
-  m_RetainTransformParent: 0
+  m_RetainTransformParent: 1
   m_AttachPointCompatibilityMode: 0
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
@@ -12949,7 +12965,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1236520545
 Transform:
   m_ObjectHideFlags: 0
@@ -12962,7 +12978,23 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 377754166}
+  - {fileID: 2094568339}
+  - {fileID: 680647658}
+  - {fileID: 1517688837}
+  - {fileID: 1200662544}
+  - {fileID: 819763258}
+  - {fileID: 2139229586}
+  - {fileID: 1648355462}
+  - {fileID: 1766617563}
+  - {fileID: 2061100363}
+  - {fileID: 1682907800}
+  - {fileID: 1191074130}
+  - {fileID: 670118517}
+  - {fileID: 1566248936}
+  - {fileID: 954227549}
+  - {fileID: 2002498020}
   m_Father: {fileID: 543450652658442121}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1236520546
@@ -13014,7 +13046,7 @@ Transform:
   m_GameObject: {fileID: 1245130131}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.11830015, y: 0.0849001, z: 0.010099895}
+  m_LocalPosition: {x: -0.11830007, y: 0.08490009, z: 0.010099925}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -13116,7 +13148,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 55
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &1248889471
 GameObject:
   m_ObjectHideFlags: 0
@@ -13275,8 +13307,8 @@ GameObject:
   - component: {fileID: 1287255511}
   - component: {fileID: 1287255510}
   - component: {fileID: 1287255509}
-  - component: {fileID: 1287255514}
   - component: {fileID: 1287255513}
+  - component: {fileID: 1287255514}
   - component: {fileID: 1287255515}
   m_Layer: 0
   m_Name: A Rook
@@ -13293,13 +13325,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1287255507}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -1.13686824e-13, w: 1}
-  m_LocalPosition: {x: -0.15059927, y: 0.76620024, z: 0.5018015}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalRotation: {x: 0.000002078712, y: 0.70710796, z: 0.7071057, w: 0.0000021234155}
+  m_LocalPosition: {x: 0.11980011, y: 0.10490008, z: 0.025099859}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2476263461758012162}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 640078941}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1287255509
 MonoBehaviour:
@@ -13442,7 +13474,7 @@ MonoBehaviour:
   m_SmoothScale: 0
   m_SmoothScaleAmount: 8
   m_TightenScale: 0.1
-  m_ThrowOnDetach: 0
+  m_ThrowOnDetach: 1
   m_ThrowSmoothingDuration: 0.25
   m_ThrowSmoothingCurve:
     serializedVersion: 2
@@ -13462,7 +13494,7 @@ MonoBehaviour:
   m_ThrowVelocityScale: 1.5
   m_ThrowAngularVelocityScale: 1
   m_ForceGravityOnDetach: 0
-  m_RetainTransformParent: 0
+  m_RetainTransformParent: 1
   m_AttachPointCompatibilityMode: 0
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
@@ -13610,13 +13642,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1305588125}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -1.13686824e-13, w: 1}
-  m_LocalPosition: {x: 0.054792106, y: 0.766191, z: 0.43020117}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalRotation: {x: 0.000002078712, y: 0.70710796, z: 0.7071057, w: 0.0000021234155}
+  m_LocalPosition: {x: 0.01710433, y: 0.069100566, z: 0.025095265}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1177781358}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 640078941}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1305588127
 MonoBehaviour:
@@ -13759,7 +13791,7 @@ MonoBehaviour:
   m_SmoothScale: 0
   m_SmoothScaleAmount: 8
   m_TightenScale: 0.1
-  m_ThrowOnDetach: 0
+  m_ThrowOnDetach: 1
   m_ThrowSmoothingDuration: 0.25
   m_ThrowSmoothingCurve:
     serializedVersion: 2
@@ -13779,7 +13811,7 @@ MonoBehaviour:
   m_ThrowVelocityScale: 1.5
   m_ThrowAngularVelocityScale: 1
   m_ForceGravityOnDetach: 0
-  m_RetainTransformParent: 0
+  m_RetainTransformParent: 1
   m_AttachPointCompatibilityMode: 0
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
@@ -14090,7 +14122,7 @@ Transform:
   m_GameObject: {fileID: 1340708101}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.11930013, y: -0.08420004, z: 0.010100059}
+  m_LocalPosition: {x: 0.11930006, y: -0.084200025, z: 0.010100029}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -14192,7 +14224,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 8
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &1368075089
 GameObject:
   m_ObjectHideFlags: 0
@@ -14252,7 +14284,7 @@ Transform:
   m_GameObject: {fileID: 1371197130}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.016800012, y: -0.04990003, z: 0.010100026}
+  m_LocalPosition: {x: 0.016800007, y: -0.049900014, z: 0.010100026}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -14354,7 +14386,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 19
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &1390902803
 GameObject:
   m_ObjectHideFlags: 0
@@ -14414,7 +14446,7 @@ Transform:
   m_GameObject: {fileID: 1401752864}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.11830016, y: -0.11780006, z: 0.010100104}
+  m_LocalPosition: {x: -0.11830009, y: -0.11780001, z: 0.010100044}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -14516,7 +14548,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 7
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &1406882710
 GameObject:
   m_ObjectHideFlags: 0
@@ -14545,7 +14577,7 @@ Transform:
   m_GameObject: {fileID: 1406882710}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.015799992, y: 0.118500106, z: 0.01009988}
+  m_LocalPosition: {x: -0.015799984, y: 0.118500076, z: 0.01009991}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -14647,7 +14679,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 60
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &1416669672
 GameObject:
   m_ObjectHideFlags: 0
@@ -14738,7 +14770,7 @@ Transform:
   m_GameObject: {fileID: 1428603856}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.015800042, y: 0.084900096, z: 0.010099903}
+  m_LocalPosition: {x: -0.01580002, y: 0.084900096, z: 0.010099933}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -14840,7 +14872,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 52
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &1434615973
 GameObject:
   m_ObjectHideFlags: 0
@@ -15055,7 +15087,7 @@ Transform:
   m_GameObject: {fileID: 1515691090}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.0848002, y: -0.08420003, z: 0.010100059}
+  m_LocalPosition: {x: 0.08480016, y: -0.08420001, z: 0.010100029}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -15157,7 +15189,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 9
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &1517688836
 GameObject:
   m_ObjectHideFlags: 0
@@ -15189,13 +15221,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1517688836}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -1.13686824e-13, w: 1}
-  m_LocalPosition: {x: 0.12159842, y: 0.76619947, z: 0.02319938}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalRotation: {x: 0.000002078712, y: 0.70710796, z: 0.7071057, w: 0.0000021234155}
+  m_LocalPosition: {x: -0.0163, y: -0.1344, z: 0.0251}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5159190963153883646}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1236520545}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1517688838
 MonoBehaviour:
@@ -15324,7 +15356,7 @@ MonoBehaviour:
   m_SmoothScale: 0
   m_SmoothScaleAmount: 8
   m_TightenScale: 0.1
-  m_ThrowOnDetach: 0
+  m_ThrowOnDetach: 1
   m_ThrowSmoothingDuration: 0.25
   m_ThrowSmoothingCurve:
     serializedVersion: 2
@@ -15344,7 +15376,7 @@ MonoBehaviour:
   m_ThrowVelocityScale: 1.5
   m_ThrowAngularVelocityScale: 1
   m_ForceGravityOnDetach: 0
-  m_RetainTransformParent: 0
+  m_RetainTransformParent: 1
   m_AttachPointCompatibilityMode: 0
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
@@ -15503,7 +15535,7 @@ Transform:
   m_GameObject: {fileID: 1520028001}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.08480023, y: 0.017000085, z: 0.010099958}
+  m_LocalPosition: {x: 0.08480019, y: 0.017000085, z: 0.010099958}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -15605,7 +15637,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 33
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &1531144394
 GameObject:
   m_ObjectHideFlags: 0
@@ -15634,7 +15666,7 @@ Transform:
   m_GameObject: {fileID: 1531144394}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.050299987, y: -0.08420002, z: 0.010100052}
+  m_LocalPosition: {x: -0.050299965, y: -0.0842, z: 0.010100022}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -15736,7 +15768,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 13
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &1555582554
 GameObject:
   m_ObjectHideFlags: 0
@@ -15768,13 +15800,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1555582554}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -1.13686824e-13, w: 1}
-  m_LocalPosition: {x: -0.15059972, y: 0.7662004, z: 0.4302013}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalRotation: {x: 0.000002078712, y: 0.70710796, z: 0.7071057, w: 0.0000021234155}
+  m_LocalPosition: {x: 0.11980012, y: 0.06910002, z: 0.025099982}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 402395509}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 640078941}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1555582556
 MonoBehaviour:
@@ -15917,7 +15949,7 @@ MonoBehaviour:
   m_SmoothScale: 0
   m_SmoothScaleAmount: 8
   m_TightenScale: 0.1
-  m_ThrowOnDetach: 0
+  m_ThrowOnDetach: 1
   m_ThrowSmoothingDuration: 0.25
   m_ThrowSmoothingCurve:
     serializedVersion: 2
@@ -15937,7 +15969,7 @@ MonoBehaviour:
   m_ThrowVelocityScale: 1.5
   m_ThrowAngularVelocityScale: 1
   m_ForceGravityOnDetach: 0
-  m_RetainTransformParent: 0
+  m_RetainTransformParent: 1
   m_AttachPointCompatibilityMode: 0
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
@@ -16085,13 +16117,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1566248935}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -1.13686824e-13, w: 1}
-  m_LocalPosition: {x: 0.18819907, y: 0.76619965, z: 0.09359896}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalRotation: {x: 0.000002078712, y: 0.70710796, z: 0.7071057, w: 0.0000021234155}
+  m_LocalPosition: {x: -0.04960006, y: -0.09920007, z: 0.025100052}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 824597343}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1236520545}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1566248937
 MonoBehaviour:
@@ -16220,7 +16252,7 @@ MonoBehaviour:
   m_SmoothScale: 0
   m_SmoothScaleAmount: 8
   m_TightenScale: 0.1
-  m_ThrowOnDetach: 0
+  m_ThrowOnDetach: 1
   m_ThrowSmoothingDuration: 0.25
   m_ThrowSmoothingCurve:
     serializedVersion: 2
@@ -16240,7 +16272,7 @@ MonoBehaviour:
   m_ThrowVelocityScale: 1.5
   m_ThrowAngularVelocityScale: 1
   m_ForceGravityOnDetach: 0
-  m_RetainTransformParent: 0
+  m_RetainTransformParent: 1
   m_AttachPointCompatibilityMode: 0
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
@@ -16430,7 +16462,7 @@ Transform:
   m_GameObject: {fileID: 1607649531}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.11830006, y: 0.050600063, z: 0.010099921}
+  m_LocalPosition: {x: -0.1183, y: 0.05060005, z: 0.010099951}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -16532,7 +16564,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 47
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &1609950641
 GameObject:
   m_ObjectHideFlags: 0
@@ -16561,7 +16593,7 @@ Transform:
   m_GameObject: {fileID: 1609950641}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.084800206, y: 0.11850013, z: 0.010099858}
+  m_LocalPosition: {x: 0.084800184, y: 0.1185001, z: 0.010099888}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -16663,7 +16695,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 57
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &1629671038
 GameObject:
   m_ObjectHideFlags: 0
@@ -16692,7 +16724,7 @@ Transform:
   m_GameObject: {fileID: 1629671038}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.01680007, y: 0.08490008, z: 0.010099903}
+  m_LocalPosition: {x: 0.016800063, y: 0.084900066, z: 0.010099933}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -16794,7 +16826,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 51
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &1633822821
 GameObject:
   m_ObjectHideFlags: 0
@@ -16823,7 +16855,7 @@ Transform:
   m_GameObject: {fileID: 1633822821}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.05030001, y: -0.11780004, z: 0.010100082}
+  m_LocalPosition: {x: -0.050299995, y: -0.11780001, z: 0.010100022}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -16925,7 +16957,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 5
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &1642979123
 GameObject:
   m_ObjectHideFlags: 0
@@ -16954,7 +16986,7 @@ Transform:
   m_GameObject: {fileID: 1642979123}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.016800113, y: 0.017000072, z: 0.010099984}
+  m_LocalPosition: {x: 0.0168001, y: 0.017000072, z: 0.010099984}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -17056,7 +17088,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 35
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &1648355461
 GameObject:
   m_ObjectHideFlags: 0
@@ -17088,13 +17120,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1648355461}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -1.13686824e-13, w: 1}
-  m_LocalPosition: {x: -0.1506019, y: 0.76619947, z: 0.023201048}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalRotation: {x: 0.000002078712, y: 0.70710796, z: 0.7071057, w: 0.0000021234155}
+  m_LocalPosition: {x: 0.1198, y: -0.1344, z: 0.0251}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 9130927277180611710}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1236520545}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1648355463
 MonoBehaviour:
@@ -17223,7 +17255,7 @@ MonoBehaviour:
   m_SmoothScale: 0
   m_SmoothScaleAmount: 8
   m_TightenScale: 0.1
-  m_ThrowOnDetach: 0
+  m_ThrowOnDetach: 1
   m_ThrowSmoothingDuration: 0.25
   m_ThrowSmoothingCurve:
     serializedVersion: 2
@@ -17243,7 +17275,7 @@ MonoBehaviour:
   m_ThrowVelocityScale: 1.5
   m_ThrowAngularVelocityScale: 1
   m_ForceGravityOnDetach: 0
-  m_RetainTransformParent: 0
+  m_RetainTransformParent: 1
   m_AttachPointCompatibilityMode: 0
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
@@ -17433,7 +17465,7 @@ Transform:
   m_GameObject: {fileID: 1651512844}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.0158, y: 0.017000057, z: 0.01009995}
+  m_LocalPosition: {x: -0.015799984, y: 0.017000057, z: 0.01009995}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -17535,7 +17567,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 36
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &1653739133
 GameObject:
   m_ObjectHideFlags: 0
@@ -17595,7 +17627,7 @@ Transform:
   m_GameObject: {fileID: 1660224501}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.11830007, y: 0.11850011, z: 0.010099903}
+  m_LocalPosition: {x: -0.11830003, y: 0.11850008, z: 0.010099933}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -17697,7 +17729,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 63
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &1679791699
 GameObject:
   m_ObjectHideFlags: 0
@@ -17723,7 +17755,7 @@ Transform:
   m_GameObject: {fileID: 1679791699}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.252, y: -0.094, z: -0.374}
+  m_LocalPosition: {x: 0.044499006, y: -0.16699985, z: 0.14050055}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -17760,13 +17792,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1682907799}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -1.13686824e-13, w: 1}
-  m_LocalPosition: {x: -0.016201526, y: 0.7661997, z: 0.093600154}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalRotation: {x: 0.000002078712, y: 0.70710796, z: 0.7071057, w: 0.0000021234155}
+  m_LocalPosition: {x: 0.0526001, y: -0.09920006, z: 0.02510009}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 294906319}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1236520545}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1682907801
 MonoBehaviour:
@@ -17895,7 +17927,7 @@ MonoBehaviour:
   m_SmoothScale: 0
   m_SmoothScaleAmount: 8
   m_TightenScale: 0.1
-  m_ThrowOnDetach: 0
+  m_ThrowOnDetach: 1
   m_ThrowSmoothingDuration: 0.25
   m_ThrowSmoothingCurve:
     serializedVersion: 2
@@ -17915,7 +17947,7 @@ MonoBehaviour:
   m_ThrowVelocityScale: 1.5
   m_ThrowAngularVelocityScale: 1
   m_ForceGravityOnDetach: 0
-  m_RetainTransformParent: 0
+  m_RetainTransformParent: 1
   m_AttachPointCompatibilityMode: 0
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
@@ -18105,7 +18137,7 @@ Transform:
   m_GameObject: {fileID: 1721434828}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.11930018, y: 0.050600067, z: 0.010099936}
+  m_LocalPosition: {x: 0.11930012, y: 0.050600052, z: 0.010099966}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -18207,7 +18239,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 40
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &1725032584
 GameObject:
   m_ObjectHideFlags: 0
@@ -18319,7 +18351,7 @@ Transform:
   m_GameObject: {fileID: 1754474656}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.051300056, y: -0.11780008, z: 0.010100111}
+  m_LocalPosition: {x: 0.05130003, y: -0.117800035, z: 0.010100052}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -18421,7 +18453,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 2
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &1766617562
 GameObject:
   m_ObjectHideFlags: 0
@@ -18453,13 +18485,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1766617562}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -1.13686824e-13, w: 1}
-  m_LocalPosition: {x: -0.15060171, y: 0.76619965, z: 0.09360087}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalRotation: {x: 0.000002078712, y: 0.70710796, z: 0.7071057, w: 0.0000021234155}
+  m_LocalPosition: {x: 0.11980012, y: -0.099200085, z: 0.02510006}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1955249735}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1236520545}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1766617564
 MonoBehaviour:
@@ -18588,7 +18620,7 @@ MonoBehaviour:
   m_SmoothScale: 0
   m_SmoothScaleAmount: 8
   m_TightenScale: 0.1
-  m_ThrowOnDetach: 0
+  m_ThrowOnDetach: 1
   m_ThrowSmoothingDuration: 0.25
   m_ThrowSmoothingCurve:
     serializedVersion: 2
@@ -18608,7 +18640,7 @@ MonoBehaviour:
   m_ThrowVelocityScale: 1.5
   m_ThrowAngularVelocityScale: 1
   m_ForceGravityOnDetach: 0
-  m_RetainTransformParent: 0
+  m_RetainTransformParent: 1
   m_AttachPointCompatibilityMode: 0
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
@@ -18958,13 +18990,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1847255035}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -1.13686824e-13, w: 1}
-  m_LocalPosition: {x: 0.12000102, y: 0.7662003, z: 0.43019974}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalRotation: {x: 0.000002078712, y: 0.70710796, z: 0.7071057, w: 0.0000021234155}
+  m_LocalPosition: {x: -0.015500081, y: 0.069100045, z: 0.025099915}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1317357279}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 640078941}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1847255037
 MonoBehaviour:
@@ -19107,7 +19139,7 @@ MonoBehaviour:
   m_SmoothScale: 0
   m_SmoothScaleAmount: 8
   m_TightenScale: 0.1
-  m_ThrowOnDetach: 0
+  m_ThrowOnDetach: 1
   m_ThrowSmoothingDuration: 0.25
   m_ThrowSmoothingCurve:
     serializedVersion: 2
@@ -19127,7 +19159,7 @@ MonoBehaviour:
   m_ThrowVelocityScale: 1.5
   m_ThrowAngularVelocityScale: 1
   m_ForceGravityOnDetach: 0
-  m_RetainTransformParent: 0
+  m_RetainTransformParent: 1
   m_AttachPointCompatibilityMode: 0
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
@@ -19288,8 +19320,8 @@ GameObject:
   - component: {fileID: 1880526265}
   - component: {fileID: 1880526264}
   - component: {fileID: 1880526263}
-  - component: {fileID: 1880526268}
   - component: {fileID: 1880526267}
+  - component: {fileID: 1880526268}
   - component: {fileID: 1880526269}
   m_Layer: 0
   m_Name: G Knight
@@ -19306,13 +19338,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1880526261}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -1.13686824e-13, w: 1}
-  m_LocalPosition: {x: 0.25660995, y: 0.7662097, z: 0.5017981}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalRotation: {x: 0.000002078712, y: 0.70710796, z: 0.7071057, w: 0.0000021234155}
+  m_LocalPosition: {x: -0.0838043, y: 0.104899555, z: 0.025104553}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1056379709552684046}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 640078941}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1880526263
 MonoBehaviour:
@@ -19455,7 +19487,7 @@ MonoBehaviour:
   m_SmoothScale: 0
   m_SmoothScaleAmount: 8
   m_TightenScale: 0.1
-  m_ThrowOnDetach: 0
+  m_ThrowOnDetach: 1
   m_ThrowSmoothingDuration: 0.25
   m_ThrowSmoothingCurve:
     serializedVersion: 2
@@ -19475,7 +19507,7 @@ MonoBehaviour:
   m_ThrowVelocityScale: 1.5
   m_ThrowAngularVelocityScale: 1
   m_ForceGravityOnDetach: 0
-  m_RetainTransformParent: 0
+  m_RetainTransformParent: 1
   m_AttachPointCompatibilityMode: 0
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
@@ -19617,7 +19649,7 @@ Transform:
   m_GameObject: {fileID: 1902226150}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.094, z: -0.374}
+  m_LocalPosition: {x: 0.044499006, y: 0.20800015, z: 0.14050049}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -19682,7 +19714,7 @@ Transform:
   m_GameObject: {fileID: 1906539051}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.051300026, y: -0.049900025, z: 0.010100029}
+  m_LocalPosition: {x: 0.051299993, y: -0.04990001, z: 0.0101}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -19784,7 +19816,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 18
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &1914623089
 GameObject:
   m_ObjectHideFlags: 0
@@ -19991,7 +20023,7 @@ Transform:
   m_GameObject: {fileID: 1932919869}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.016800057, y: -0.11780005, z: 0.010100111}
+  m_LocalPosition: {x: 0.016800044, y: -0.11780002, z: 0.010100052}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -20093,7 +20125,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 3
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &1938200812
 GameObject:
   m_ObjectHideFlags: 0
@@ -20122,7 +20154,7 @@ Transform:
   m_GameObject: {fileID: 1938200812}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.01580007, y: -0.049900014, z: 0.010100026}
+  m_LocalPosition: {x: -0.015800074, y: -0.04989999, z: 0.010099996}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -20224,7 +20256,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 20
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &1955249734
 GameObject:
   m_ObjectHideFlags: 0
@@ -20336,7 +20368,7 @@ Transform:
   m_GameObject: {fileID: 1974135696}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.083800055, y: 0.11850006, z: 0.010099933}
+  m_LocalPosition: {x: -0.08380004, y: 0.11850003, z: 0.010099962}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -20438,7 +20470,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 62
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &1983100936
 GameObject:
   m_ObjectHideFlags: 0
@@ -20467,7 +20499,7 @@ Transform:
   m_GameObject: {fileID: 1983100936}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.05130005, y: -0.01630003, z: 0.010100007}
+  m_LocalPosition: {x: 0.051300026, y: -0.01630003, z: 0.010100007}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -20569,7 +20601,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 26
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &1995028167
 GameObject:
   m_ObjectHideFlags: 0
@@ -20663,13 +20695,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2002498019}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -1.13686824e-13, w: 1}
-  m_LocalPosition: {x: 0.32759932, y: 0.7661997, z: 0.0935981}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalRotation: {x: 0.000002078712, y: 0.70710796, z: 0.7071057, w: 0.0000021234155}
+  m_LocalPosition: {x: -0.11930011, y: -0.09920008, z: 0.025100075}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 872029006}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1236520545}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2002498021
 MonoBehaviour:
@@ -20798,7 +20830,7 @@ MonoBehaviour:
   m_SmoothScale: 0
   m_SmoothScaleAmount: 8
   m_TightenScale: 0.1
-  m_ThrowOnDetach: 0
+  m_ThrowOnDetach: 1
   m_ThrowSmoothingDuration: 0.25
   m_ThrowSmoothingCurve:
     serializedVersion: 2
@@ -20818,7 +20850,7 @@ MonoBehaviour:
   m_ThrowVelocityScale: 1.5
   m_ThrowAngularVelocityScale: 1
   m_ForceGravityOnDetach: 0
-  m_RetainTransformParent: 0
+  m_RetainTransformParent: 1
   m_AttachPointCompatibilityMode: 0
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
@@ -21146,7 +21178,7 @@ Transform:
   m_GameObject: {fileID: 2015939923}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.118300155, y: -0.016300004, z: 0.010099996}
+  m_LocalPosition: {x: -0.118300095, y: -0.016300004, z: 0.010099996}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -21248,7 +21280,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 31
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &2061100362
 GameObject:
   m_ObjectHideFlags: 0
@@ -21280,13 +21312,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2061100362}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -1.13686824e-13, w: 1}
-  m_LocalPosition: {x: -0.084610164, y: 0.7661903, z: 0.093601584}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalRotation: {x: 0.000002078712, y: 0.70710796, z: 0.7071057, w: 0.0000021234155}
+  m_LocalPosition: {x: 0.08680442, y: -0.09919955, z: 0.025095388}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1314457858}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1236520545}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2061100364
 MonoBehaviour:
@@ -21415,7 +21447,7 @@ MonoBehaviour:
   m_SmoothScale: 0
   m_SmoothScaleAmount: 8
   m_TightenScale: 0.1
-  m_ThrowOnDetach: 0
+  m_ThrowOnDetach: 1
   m_ThrowSmoothingDuration: 0.25
   m_ThrowSmoothingCurve:
     serializedVersion: 2
@@ -21435,7 +21467,7 @@ MonoBehaviour:
   m_ThrowVelocityScale: 1.5
   m_ThrowAngularVelocityScale: 1
   m_ForceGravityOnDetach: 0
-  m_RetainTransformParent: 0
+  m_RetainTransformParent: 1
   m_AttachPointCompatibilityMode: 0
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
@@ -22282,7 +22314,7 @@ Transform:
   m_GameObject: {fileID: 2077854577}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.083800144, y: -0.11780008, z: 0.010100074}
+  m_LocalPosition: {x: -0.0838001, y: -0.117800035, z: 0.010100037}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -22384,7 +22416,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 6
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &2079647487
 GameObject:
   m_ObjectHideFlags: 0
@@ -22413,7 +22445,7 @@ Transform:
   m_GameObject: {fileID: 2079647487}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.016800078, y: -0.08420004, z: 0.010100052}
+  m_LocalPosition: {x: 0.016800076, y: -0.084200025, z: 0.010100022}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -22515,7 +22547,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 11
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &2088253999
 GameObject:
   m_ObjectHideFlags: 0
@@ -22544,7 +22576,7 @@ Transform:
   m_GameObject: {fileID: 2088253999}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.08480013, y: -0.049899984, z: 0.01009997}
+  m_LocalPosition: {x: 0.084800094, y: -0.04989997, z: 0.01009997}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -22646,7 +22678,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 17
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &2094568338
 GameObject:
   m_ObjectHideFlags: 0
@@ -22678,13 +22710,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2094568338}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -1.13686824e-13, w: 1}
-  m_LocalPosition: {x: 0.2566072, y: 0.7662089, z: 0.023197591}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalRotation: {x: 0.000002078712, y: 0.70710796, z: 0.7071057, w: 0.0000021234155}
+  m_LocalPosition: {x: -0.083804324, y: -0.13440052, z: 0.025104724}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 548746765502383183}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1236520545}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2094568340
 MonoBehaviour:
@@ -22813,7 +22845,7 @@ MonoBehaviour:
   m_SmoothScale: 0
   m_SmoothScaleAmount: 8
   m_TightenScale: 0.1
-  m_ThrowOnDetach: 0
+  m_ThrowOnDetach: 1
   m_ThrowSmoothingDuration: 0.25
   m_ThrowSmoothingCurve:
     serializedVersion: 2
@@ -22833,7 +22865,7 @@ MonoBehaviour:
   m_ThrowVelocityScale: 1.5
   m_ThrowAngularVelocityScale: 1
   m_ForceGravityOnDetach: 0
-  m_RetainTransformParent: 0
+  m_RetainTransformParent: 1
   m_AttachPointCompatibilityMode: 0
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
@@ -22992,7 +23024,7 @@ Transform:
   m_GameObject: {fileID: 2098735176}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.016800035, y: -0.016300004, z: 0.010100005}
+  m_LocalPosition: {x: 0.01680004, y: -0.016300004, z: 0.010100005}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -23094,7 +23126,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   socket: {fileID: 0}
   Square: 27
-  chessManager: {fileID: 919132148988462389}
+  chessManager: {fileID: 919132148988462388}
 --- !u!1 &2099038994
 GameObject:
   m_ObjectHideFlags: 0
@@ -23139,8 +23171,8 @@ GameObject:
   - component: {fileID: 2110702822}
   - component: {fileID: 2110702821}
   - component: {fileID: 2110702820}
-  - component: {fileID: 2110702825}
   - component: {fileID: 2110702824}
+  - component: {fileID: 2110702825}
   - component: {fileID: 2110702826}
   m_Layer: 0
   m_Name: F Pawn
@@ -23157,13 +23189,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2110702818}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -1.13686824e-13, w: 1}
-  m_LocalPosition: {x: 0.18820128, y: 0.7662003, z: 0.43019933}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalRotation: {x: 0.000002078712, y: 0.70710796, z: 0.7071057, w: 0.0000021234155}
+  m_LocalPosition: {x: -0.049600154, y: 0.06910004, z: 0.025099915}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1111316371}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 640078941}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2110702820
 MonoBehaviour:
@@ -23306,7 +23338,7 @@ MonoBehaviour:
   m_SmoothScale: 0
   m_SmoothScaleAmount: 8
   m_TightenScale: 0.1
-  m_ThrowOnDetach: 0
+  m_ThrowOnDetach: 1
   m_ThrowSmoothingDuration: 0.25
   m_ThrowSmoothingCurve:
     serializedVersion: 2
@@ -23326,7 +23358,7 @@ MonoBehaviour:
   m_ThrowVelocityScale: 1.5
   m_ThrowAngularVelocityScale: 1
   m_ForceGravityOnDetach: 0
-  m_RetainTransformParent: 0
+  m_RetainTransformParent: 1
   m_AttachPointCompatibilityMode: 0
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
@@ -24193,13 +24225,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2139229585}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -1.13686824e-13, w: 1}
-  m_LocalPosition: {x: -0.08461046, y: 0.7661902, z: 0.023201674}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalRotation: {x: 0.000002078712, y: 0.70710796, z: 0.7071057, w: 0.0000021234155}
+  m_LocalPosition: {x: 0.08680436, y: -0.13439949, z: 0.02509536}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7200198835068281744}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1236520545}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2139229587
 MonoBehaviour:
@@ -24328,7 +24360,7 @@ MonoBehaviour:
   m_SmoothScale: 0
   m_SmoothScaleAmount: 8
   m_TightenScale: 0.1
-  m_ThrowOnDetach: 0
+  m_ThrowOnDetach: 1
   m_ThrowSmoothingDuration: 0.25
   m_ThrowSmoothingCurve:
     serializedVersion: 2
@@ -24348,7 +24380,7 @@ MonoBehaviour:
   m_ThrowVelocityScale: 1.5
   m_ThrowAngularVelocityScale: 1
   m_ForceGravityOnDetach: 0
-  m_RetainTransformParent: 0
+  m_RetainTransformParent: 1
   m_AttachPointCompatibilityMode: 0
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
@@ -25169,8 +25201,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 543450652658442121}
-  - component: {fileID: 919132148988462388}
   - component: {fileID: 919132148988462389}
+  - component: {fileID: 919132148988462388}
   m_Layer: 0
   m_Name: 'Chess '
   m_TagString: Untagged
@@ -25187,35 +25219,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 919132148988462387}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 699675734
-  InScenePlacedSourceGlobalObjectIdHash: 0
-  AlwaysReplicateAsRoot: 0
-  SynchronizeTransform: 1
-  ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 1
-  SpawnWithObservers: 1
-  DontDestroyWithOwner: 0
-  AutoObjectParentSync: 1
---- !u!114 &919132148988462389
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 919132148988462387}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c79be17e3073b644d874e66fa0d1ef30, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   isWhiteTurn: 1
-  changetheTurn: 0
-  shouldSnapBack: 1
-  lastUnsnap: {fileID: 0}
-  pieceSnapTimer: 0.5
   sockets:
   - {fileID: 461861461}
   - {fileID: 296984480}
@@ -25318,9 +25325,35 @@ MonoBehaviour:
   interactors:
   - {fileID: 2113541946}
   - {fileID: 2067009477}
+  lastUnsnap: {fileID: 0}
+  pieceSnapTimer: 0.5
+  shouldSnapBack: 1
+  dir: 00000000000000000000000000000000
   XRRig: {fileID: 807822914}
   WhiteRigSpawnPoint: {fileID: 1679791699}
   BlackRigSpawnPoint: {fileID: 1902226150}
+  changetheTurn: 0
+--- !u!114 &919132148988462389
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 919132148988462387}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 2766462195
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
 --- !u!23 &971926340104539174
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -30234,35 +30267,3 @@ SceneRoots:
   - {fileID: 169078869}
   - {fileID: 543450651964802638}
   - {fileID: 543450652658442121}
-  - {fileID: 377754166}
-  - {fileID: 2094568339}
-  - {fileID: 680647658}
-  - {fileID: 1517688837}
-  - {fileID: 1200662544}
-  - {fileID: 819763258}
-  - {fileID: 2139229586}
-  - {fileID: 1648355462}
-  - {fileID: 1766617563}
-  - {fileID: 2061100363}
-  - {fileID: 1682907800}
-  - {fileID: 1191074130}
-  - {fileID: 670118517}
-  - {fileID: 1566248936}
-  - {fileID: 954227549}
-  - {fileID: 2002498020}
-  - {fileID: 1287255508}
-  - {fileID: 393703936}
-  - {fileID: 612186127}
-  - {fileID: 449793336}
-  - {fileID: 58725937}
-  - {fileID: 1236378494}
-  - {fileID: 1880526262}
-  - {fileID: 348522664}
-  - {fileID: 1555582555}
-  - {fileID: 185379232}
-  - {fileID: 291195524}
-  - {fileID: 1305588126}
-  - {fileID: 1847255036}
-  - {fileID: 2110702819}
-  - {fileID: 734097355}
-  - {fileID: 91707233}

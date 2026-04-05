@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2233932123
+  GlobalObjectIdHash: 2145044377
   InScenePlacedSourceGlobalObjectIdHash: 1853300506
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -68,5 +68,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CameraRig: {fileID: 2578880246657694753, guid: 4da737f9da7689c4f8c9cad2e7137d63,
     type: 3}
-  NetworkPlayerModel: {fileID: 391882862147371098, guid: b7c318aa6e5932b419dfccaf0fc85a42,
-    type: 3}
+  NetworkPlayerModel: {fileID: 0}
+  gameplaySceneName: Chess
+  useSceneRigIfPresent: 1
