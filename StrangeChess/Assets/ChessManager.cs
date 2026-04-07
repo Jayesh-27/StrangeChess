@@ -41,18 +41,12 @@ public class ChessManager : NetworkBehaviour
     {
         Debug.Log($"[ChessManager] OnNetworkSpawn: IsHost = {IsHost}, ClientId = {NetworkManager.Singleton.LocalClientId}");
         
-        // Grab the XROrigin component from your Rig
         XROrigin xrOrigin = XRRig.GetComponent<XROrigin>();
 
         if (IsHost)
         {
-            // This built-in function snaps the PLAYER'S HEAD to the X/Z coordinates of the spawn point, 
-            // while keeping their real-world Y (height) intact!
             xrOrigin.MoveCameraToWorldLocation(WhiteRigSpawnPoint.transform.position);
-            
-            // Match the rotation so they are facing the board
             xrOrigin.MatchOriginUpCameraForward(WhiteRigSpawnPoint.transform.up, WhiteRigSpawnPoint.transform.forward);
-            
             Debug.Log("[ChessManager] Positioned rig at White Spawn Point.");
             
             foreach (var client in NetworkManager.Singleton.ConnectedClientsList)
@@ -66,7 +60,7 @@ public class ChessManager : NetworkBehaviour
         }
         else
         {
-            xrOrigin.MoveCameraToWorldLocation(BlackRigSpawnPoint.transform.position);
+            xrOrigin.MoveCameraToWorldLocation(BlackRigSpawnPoint.transform.position);            
             xrOrigin.MatchOriginUpCameraForward(BlackRigSpawnPoint.transform.up, BlackRigSpawnPoint.transform.forward);
             Debug.Log("[ChessManager] Positioned rig at Black Spawn Point.");
         }
@@ -74,16 +68,12 @@ public class ChessManager : NetworkBehaviour
 
     private void GrantBlackPieceOwnership(ulong clientId)
     {
-        // Ensure we don't accidentally give the host ownership again
         if (clientId != NetworkManager.Singleton.LocalClientId)
         {
             Debug.Log($"[ChessManager] Client {clientId} found! Forcing Black Pieces ownership transfer...");
-            
             foreach (XRGrabInteractable interactable in blackPiecesInteractable)
             {
                 NetworkObject netObj = interactable.GetComponent<NetworkObject>();
-                
-                // Add an extra safety check to ensure the object is ready for the network
                 if (netObj != null && netObj.IsSpawned)
                 {
                     netObj.ChangeOwnership(clientId);
@@ -106,14 +96,8 @@ public class ChessManager : NetworkBehaviour
         if (changetheTurn)
         {
             changetheTurn = false;
-            ChangeTurn();
+            RequestChangeTurn();
         }
-    }
-
-    public void ChangeTurn()
-    {
-        Debug.Log("[ChessManager] Changing Turn...");
-        // Turn logic can go here later once physics are stable
     }
 
     // --- INTERACTOR MANAGEMENT ---
@@ -122,8 +106,7 @@ public class ChessManager : NetworkBehaviour
     {
         foreach (XRDirectInteractor interactor in interactors)
         {
-            if (interactor != correctInteractor)
-                interactor.enabled = false;
+            if (interactor != correctInteractor) interactor.enabled = false;
         }
     }
 
@@ -151,25 +134,29 @@ public class ChessManager : NetworkBehaviour
         string pieceName = args.interactableObject.transform.name;
         Debug.Log($"[ChessManager] onGrab: Player hand grabbed -> {pieceName}");
 
-        // 1. SECURITY CHECK: Prevent grabbing the wrong color
         if ((IsHost && !piece.isWhitePiece) || (!IsHost && piece.isWhitePiece))
         {
             Debug.LogWarning($"[ChessManager] ILLEGAL GRAB! Player tried to grab opponent's piece ({pieceName}). Forcing drop!");
             args.manager.SelectCancel(args.interactorObject, args.interactableObject);
-            return; // Stop code execution here
+            return; 
         }
 
-        // 2. NETWORK FIX: Tell the server to force all sockets to let go of this piece
+        if ((isWhiteTurn && !IsHost) || (!isWhiteTurn && IsHost))
+        {
+            Debug.LogWarning($"[ChessManager] ILLEGAL GRAB! It is not your turn!");
+            args.manager.SelectCancel(args.interactorObject, args.interactableObject);
+            return; 
+        }
+
         NetworkObject netObj = args.interactableObject.transform.GetComponent<NetworkObject>();
         if (netObj != null)
         {
-            Debug.Log($"[ChessManager] Sending RPC to unsnap piece: {pieceName} (NetID: {netObj.NetworkObjectId})");
+            Debug.Log($"[ChessManager] Sending RPC to unsnap piece: {pieceName}");
             ForceUnsnapServerRpc(netObj.NetworkObjectId);
         }
 
         disableOtherDirectInteractor(args.interactorObject as XRDirectInteractor);
 
-        // 3. Move Calculation
         switch (piece.piece)
         {
             case PieceType.Pawn: pawnMoves(args.interactableObject as XRGrabInteractable); break;
@@ -195,21 +182,19 @@ public class ChessManager : NetworkBehaviour
         if (shouldSnapBack && lastUnsnap != null)
         {
             Debug.Log($"[ChessManager] snapPieceBack: Piece {grab.transform.name} snapping back to square {lastUnsnap.Square}");
-            if (!lastUnsnap.enabled)
-                lastUnsnap.enabled = true;
-                
+            if (!lastUnsnap.enabled) lastUnsnap.enabled = true;
             lastUnsnap.GetComponent<XRSocketInteractor>().StartManualInteraction((IXRSelectInteractable)grab);
         }
         else
         {
-            Debug.Log($"[ChessManager] snapPieceBack: Piece successfully placed on new square! (shouldSnapBack = {shouldSnapBack})");
+            Debug.Log($"[ChessManager] snapPieceBack: Piece successfully placed on new square!");
+            RequestChangeTurn();
         }
         
         enableDirectInteractor();
     }
 
     // --- PIECE MOVEMENT LOGIC ---
-    // (Keeping your exact movement logic intact)
 
     private void pawnMoves(XRGrabInteractable grab)
     {
@@ -371,42 +356,98 @@ public class ChessManager : NetworkBehaviour
     }
 
     // -------------------------------------------------------------
+    // TURN MANAGEMENT RPCS
+    // -------------------------------------------------------------
+
+    public void RequestChangeTurn()
+    {
+        if (IsServer) ChangeTurnClientRpc();
+        else ChangeTurnServerRpc();
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void ChangeTurnServerRpc()
+    {
+        ChangeTurnClientRpc();
+    }
+
+    [ClientRpc]
+    private void ChangeTurnClientRpc()
+    {
+        isWhiteTurn = !isWhiteTurn;
+        string turnStatus = isWhiteTurn ? "White's" : "Black's";
+        Debug.Log($"[ChessManager] Turn Changed! It is now {turnStatus} turn.");
+    }
+
+    // -------------------------------------------------------------
     // NETWORKED SOCKET SYNCING RPCS
     // -------------------------------------------------------------
 
     [ServerRpc(RequireOwnership = false)]
     public void ForceUnsnapServerRpc(ulong networkObjectId)
     {
-        Debug.Log($"[ChessManager] RPC SERVER: Received request to unsnap NetworkID {networkObjectId}. Broadcasting to clients...");
         ForceUnsnapClientRpc(networkObjectId);
     }
 
     [ClientRpc]
     public void ForceUnsnapClientRpc(ulong networkObjectId)
     {
-        Debug.Log($"[ChessManager] RPC CLIENT: Searching for NetworkID {networkObjectId} to force drop...");
-        
         if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(networkObjectId, out NetworkObject netObj))
         {
             IXRSelectInteractable interactable = netObj.GetComponent<XRGrabInteractable>();
             
             foreach (XRSocketInteractor socket in sockets)
             {
+                // 1. Force the current socket to drop it
                 if (socket.hasSelection && socket.firstInteractableSelected == interactable)
                 {
-                    Debug.Log($"[ChessManager] SUCCESS! Socket {socket.transform.name} is holding it. Forcing drop and blinding socket.");
-
-                    // 1. Tell the Interaction Manager to break the bond
                     socket.interactionManager.SelectCancel((IXRSelectInteractor)socket, interactable);
+                    socket.GetComponent<BoxCollider>().enabled = false;
+                }
 
-                    // 2. Blind the socket temporarily so it doesn't instantly snatch it back
+                // 2. CRITICAL FIX: BLIND THE OPPONENT
+                // Turn off the opponent's sockets so they don't catch the piece mid-air!
+                if (!netObj.IsOwner)
+                {
                     socket.GetComponent<BoxCollider>().enabled = false;
                 }
             }
         }
-        else
+    }
+
+    // -------------------------------------------------------------
+    // NEW: NETWORKED DROP SYNCING
+    // -------------------------------------------------------------
+
+    [ServerRpc(RequireOwnership = false)]
+    public void SyncSnapServerRpc(ulong networkObjectId, int squareIndex)
+    {
+        SyncSnapClientRpc(networkObjectId, squareIndex);
+    }
+
+    [ClientRpc]
+    public void SyncSnapClientRpc(ulong networkObjectId, int squareIndex)
+    {
+        if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(networkObjectId, out NetworkObject netObj))
         {
-            Debug.LogWarning($"[ChessManager] RPC FAILED: Could not find NetworkObject with ID {networkObjectId} in SpawnManager!");
+            // If we are the player who dropped the piece, do nothing (we already snapped locally)
+            if (netObj.IsOwner) return;
+
+            IXRSelectInteractable interactable = netObj.GetComponent<XRGrabInteractable>();
+            
+            // Turn our sockets back on now that the opponent is done moving
+            enableAllSockets();
+
+            // Find the specific socket the opponent dropped it in, and force snap
+            foreach (XRSocketInteractor socket in sockets)
+            {
+                if (socket.GetComponent<SocketTracker>().Square == squareIndex)
+                {
+                    socket.StartManualInteraction(interactable);
+                    Debug.Log($"[Network Sync] Synchronized {netObj.name} into Square {squareIndex}");
+                    break;
+                }
+            }
         }
     }
 }
