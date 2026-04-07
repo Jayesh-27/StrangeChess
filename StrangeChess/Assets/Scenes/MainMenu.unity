@@ -1141,7 +1141,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69b33a9daa274a24582bf918676a867b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  autoConnect: 1
+  autoConnect: 0
   statusText: {fileID: 1399881634}
   startGameButton: {fileID: 1426717868}
 --- !u!1 &476065479

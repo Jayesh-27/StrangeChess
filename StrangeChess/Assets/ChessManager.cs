@@ -356,25 +356,49 @@ public class ChessManager : NetworkBehaviour
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void CapturePieceServerRpc(ulong capturedPieceNetId)
+    public void CapturePieceServerRpc(ulong capturedPieceNetId, ulong attackingPieceNetId, int squareIndex)
     {
-        CapturePieceClientRpc(capturedPieceNetId);
+        CapturePieceClientRpc(capturedPieceNetId, attackingPieceNetId, squareIndex);
     }
 
     [ClientRpc]
-    public void CapturePieceClientRpc(ulong capturedPieceNetId)
+    public void CapturePieceClientRpc(ulong capturedPieceNetId, ulong attackingPieceNetId, int squareIndex)
     {
-        if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(capturedPieceNetId, out NetworkObject netObj))
+        XRSocketInteractor targetSocket = sockets[squareIndex];
+
+        // 1. BANISH THE DEFENDER
+        if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(capturedPieceNetId, out NetworkObject defObj))
         {
-            IXRSelectInteractable interactable = netObj.GetComponent<XRGrabInteractable>();
-            foreach (XRSocketInteractor socket in sockets)
+            IXRSelectInteractable defInteractable = defObj.GetComponent<XRGrabInteractable>();
+            
+            if (targetSocket.hasSelection && targetSocket.firstInteractableSelected == defInteractable)
             {
-                if (socket.hasSelection && socket.firstInteractableSelected == interactable)
-                    socket.interactionManager.SelectCancel((IXRSelectInteractor)socket, interactable);
+                targetSocket.interactionManager.SelectCancel((IXRSelectInteractor)targetSocket, defInteractable);
             }
 
-            netObj.transform.position = new Vector3(0, -10f, 0); 
-            netObj.GetComponent<Collider>().enabled = false;
+            defObj.transform.position = new Vector3(0, -10f, 0); 
+            defObj.GetComponent<Collider>().enabled = false;
+        }
+
+        // 2. FORCE SNAP THE ATTACKER
+        if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(attackingPieceNetId, out NetworkObject attObj))
+        {
+            IXRSelectInteractable attInteractable = attObj.GetComponent<XRGrabInteractable>();
+            
+            // Force the player's hand to let go of the piece
+            foreach (XRDirectInteractor interactor in interactors)
+            {
+                if (interactor.hasSelection && interactor.firstInteractableSelected == attInteractable)
+                {
+                    interactor.interactionManager.SelectCancel((IXRSelectInteractor)interactor, attInteractable);
+                }
+            }
+
+            // Snap the attacking piece directly into the newly emptied socket!
+            targetSocket.StartManualInteraction(attInteractable);
+            
+            // Turn sockets back on for the next move
+            enableAllSockets();
         }
     }
 

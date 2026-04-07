@@ -21,7 +21,6 @@ public class SocketTracker : MonoBehaviour
 
     void OnHover(HoverEnterEventArgs args)
     {
-        // If this socket already has an enemy piece in it, CAPTURE IT!
         if (socket.hasSelection)
         {
             ChessPiece attackingPiece = args.interactableObject.transform.GetComponent<ChessPiece>();
@@ -31,11 +30,16 @@ public class SocketTracker : MonoBehaviour
             {
                 NetworkObject netObj = attackingPiece.GetComponent<NetworkObject>();
                 
-                // Only the player holding the attacking piece sends the kill command
                 if (netObj != null && netObj.IsOwner)
                 {
-                    Debug.Log($"[Capture] Banish enemy piece {defendingPiece.name}!");
-                    chessManager.CapturePieceServerRpc(defendingPiece.GetComponent<NetworkObject>().NetworkObjectId);
+                    Debug.Log($"[Capture] Banish enemy {defendingPiece.name} and snap {attackingPiece.name}!");
+                    
+                    // Tell the server WHO died, WHO killed them, and WHERE it happened
+                    chessManager.CapturePieceServerRpc(
+                        defendingPiece.GetComponent<NetworkObject>().NetworkObjectId, 
+                        netObj.NetworkObjectId, 
+                        Square
+                    );
                 }
             }
         }
