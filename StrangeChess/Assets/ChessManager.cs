@@ -8,17 +8,17 @@ using Unity.XR.CoreUtils;
 public class ChessManager : NetworkBehaviour
 {
     [Header("Game State")]
-    [SerializeField] public bool isWhiteTurn = true;
+    public NetworkVariable<bool> isWhiteTurn = new NetworkVariable<bool>(true);
+    
     [SerializeField] private bool changetheTurn = false;
     [SerializeField] public bool shouldSnapBack = true;
-    [SerializeField] public SocketTracker lastUnsnap = null;
     [SerializeField] private float pieceSnapTimer = 0.5f;
 
     [Header("Board References")]
     [SerializeField] public XRSocketInteractor[] sockets = new XRSocketInteractor[64];
-    [SerializeField] private XRGrabInteractable[] whitePiecesInteractable;  // 16 pieces
-    [SerializeField] private XRGrabInteractable[] blackPiecesInteractable;  // 16 pieces
-    [SerializeField] private XRDirectInteractor[] interactors; // 0:whiteRight, 1:whiteLeft, 2:blackRight, 3:blackLeft
+    [SerializeField] private XRGrabInteractable[] whitePiecesInteractable;  
+    [SerializeField] private XRGrabInteractable[] blackPiecesInteractable;  
+    [SerializeField] private XRDirectInteractor[] interactors; 
 
     [Header("Spawn Points")]
     [SerializeField] private GameObject XRRig;
@@ -29,7 +29,6 @@ public class ChessManager : NetworkBehaviour
 
     private void Awake()
     {
-        Debug.Log("[ChessManager] Awake: Setting up XR Interaction Listeners.");
         foreach (XRDirectInteractor interactor in interactors)
         {
             interactor.selectEntered.AddListener(onGrab);
@@ -39,22 +38,23 @@ public class ChessManager : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        Debug.Log($"[ChessManager] OnNetworkSpawn: IsHost = {IsHost}, ClientId = {NetworkManager.Singleton.LocalClientId}");
-        
         XROrigin xrOrigin = XRRig.GetComponent<XROrigin>();
+
+        // When the turn changes, automatically update the VR Hands!
+        isWhiteTurn.OnValueChanged += (bool prev, bool current) => {
+            string turnStatus = current ? "White's" : "Black's";
+            Debug.Log($"[Turn Sync] It is now {turnStatus} turn.");
+            UpdateHandPermissions(); 
+        };
 
         if (IsHost)
         {
             xrOrigin.MoveCameraToWorldLocation(WhiteRigSpawnPoint.transform.position);
             xrOrigin.MatchOriginUpCameraForward(WhiteRigSpawnPoint.transform.up, WhiteRigSpawnPoint.transform.forward);
-            Debug.Log("[ChessManager] Positioned rig at White Spawn Point.");
             
             foreach (var client in NetworkManager.Singleton.ConnectedClientsList)
             {
-                if (client.ClientId != NetworkManager.Singleton.LocalClientId)
-                {
-                    GrantBlackPieceOwnership(client.ClientId);
-                }
+                if (client.ClientId != NetworkManager.Singleton.LocalClientId) GrantBlackPieceOwnership(client.ClientId);
             }
             NetworkManager.Singleton.OnClientConnectedCallback += GrantBlackPieceOwnership;
         }
@@ -62,41 +62,56 @@ public class ChessManager : NetworkBehaviour
         {
             xrOrigin.MoveCameraToWorldLocation(BlackRigSpawnPoint.transform.position);            
             xrOrigin.MatchOriginUpCameraForward(BlackRigSpawnPoint.transform.up, BlackRigSpawnPoint.transform.forward);
-            Debug.Log("[ChessManager] Positioned rig at Black Spawn Point.");
         }
+
+        // Set the initial hand permissions the moment the game starts
+        UpdateHandPermissions();
     }
 
     private void GrantBlackPieceOwnership(ulong clientId)
     {
         if (clientId != NetworkManager.Singleton.LocalClientId)
         {
-            Debug.Log($"[ChessManager] Client {clientId} found! Forcing Black Pieces ownership transfer...");
             foreach (XRGrabInteractable interactable in blackPiecesInteractable)
             {
                 NetworkObject netObj = interactable.GetComponent<NetworkObject>();
-                if (netObj != null && netObj.IsSpawned)
-                {
-                    netObj.ChangeOwnership(clientId);
-                }
+                if (netObj != null && netObj.IsSpawned) netObj.ChangeOwnership(clientId);
             }
-            Debug.Log($"[ChessManager] SUCCESS! Client {clientId} now has full network authority over Black pieces.");
         }
     }
 
     public override void OnNetworkDespawn()
     {
         if (NetworkManager.Singleton != null && IsHost)
-        {
             NetworkManager.Singleton.OnClientConnectedCallback -= GrantBlackPieceOwnership;
-        }
     }
 
     private void Update()
     {
-        if (changetheTurn)
+        if (changetheTurn) { changetheTurn = false; RequestChangeTurn(); }
+    }
+
+    // -------------------------------------------------------------
+    // NEW: DYNAMIC VIP PASS FOR VR HANDS
+    // -------------------------------------------------------------
+    public void UpdateHandPermissions()
+    {
+        string myTeamLayer = IsHost ? "WhitePieces" : "BlackPieces";
+        bool isMyTurn = (IsHost && isWhiteTurn.Value) || (!IsHost && !isWhiteTurn.Value);
+
+        foreach (XRDirectInteractor interactor in interactors)
         {
-            changetheTurn = false;
-            RequestChangeTurn();
+            if (isMyTurn)
+            {
+                // It is our turn! Our hands can only interact with our own pieces.
+                interactor.interactionLayers = InteractionLayerMask.GetMask(myTeamLayer);
+            }
+            else
+            {
+                // Not our turn. Our hands become ghosts to all chess pieces.
+                // (Setting mask to 0 means "Nothing")
+                interactor.interactionLayers = 0; 
+            }
         }
     }
 
@@ -104,26 +119,17 @@ public class ChessManager : NetworkBehaviour
 
     public void disableOtherDirectInteractor(XRDirectInteractor correctInteractor)
     {
-        foreach (XRDirectInteractor interactor in interactors)
-        {
-            if (interactor != correctInteractor) interactor.enabled = false;
-        }
+        foreach (XRDirectInteractor interactor in interactors) if (interactor != correctInteractor) interactor.enabled = false;
     }
 
     public void disableOtherDirectInteractor()
     {
-        foreach (XRDirectInteractor interactor in interactors)
-        {
-            interactor.enabled = false;
-        }
+        foreach (XRDirectInteractor interactor in interactors) interactor.enabled = false;
     }
 
     public void enableDirectInteractor()
     {
-        foreach (XRDirectInteractor interactor in interactors)
-        {
-            interactor.enabled = true;
-        }
+        foreach (XRDirectInteractor interactor in interactors) interactor.enabled = true;
     }
 
     // --- GRABBING & RELEASING ---
@@ -132,45 +138,29 @@ public class ChessManager : NetworkBehaviour
     {
         ChessPiece piece = args.interactableObject.transform.GetComponent<ChessPiece>();
         string pieceName = args.interactableObject.transform.name;
-        Debug.Log($"[ChessManager] onGrab: Player hand grabbed -> {pieceName}");
 
-        if ((IsHost && !piece.isWhitePiece) || (!IsHost && piece.isWhitePiece))
-        {
-            Debug.LogWarning($"[ChessManager] ILLEGAL GRAB! Player tried to grab opponent's piece ({pieceName}). Forcing drop!");
-            args.manager.SelectCancel(args.interactorObject, args.interactableObject);
-            return; 
-        }
-
-        if ((isWhiteTurn && !IsHost) || (!isWhiteTurn && IsHost))
-        {
-            Debug.LogWarning($"[ChessManager] ILLEGAL GRAB! It is not your turn!");
-            args.manager.SelectCancel(args.interactorObject, args.interactableObject);
-            return; 
-        }
+        // NOTE: We deleted the manual security checks here! 
+        // Because of the Interaction Layers, it is literally impossible for this code 
+        // to run unless it is your turn and it is your piece.
 
         NetworkObject netObj = args.interactableObject.transform.GetComponent<NetworkObject>();
-        if (netObj != null)
-        {
-            Debug.Log($"[ChessManager] Sending RPC to unsnap piece: {pieceName}");
-            ForceUnsnapServerRpc(netObj.NetworkObjectId);
-        }
+        if (netObj != null) ForceUnsnapServerRpc(netObj.NetworkObjectId);
 
         disableOtherDirectInteractor(args.interactorObject as XRDirectInteractor);
 
         switch (piece.piece)
         {
-            case PieceType.Pawn: pawnMoves(args.interactableObject as XRGrabInteractable); break;
-            case PieceType.Knight: knightMoves(); break;
-            case PieceType.Bishop: bishopMoves(); break;
-            case PieceType.Rook: rookMoves(); break;
-            case PieceType.Queen: queenMoves(); break;
-            case PieceType.King: kingMoves(); break;
+            case PieceType.Pawn: pawnMoves(piece); break;
+            case PieceType.Knight: knightMoves(piece); break;
+            case PieceType.Bishop: bishopMoves(piece); break;
+            case PieceType.Rook: rookMoves(piece); break;
+            case PieceType.Queen: queenMoves(piece); break;
+            case PieceType.King: kingMoves(piece); break;
         }
     }
 
     void OnRelease(SelectExitEventArgs args)
     {
-        Debug.Log($"[ChessManager] OnRelease: Player let go of -> {args.interactableObject.transform.name}");
         StartCoroutine(snapPieceBack(args.interactableObject as XRGrabInteractable));
     }
 
@@ -179,47 +169,108 @@ public class ChessManager : NetworkBehaviour
         disableOtherDirectInteractor();
         yield return new WaitForSeconds(pieceSnapTimer);
         
-        if (shouldSnapBack && lastUnsnap != null)
+        ChessPiece piece = grab.GetComponent<ChessPiece>();
+        IXRSelectInteractor currentInteractor = grab.interactorsSelecting.Count > 0 ? grab.interactorsSelecting[0] : null;
+        XRSocketInteractor currentSocket = currentInteractor as XRSocketInteractor;
+
+        // If dropped in an invalid place, snap back to where it came from
+        if (shouldSnapBack && piece.previousSquare != -1)
         {
-            Debug.Log($"[ChessManager] snapPieceBack: Piece {grab.transform.name} snapping back to square {lastUnsnap.Square}");
-            if (!lastUnsnap.enabled) lastUnsnap.enabled = true;
-            lastUnsnap.GetComponent<XRSocketInteractor>().StartManualInteraction((IXRSelectInteractable)grab);
+            XRSocketInteractor originalSocket = sockets[piece.previousSquare];
+            if (!originalSocket.enabled) originalSocket.enabled = true;
+            originalSocket.StartManualInteraction((IXRSelectInteractable)grab);
+            piece.currentSquare = piece.previousSquare; // Revert state
         }
-        else
+        // If placed in a DIFFERENT socket, the move is successfully completed!
+        else if (currentSocket != null && piece.currentSquare != piece.previousSquare)
         {
-            Debug.Log($"[ChessManager] snapPieceBack: Piece successfully placed on new square!");
             RequestChangeTurn();
+            piece.previousSquare = piece.currentSquare; // Reset
         }
         
         enableDirectInteractor();
     }
 
-    // --- PIECE MOVEMENT LOGIC ---
+    // --- CAPTURE & MOVEMENT HELPER ---
 
-    private void pawnMoves(XRGrabInteractable grab)
+    private bool CheckAndEnableSocket(int targetSquare, ChessPiece attackingPiece)
     {
-        int currentSquare = lastUnsnap.Square;
-        int currentRow = currentSquare / 8;
-        disableAllSockets(lastUnsnap.GetComponent<XRSocketInteractor>());
+        if (targetSquare < 0 || targetSquare >= 64 || sockets[targetSquare] == null) return false;
 
-        if (grab.GetComponent<ChessPiece>().isWhitePiece)
+        XRSocketInteractor socket = sockets[targetSquare];
+
+        if (socket.hasSelection)
         {
-            dir[0] = (currentRow == 1) ? 2 : 1;
-            dir[1] = 0;
+            ChessPiece defendingPiece = socket.firstInteractableSelected.transform.GetComponent<ChessPiece>();
+            if (defendingPiece != null && defendingPiece.isWhitePiece != attackingPiece.isWhitePiece)
+                socket.GetComponent<BoxCollider>().enabled = true;
+            
+            return false; 
         }
-        else
-        {
-            dir[0] = 0;
-            dir[1] = (currentRow == 6) ? 2 : 1;
-        }
-        dir[2] = 0; dir[3] = 0;
-        straightMoves();
+
+        socket.GetComponent<BoxCollider>().enabled = true;
+        return true;
     }
 
-    private void knightMoves()
+    private void disableAllSockets(int originalSquare)
     {
-        disableAllSockets(lastUnsnap.GetComponent<XRSocketInteractor>());
-        int currentSquare = lastUnsnap.Square;
+        for(int i = 0; i < 64; i++) sockets[i].GetComponent<BoxCollider>().enabled = (i == originalSquare);
+    }
+
+    public void enableAllSockets()
+    {
+        foreach (XRSocketInteractor socket in sockets) socket.GetComponent<BoxCollider>().enabled = true;
+    }
+
+    // --- PIECE MOVEMENT LOGIC ---
+
+    private void pawnMoves(ChessPiece piece)
+    {
+        int currentSquare = piece.currentSquare;
+        int currentRow = currentSquare / 8;
+        int currentFile = currentSquare % 8;
+        disableAllSockets(currentSquare);
+
+        int forwardStep = piece.isWhitePiece ? 8 : -8;
+        int startRow = piece.isWhitePiece ? 1 : 6;
+
+        int target1 = currentSquare + forwardStep;
+        if (target1 >= 0 && target1 < 64 && !sockets[target1].hasSelection)
+        {
+            sockets[target1].GetComponent<BoxCollider>().enabled = true;
+            if (currentRow == startRow)
+            {
+                int target2 = currentSquare + (forwardStep * 2);
+                if (target2 >= 0 && target2 < 64 && !sockets[target2].hasSelection)
+                    sockets[target2].GetComponent<BoxCollider>().enabled = true;
+            }
+        }
+
+        if (currentFile > 0)
+        {
+            int capLeft = currentSquare + forwardStep - 1;
+            if (capLeft >= 0 && capLeft < 64 && sockets[capLeft].hasSelection)
+            {
+                ChessPiece def = sockets[capLeft].firstInteractableSelected.transform.GetComponent<ChessPiece>();
+                if (def != null && def.isWhitePiece != piece.isWhitePiece) sockets[capLeft].GetComponent<BoxCollider>().enabled = true;
+            }
+        }
+
+        if (currentFile < 7)
+        {
+            int capRight = currentSquare + forwardStep + 1;
+            if (capRight >= 0 && capRight < 64 && sockets[capRight].hasSelection)
+            {
+                ChessPiece def = sockets[capRight].firstInteractableSelected.transform.GetComponent<ChessPiece>();
+                if (def != null && def.isWhitePiece != piece.isWhitePiece) sockets[capRight].GetComponent<BoxCollider>().enabled = true;
+            }
+        }
+    }
+
+    private void knightMoves(ChessPiece piece)
+    {
+        disableAllSockets(piece.currentSquare);
+        int currentSquare = piece.currentSquare;
         int currentFile = currentSquare % 8;
         int currentRow = currentSquare / 8;
         int[] knightOffsets = { 15, 17, 10, -6, -15, -17, -10, 6 };
@@ -229,154 +280,102 @@ public class ChessManager : NetworkBehaviour
             int target = currentSquare + offset;
             if (target >= 0 && target < 64)
             {
-                int targetFile = target % 8;
-                int targetRow = target / 8;
-                int fileDiff = Mathf.Abs(currentFile - targetFile);
-                int rowDiff = Mathf.Abs(currentRow - targetRow);
-
-                if ((fileDiff == 1 && rowDiff == 2) || (fileDiff == 2 && rowDiff == 1))
-                {
-                    if (sockets[target] != null && !sockets[target].hasSelection)
-                    {
-                        sockets[target].GetComponent<BoxCollider>().enabled = true;
-                    }
-                }
+                int fileDiff = Mathf.Abs(currentFile - (target % 8));
+                int rowDiff = Mathf.Abs(currentRow - (target / 8));
+                if ((fileDiff == 1 && rowDiff == 2) || (fileDiff == 2 && rowDiff == 1)) CheckAndEnableSocket(target, piece);
             }
         }
     }
 
-    private void bishopMoves()
+    private void bishopMoves(ChessPiece piece)
     {
-        disableAllSockets(lastUnsnap.GetComponent<XRSocketInteractor>());
+        disableAllSockets(piece.currentSquare);
         dir[0] = 8; dir[1] = 8; dir[2] = 8; dir[3] = 8;
-        diagonalMoves();
+        diagonalMoves(piece);
     }
 
-    private void rookMoves()
+    private void rookMoves(ChessPiece piece)
     {
-        disableAllSockets(lastUnsnap.GetComponent<XRSocketInteractor>());
+        disableAllSockets(piece.currentSquare);
         dir[0] = 8; dir[1] = 8; dir[2] = 8; dir[3] = 8;
-        straightMoves();
+        straightMoves(piece);
     }
 
-    private void queenMoves()
+    private void queenMoves(ChessPiece piece)
     {
-        disableAllSockets(lastUnsnap.GetComponent<XRSocketInteractor>());
+        disableAllSockets(piece.currentSquare);
         dir[0] = 8; dir[1] = 8; dir[2] = 8; dir[3] = 8;
-        straightMoves();
-        diagonalMoves();
+        straightMoves(piece);
+        diagonalMoves(piece);
     }
 
-    private void kingMoves()
+    private void kingMoves(ChessPiece piece)
     {
-        disableAllSockets(lastUnsnap.GetComponent<XRSocketInteractor>());
+        disableAllSockets(piece.currentSquare);
         dir[0] = 1; dir[1] = 1; dir[2] = 1; dir[3] = 1;
-        straightMoves();
-        diagonalMoves();
+        straightMoves(piece);
+        diagonalMoves(piece);
     }
 
-    private void straightMoves()
+    private void straightMoves(ChessPiece piece)
     {
-        int currentSquare = lastUnsnap.Square;
+        int currentSquare = piece.currentSquare;
         int currentFile = currentSquare % 8;
 
-        for (int i = 1; i <= dir[0]; i++) // UP
-        {
-            int target = currentSquare + (i * 8);
-            if (target >= 64 || sockets[target] == null || sockets[target].hasSelection) break;
-            sockets[target].GetComponent<BoxCollider>().enabled = true;
-        }
-        for (int i = 1; i <= dir[1]; i++) // DOWN
-        {
-            int target = currentSquare - (i * 8);
-            if (target < 0 || sockets[target] == null || sockets[target].hasSelection) break;
-            sockets[target].GetComponent<BoxCollider>().enabled = true;
-        }
-        for (int i = 1; i <= dir[2]; i++) // RIGHT
-        {
-            int target = currentSquare + i;
-            if (currentFile + i > 7 || target >= 64 || sockets[target] == null || sockets[target].hasSelection) break;
-            sockets[target].GetComponent<BoxCollider>().enabled = true;
-        }
-        for (int i = 1; i <= dir[3]; i++) // LEFT
-        {
-            int target = currentSquare - i;
-            if (currentFile - i < 0 || target < 0 || sockets[target] == null || sockets[target].hasSelection) break;
-            sockets[target].GetComponent<BoxCollider>().enabled = true;
-        }
+        for (int i = 1; i <= dir[0]; i++) if (!CheckAndEnableSocket(currentSquare + (i * 8), piece)) break;
+        for (int i = 1; i <= dir[1]; i++) if (!CheckAndEnableSocket(currentSquare - (i * 8), piece)) break;
+        for (int i = 1; i <= dir[2]; i++) { if (currentFile + i > 7) break; if (!CheckAndEnableSocket(currentSquare + i, piece)) break; }
+        for (int i = 1; i <= dir[3]; i++) { if (currentFile - i < 0) break; if (!CheckAndEnableSocket(currentSquare - i, piece)) break; }
     }
 
-    private void diagonalMoves()
+    private void diagonalMoves(ChessPiece piece)
     {
-        int currentSquare = lastUnsnap.Square;
+        int currentSquare = piece.currentSquare;
         int currentFile = currentSquare % 8;
 
-        for (int i = 1; i <= dir[0]; i++) // UP-LEFT
-        {
-            int target = currentSquare + (i * 7);
-            if (currentFile - i < 0 || target >= 64 || sockets[target] == null || sockets[target].hasSelection) break;
-            sockets[target].GetComponent<BoxCollider>().enabled = true;
-        }
-        for (int i = 1; i <= dir[1]; i++) // UP-RIGHT
-        {
-            int target = currentSquare + (i * 9);
-            if (currentFile + i > 7 || target >= 64 || sockets[target] == null || sockets[target].hasSelection) break;
-            sockets[target].GetComponent<BoxCollider>().enabled = true;
-        }
-        for (int i = 1; i <= dir[2]; i++) // DOWN-LEFT
-        {
-            int target = currentSquare - (i * 9);
-            if (currentFile - i < 0 || target < 0 || sockets[target] == null || sockets[target].hasSelection) break;
-            sockets[target].GetComponent<BoxCollider>().enabled = true;
-        }
-        for (int i = 1; i <= dir[3]; i++) // DOWN-RIGHT
-        {
-            int target = currentSquare - (i * 7);
-            if (currentFile + i > 7 || target < 0 || sockets[target] == null || sockets[target].hasSelection) break;
-            sockets[target].GetComponent<BoxCollider>().enabled = true;
-        }
-    }
-
-    // --- SOCKET MANAGEMENT ---
-
-    private void disableAllSockets(XRSocketInteractor lastUnsnapSocket)
-    {
-        foreach (XRSocketInteractor socket in sockets)
-        {
-            socket.GetComponent<BoxCollider>().enabled = (lastUnsnapSocket == socket);
-        }
-    }
-
-    public void enableAllSockets()
-    {
-        foreach (XRSocketInteractor socket in sockets)
-        {
-            socket.GetComponent<BoxCollider>().enabled = true;
-        }
+        for (int i = 1; i <= dir[0]; i++) { if (currentFile - i < 0) break; if (!CheckAndEnableSocket(currentSquare + (i * 7), piece)) break; }
+        for (int i = 1; i <= dir[1]; i++) { if (currentFile + i > 7) break; if (!CheckAndEnableSocket(currentSquare + (i * 9), piece)) break; }
+        for (int i = 1; i <= dir[2]; i++) { if (currentFile - i < 0) break; if (!CheckAndEnableSocket(currentSquare - (i * 9), piece)) break; }
+        for (int i = 1; i <= dir[3]; i++) { if (currentFile + i > 7) break; if (!CheckAndEnableSocket(currentSquare - (i * 7), piece)) break; }
     }
 
     // -------------------------------------------------------------
-    // TURN MANAGEMENT RPCS
+    // TURN & CAPTURE RPCS
     // -------------------------------------------------------------
 
     public void RequestChangeTurn()
     {
-        if (IsServer) ChangeTurnClientRpc();
+        if (IsServer) isWhiteTurn.Value = !isWhiteTurn.Value;
         else ChangeTurnServerRpc();
     }
 
     [ServerRpc(RequireOwnership = false)]
     private void ChangeTurnServerRpc()
     {
-        ChangeTurnClientRpc();
+        isWhiteTurn.Value = !isWhiteTurn.Value;
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void CapturePieceServerRpc(ulong capturedPieceNetId)
+    {
+        CapturePieceClientRpc(capturedPieceNetId);
     }
 
     [ClientRpc]
-    private void ChangeTurnClientRpc()
+    public void CapturePieceClientRpc(ulong capturedPieceNetId)
     {
-        isWhiteTurn = !isWhiteTurn;
-        string turnStatus = isWhiteTurn ? "White's" : "Black's";
-        Debug.Log($"[ChessManager] Turn Changed! It is now {turnStatus} turn.");
+        if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(capturedPieceNetId, out NetworkObject netObj))
+        {
+            IXRSelectInteractable interactable = netObj.GetComponent<XRGrabInteractable>();
+            foreach (XRSocketInteractor socket in sockets)
+            {
+                if (socket.hasSelection && socket.firstInteractableSelected == interactable)
+                    socket.interactionManager.SelectCancel((IXRSelectInteractor)socket, interactable);
+            }
+
+            netObj.transform.position = new Vector3(0, -10f, 0); 
+            netObj.GetComponent<Collider>().enabled = false;
+        }
     }
 
     // -------------------------------------------------------------
@@ -398,26 +397,16 @@ public class ChessManager : NetworkBehaviour
             
             foreach (XRSocketInteractor socket in sockets)
             {
-                // 1. Force the current socket to drop it
                 if (socket.hasSelection && socket.firstInteractableSelected == interactable)
                 {
                     socket.interactionManager.SelectCancel((IXRSelectInteractor)socket, interactable);
                     socket.GetComponent<BoxCollider>().enabled = false;
                 }
 
-                // 2. CRITICAL FIX: BLIND THE OPPONENT
-                // Turn off the opponent's sockets so they don't catch the piece mid-air!
-                if (!netObj.IsOwner)
-                {
-                    socket.GetComponent<BoxCollider>().enabled = false;
-                }
+                if (!netObj.IsOwner) socket.GetComponent<BoxCollider>().enabled = false;
             }
         }
     }
-
-    // -------------------------------------------------------------
-    // NEW: NETWORKED DROP SYNCING
-    // -------------------------------------------------------------
 
     [ServerRpc(RequireOwnership = false)]
     public void SyncSnapServerRpc(ulong networkObjectId, int squareIndex)
@@ -430,21 +419,16 @@ public class ChessManager : NetworkBehaviour
     {
         if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(networkObjectId, out NetworkObject netObj))
         {
-            // If we are the player who dropped the piece, do nothing (we already snapped locally)
             if (netObj.IsOwner) return;
 
             IXRSelectInteractable interactable = netObj.GetComponent<XRGrabInteractable>();
-            
-            // Turn our sockets back on now that the opponent is done moving
             enableAllSockets();
 
-            // Find the specific socket the opponent dropped it in, and force snap
             foreach (XRSocketInteractor socket in sockets)
             {
                 if (socket.GetComponent<SocketTracker>().Square == squareIndex)
                 {
                     socket.StartManualInteraction(interactable);
-                    Debug.Log($"[Network Sync] Synchronized {netObj.name} into Square {squareIndex}");
                     break;
                 }
             }
