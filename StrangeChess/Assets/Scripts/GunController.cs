@@ -8,6 +8,7 @@ public class GunController : NetworkBehaviour
     public float fireRate = 0.2f;
     public int maxAmmo = 15;
     public float reloadTime = 1.5f;
+    public bool canFire = false; // NEW: Locks the gun during countdown!
     
     [Header("References")]
     public Transform bulletSpawnPoint;
@@ -24,7 +25,8 @@ public class GunController : NetworkBehaviour
 
     void Update()
     {
-        if (isReloading) return;
+        // If the gun is locked by the countdown, or reloading, do nothing.
+        if (!canFire || isReloading) return;
 
         float triggerValue = triggerAction.action.ReadValue<float>();
         
@@ -39,11 +41,7 @@ public class GunController : NetworkBehaviour
     {
         lastFireTime = Time.time;
         currentAmmo--;
-
-        // 1. INSTANT LOCAL SPAWN: Spawn the bullet instantly for the person shooting (No delay!)
         SimpleBulletPool.Instance.GetBullet(bulletSpawnPoint.position, bulletSpawnPoint.rotation, true);
-
-        // 2. Tell the network to spawn it for everyone ELSE
         ShootServerRpc(bulletSpawnPoint.position, bulletSpawnPoint.rotation, NetworkManager.Singleton.LocalClientId);
     }
 
@@ -56,19 +54,15 @@ public class GunController : NetworkBehaviour
     [ClientRpc]
     private void ShootClientRpc(Vector3 position, Quaternion rotation, ulong shooterId)
     {
-        // 3. Ignore this message if WE shot the bullet, because we already spawned it locally in Fire()!
         if (NetworkManager.Singleton.LocalClientId == shooterId) return;
-        
         SimpleBulletPool.Instance.GetBullet(position, rotation, false);
     }
 
     private System.Collections.IEnumerator Reload()
     {
         isReloading = true;
-        Debug.Log("Reloading...");
         yield return new WaitForSeconds(reloadTime);
         currentAmmo = maxAmmo;
         isReloading = false;
-        Debug.Log("Reloaded!");
     }
 }
