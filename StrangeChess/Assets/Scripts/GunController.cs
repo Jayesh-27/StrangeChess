@@ -40,11 +40,13 @@ public class GunController : NetworkBehaviour
         lastFireTime = Time.time;
         currentAmmo--;
 
-        // Pass our Client ID
+        // 1. INSTANT LOCAL SPAWN: Spawn the bullet instantly for the person shooting (No delay!)
+        SimpleBulletPool.Instance.GetBullet(bulletSpawnPoint.position, bulletSpawnPoint.rotation, true);
+
+        // 2. Tell the network to spawn it for everyone ELSE
         ShootServerRpc(bulletSpawnPoint.position, bulletSpawnPoint.rotation, NetworkManager.Singleton.LocalClientId);
     }
 
-    // CRITICAL FIX: Allow the client to fire the ServerRpc!
     [ServerRpc(RequireOwnership = false)]
     private void ShootServerRpc(Vector3 position, Quaternion rotation, ulong shooterId)
     {
@@ -54,8 +56,10 @@ public class GunController : NetworkBehaviour
     [ClientRpc]
     private void ShootClientRpc(Vector3 position, Quaternion rotation, ulong shooterId)
     {
-        bool isLocalShooter = (NetworkManager.Singleton.LocalClientId == shooterId);
-        SimpleBulletPool.Instance.GetBullet(position, rotation, isLocalShooter);
+        // 3. Ignore this message if WE shot the bullet, because we already spawned it locally in Fire()!
+        if (NetworkManager.Singleton.LocalClientId == shooterId) return;
+        
+        SimpleBulletPool.Instance.GetBullet(position, rotation, false);
     }
 
     private System.Collections.IEnumerator Reload()
