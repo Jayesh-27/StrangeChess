@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1434151716850617201}
   - component: {fileID: 3194947720370047522}
   - component: {fileID: 495144084883371778}
+  - component: {fileID: 1171312457507091224}
   m_Layer: 0
   m_Name: NetworkPlayer
   m_TagString: Untagged
@@ -69,5 +70,15 @@ MonoBehaviour:
   CameraRig: {fileID: 2578880246657694753, guid: 4da737f9da7689c4f8c9cad2e7137d63,
     type: 3}
   NetworkPlayerModel: {fileID: 0}
-  gameplaySceneName: Chess
-  useSceneRigIfPresent: 1
+--- !u!114 &1171312457507091224
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1638710883853745282}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e9e55621e452884da1500c663adacb9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
