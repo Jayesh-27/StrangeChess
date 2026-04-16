@@ -14,8 +14,6 @@ public class SocketTracker : MonoBehaviour
 
         socket.selectEntered.AddListener(OnSnap);
         socket.selectExited.AddListener(OnUnsnap);
-        
-        // Listen for when a player hovers a piece over this socket!
         socket.hoverEntered.AddListener(OnHover); 
     }
 
@@ -34,7 +32,7 @@ public class SocketTracker : MonoBehaviour
                 {
                     Debug.Log($"[Capture] Banish enemy {defendingPiece.name} and snap {attackingPiece.name}!");
                     
-                    // Tell the server WHO died, WHO killed them, and WHERE it happened
+                    // Call the instant capture function
                     chessManager.CapturePieceServerRpc(
                         defendingPiece.GetComponent<NetworkObject>().NetworkObjectId, 
                         netObj.NetworkObjectId, 
@@ -50,7 +48,6 @@ public class SocketTracker : MonoBehaviour
         chessManager.shouldSnapBack = false;
         chessManager.enableAllSockets();
 
-        // Update the piece's memory of where it currently is
         ChessPiece piece = args.interactableObject.transform.GetComponent<ChessPiece>();
         if (piece != null) piece.currentSquare = Square;
 
@@ -65,7 +62,6 @@ public class SocketTracker : MonoBehaviour
     {
         chessManager.shouldSnapBack = true;
         
-        // Save where the piece came from so we can check if it was a valid move later
         ChessPiece piece = args.interactableObject.transform.GetComponent<ChessPiece>();
         if (piece != null) piece.previousSquare = piece.currentSquare;
     }

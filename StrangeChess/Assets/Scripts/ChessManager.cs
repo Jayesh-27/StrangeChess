@@ -19,12 +19,6 @@ public class ChessManager : NetworkBehaviour
     [SerializeField] private XRGrabInteractable[] blackPiecesInteractable;  
     [SerializeField] private XRDirectInteractor[] interactors; 
 
-    [Header("Combat UI & State")]
-    public TMPro.TMP_Text combatCountdownText;
-    private ulong currentAttackerNetId;
-    private ulong currentDefenderNetId;
-    private int currentContestedSquare;
-
     [Header("Spawn Points")]
     [SerializeField] private GameObject XRRig;
     [SerializeField] private GameObject WhiteRigSpawnPoint;
@@ -39,7 +33,6 @@ public class ChessManager : NetworkBehaviour
             interactor.selectEntered.AddListener(onGrab);
             interactor.selectExited.AddListener(OnRelease);
         }
-        if (combatCountdownText != null) combatCountdownText.gameObject.SetActive(false);
     }
 
     public override void OnNetworkSpawn()
@@ -52,8 +45,7 @@ public class ChessManager : NetworkBehaviour
 
         if (IsHost)
         {
-            xrOrigin.MoveCameraToWorldLocation(WhiteRigSpawnPoint.transform.position);
-            xrOrigin.MatchOriginUpCameraForward(WhiteRigSpawnPoint.transform.up, WhiteRigSpawnPoint.transform.forward);
+            TeleportVRPlayer(xrOrigin, WhiteRigSpawnPoint.transform);
             
             foreach (var client in NetworkManager.Singleton.ConnectedClientsList)
             {
@@ -63,11 +55,18 @@ public class ChessManager : NetworkBehaviour
         }
         else
         {
-            xrOrigin.MoveCameraToWorldLocation(BlackRigSpawnPoint.transform.position);            
-            xrOrigin.MatchOriginUpCameraForward(BlackRigSpawnPoint.transform.up, BlackRigSpawnPoint.transform.forward);
+            TeleportVRPlayer(xrOrigin, BlackRigSpawnPoint.transform);
         }
 
         UpdateHandPermissions();
+    }
+
+    private void TeleportVRPlayer(XROrigin rig, Transform target)
+    {
+        rig.transform.position = target.position;
+        rig.transform.rotation = target.rotation;
+        rig.MoveCameraToWorldLocation(target.position);
+        rig.MatchOriginUpCameraForward(target.up, target.forward);
     }
 
     private void GrantBlackPieceOwnership(ulong clientId)
@@ -198,7 +197,7 @@ public class ChessManager : NetworkBehaviour
         foreach (XRSocketInteractor socket in sockets) socket.GetComponent<BoxCollider>().enabled = true;
     }
 
-    // PIECE MOVEMENT LOGIC
+    // --- PIECE MOVEMENT LOGIC ---
     private void pawnMoves(ChessPiece piece)
     {
         int currentSquare = piece.currentSquare;
@@ -242,14 +241,78 @@ public class ChessManager : NetworkBehaviour
         }
     }
 
-    private void knightMoves(ChessPiece piece) { /* Unchanged */ }
-    private void bishopMoves(ChessPiece piece) { /* Unchanged */ }
-    private void rookMoves(ChessPiece piece) { /* Unchanged */ }
-    private void queenMoves(ChessPiece piece) { /* Unchanged */ }
-    private void kingMoves(ChessPiece piece) { /* Unchanged */ }
-    private void straightMoves(ChessPiece piece) { /* Unchanged */ }
-    private void diagonalMoves(ChessPiece piece) { /* Unchanged */ }
+    private void knightMoves(ChessPiece piece)
+    {
+        disableAllSockets(piece.currentSquare);
+        int currentSquare = piece.currentSquare;
+        int currentFile = currentSquare % 8;
+        int currentRow = currentSquare / 8;
+        int[] knightOffsets = { 15, 17, 10, -6, -15, -17, -10, 6 };
 
+        foreach (int offset in knightOffsets)
+        {
+            int target = currentSquare + offset;
+            if (target >= 0 && target < 64)
+            {
+                int fileDiff = Mathf.Abs(currentFile - (target % 8));
+                int rowDiff = Mathf.Abs(currentRow - (target / 8));
+                if ((fileDiff == 1 && rowDiff == 2) || (fileDiff == 2 && rowDiff == 1)) 
+                    CheckAndEnableSocket(target, piece);
+            }
+        }
+    }
+
+    private void bishopMoves(ChessPiece piece)
+    {
+        disableAllSockets(piece.currentSquare);
+        dir[0] = 8; dir[1] = 8; dir[2] = 8; dir[3] = 8;
+        diagonalMoves(piece);
+    }
+
+    private void rookMoves(ChessPiece piece)
+    {
+        disableAllSockets(piece.currentSquare);
+        dir[0] = 8; dir[1] = 8; dir[2] = 8; dir[3] = 8;
+        straightMoves(piece);
+    }
+
+    private void queenMoves(ChessPiece piece)
+    {
+        disableAllSockets(piece.currentSquare);
+        dir[0] = 8; dir[1] = 8; dir[2] = 8; dir[3] = 8;
+        straightMoves(piece);
+        diagonalMoves(piece);
+    }
+
+    private void kingMoves(ChessPiece piece)
+    {
+        disableAllSockets(piece.currentSquare);
+        dir[0] = 1; dir[1] = 1; dir[2] = 1; dir[3] = 1;
+        straightMoves(piece);
+        diagonalMoves(piece);
+    }
+
+    private void straightMoves(ChessPiece piece)
+    {
+        int currentSquare = piece.currentSquare;
+        int currentFile = currentSquare % 8;
+
+        for (int i = 1; i <= dir[0]; i++) if (!CheckAndEnableSocket(currentSquare + (i * 8), piece)) break;
+        for (int i = 1; i <= dir[1]; i++) if (!CheckAndEnableSocket(currentSquare - (i * 8), piece)) break;
+        for (int i = 1; i <= dir[2]; i++) { if (currentFile + i > 7) break; if (!CheckAndEnableSocket(currentSquare + i, piece)) break; }
+        for (int i = 1; i <= dir[3]; i++) { if (currentFile - i < 0) break; if (!CheckAndEnableSocket(currentSquare - i, piece)) break; }
+    }
+
+    private void diagonalMoves(ChessPiece piece)
+    {
+        int currentSquare = piece.currentSquare;
+        int currentFile = currentSquare % 8;
+
+        for (int i = 1; i <= dir[0]; i++) { if (currentFile - i < 0) break; if (!CheckAndEnableSocket(currentSquare + (i * 7), piece)) break; }
+        for (int i = 1; i <= dir[1]; i++) { if (currentFile + i > 7) break; if (!CheckAndEnableSocket(currentSquare + (i * 9), piece)) break; }
+        for (int i = 1; i <= dir[2]; i++) { if (currentFile - i < 0) break; if (!CheckAndEnableSocket(currentSquare - (i * 9), piece)) break; }
+        for (int i = 1; i <= dir[3]; i++) { if (currentFile + i > 7) break; if (!CheckAndEnableSocket(currentSquare - (i * 7), piece)) break; }
+    }
 
     public void RequestChangeTurn()
     {
@@ -264,141 +327,50 @@ public class ChessManager : NetworkBehaviour
     }
 
     // -------------------------------------------------------------
-    // COMBAT TRANSITION SYSTEM
-    // -------------------------------------------------------------
-
-    // We changed the name of this from CapturePieceServerRpc! Update SocketTracker to call this!
-    [ServerRpc(RequireOwnership = false)]
-    public void StartCombatServerRpc(ulong capturedPieceNetId, ulong attackingPieceNetId, int squareIndex)
-    {
-        StartCombatClientRpc(capturedPieceNetId, attackingPieceNetId, squareIndex);
-    }
-
-    [ClientRpc]
-    public void StartCombatClientRpc(ulong capturedPieceNetId, ulong attackingPieceNetId, int squareIndex)
-    {
-        // 1. Save the fight info for when the match ends
-        currentDefenderNetId = capturedPieceNetId;
-        currentAttackerNetId = attackingPieceNetId;
-        currentContestedSquare = squareIndex;
-
-        // 2. Lock the chess board so players can't move pieces during the shootout
-        disableOtherDirectInteractor(); 
-        
-        // 3. Force the attacker's hand to let go of the piece they are holding
-        if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(attackingPieceNetId, out NetworkObject attObj))
-        {
-            IXRSelectInteractable attInteractable = attObj.GetComponent<XRGrabInteractable>();
-            foreach (XRDirectInteractor interactor in interactors)
-            {
-                if (interactor.hasSelection && interactor.firstInteractableSelected == attInteractable)
-                    interactor.interactionManager.SelectCancel((IXRSelectInteractor)interactor, attInteractable);
-            }
-        }
-
-        // 4. Turn on the Avatars and Guns!
-        // We find the local player's avatar and turn it on. For MVP, we force it to PieceType.Pawn.
-        VRAvatarSync[] avatars = FindObjectsOfType<VRAvatarSync>();
-        foreach (VRAvatarSync avatar in avatars)
-        {
-            if (avatar.IsOwner) avatar.EnableCombatMode(PieceType.Pawn);
-        }
-
-        // 5. Start the countdown
-        StartCoroutine(CombatCountdownRoutine());
-    }
-
-    private IEnumerator CombatCountdownRoutine()
-    {
-        if (combatCountdownText != null)
-        {
-            combatCountdownText.gameObject.SetActive(true);
-            
-            combatCountdownText.text = "3";
-            yield return new WaitForSeconds(1f);
-            
-            combatCountdownText.text = "2";
-            yield return new WaitForSeconds(1f);
-            
-            combatCountdownText.text = "1";
-            yield return new WaitForSeconds(1f);
-            
-            combatCountdownText.text = "FIGHT!";
-            yield return new WaitForSeconds(1f);
-            
-            combatCountdownText.gameObject.SetActive(false);
-        }
-        else
-        {
-            yield return new WaitForSeconds(3f); // Fallback if UI is missing
-        }
-
-        // UNLOCK GUNS!
-        VRAvatarSync[] avatars = FindObjectsOfType<VRAvatarSync>();
-        foreach (VRAvatarSync avatar in avatars)
-        {
-            if (avatar.IsOwner && avatar.equippedGun != null) 
-                avatar.equippedGun.canFire = true;
-        }
-    }
-
-    // -------------------------------------------------------------
-    // COMBAT RESOLUTION SYSTEM
+    // INSTANT CAPTURE SYSTEM (No Combat)
     // -------------------------------------------------------------
 
     [ServerRpc(RequireOwnership = false)]
-    public void ResolveCombatServerRpc(ulong deadPlayerClientId)
+    public void CapturePieceServerRpc(ulong capturedPieceNetId, ulong attackingPieceNetId, int squareIndex)
     {
-        ResolveCombatClientRpc(deadPlayerClientId);
+        CapturePieceClientRpc(capturedPieceNetId, attackingPieceNetId, squareIndex);
     }
 
     [ClientRpc]
-    public void ResolveCombatClientRpc(ulong deadPlayerClientId)
+    public void CapturePieceClientRpc(ulong capturedPieceNetId, ulong attackingPieceNetId, int squareIndex)
     {
-        NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(currentAttackerNetId, out NetworkObject attackerPiece);
-        NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(currentDefenderNetId, out NetworkObject defenderPiece);
+        NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(capturedPieceNetId, out NetworkObject capturedPiece);
+        NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(attackingPieceNetId, out NetworkObject attackingPiece);
 
-        XRSocketInteractor targetSocket = sockets[currentContestedSquare];
+        XRSocketInteractor targetSocket = sockets[squareIndex];
 
-        // Did the Attacker die?
-        if (attackerPiece != null && attackerPiece.OwnerClientId == deadPlayerClientId)
+        // 1. Banish the dead piece
+        if (capturedPiece != null)
         {
-            // Banish the Attacker. Defender stays exactly where they are.
-            attackerPiece.transform.position = new Vector3(0, -10f, 0);
-            attackerPiece.GetComponent<Collider>().enabled = false;
-        }
-        // Did the Defender die?
-        else if (defenderPiece != null)
-        {
-            // Banish Defender
-            IXRSelectInteractable defInteractable = defenderPiece.GetComponent<XRGrabInteractable>();
+            IXRSelectInteractable defInteractable = capturedPiece.GetComponent<XRGrabInteractable>();
             if (targetSocket.hasSelection && targetSocket.firstInteractableSelected == defInteractable)
+            {
                 targetSocket.interactionManager.SelectCancel((IXRSelectInteractor)targetSocket, defInteractable);
+            }
                 
-            defenderPiece.transform.position = new Vector3(0, -10f, 0);
-            defenderPiece.GetComponent<Collider>().enabled = false;
+            capturedPiece.transform.position = new Vector3(0, -10f, 0); // Hide underground
+            capturedPiece.GetComponent<Collider>().enabled = false;
+        }
 
-            // Snap Attacker to the square
-            IXRSelectInteractable attInteractable = attackerPiece.GetComponent<XRGrabInteractable>();
+        // 2. Snap the attacking piece into the socket
+        if (attackingPiece != null) 
+        {
+            IXRSelectInteractable attInteractable = attackingPiece.GetComponent<XRGrabInteractable>();
             targetSocket.StartManualInteraction(attInteractable);
         }
 
-        // Clean up Combat Phase
+        // 3. Clean up the board and swap turns
         enableAllSockets();
-        UpdateHandPermissions(); // Turns hands back on for chess
-        RequestChangeTurn();     // Next player's turn!
-
-        // Hide Avatars and Guns, Reset Health
-        VRAvatarSync[] avatars = FindObjectsOfType<VRAvatarSync>();
-        foreach (VRAvatarSync avatar in avatars)
-        {
-            if (avatar.IsOwner) 
-            {
-                avatar.DisableCombatMode();
-                avatar.GetComponent<PlayerHealth>().ResetHealth();
-            }
-        }
+        UpdateHandPermissions(); 
+        RequestChangeTurn();     
     }
+
+    // --- NETWORKED SOCKET SYNCING RPCS ---
 
     [ServerRpc(RequireOwnership = false)]
     public void ForceUnsnapServerRpc(ulong networkObjectId) { ForceUnsnapClientRpc(networkObjectId); }
