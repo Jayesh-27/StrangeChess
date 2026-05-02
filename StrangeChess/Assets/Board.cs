@@ -22,6 +22,8 @@ public class Board : MonoBehaviour
     [SerializeField] public ulong blackPieces;
     [SerializeField] public ulong allPieces;
 
+    [SerializeField] public ulong fileB = 0x00FF000000000000;
+
     public static Board board;
 
     void Awake()

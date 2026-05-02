@@ -36,13 +36,14 @@ public class ClickDetector : MonoBehaviour
                     
                     if(isSelected && (from & Board.board.whitePieces) == 0)
                     {
-                        if((from & availableMoves) == 0)    // selected piece can move at from
+                        if((from & availableMoves) != 0)    // selected piece can move at from
                         {
                             Chess.chess.movePiece(selectedPiece, from);
+                            availableMoves = 0;
                             isSelected = false;
                         }
                     }
-                    else if((from & Board.board.allPieces) != 0)
+                    else if((from & Board.board.whitePieces) != 0)
                     {
                         Debug.Log("Selected");
                         isSelected = true;
@@ -53,7 +54,7 @@ public class ClickDetector : MonoBehaviour
         }
     }
 
-    int ToBitboardIndex(int i)
+    public int ToBitboardIndex(int i)
     {
         int file = i % 8;
         int rank = i / 8;

@@ -15,17 +15,23 @@ public class Chess : MonoBehaviour
     }
     public void pawnMoves(ulong from)
     {
-        // TODO Promotion
-        // TODO En passant
-        // TODO Single Move
-        // TODO Double Move
-        // TODO Captures
+        // TODO - Promotion
+        // TODO - En passant
+        // Done - Single Move
+        // TODO - Double Move
+        // TODO - Captures
 
         ulong captures = from << 8;
-        if(((from << 8 ) & Board.board.allPieces) != 0)   // square is empty
+        Debug.Log(Board.board.displayBitboard(from << 8));
+        if(((from << 8) & Board.board.allPieces) != 0)   // square is empty
         {
-            Debug.Log("pawn can move");
-            ClickDetector.clickDetector.availableMoves = ClickDetector.clickDetector.availableMoves | from << 8;                        
+            Debug.Log("Pawn can move 1 Square");
+            ClickDetector.clickDetector.availableMoves = ClickDetector.clickDetector.availableMoves | from << 8;
+            if((from & Board.board.fileB) != 0 && ((from << 16) & Board.board.allPieces) == 0)
+            {
+                Debug.Log("Pawn can move 2 Square");
+                ClickDetector.clickDetector.availableMoves = ClickDetector.clickDetector.availableMoves | from << 16;
+            }
         }
         else
         {
