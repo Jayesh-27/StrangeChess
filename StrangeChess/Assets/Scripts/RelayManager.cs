@@ -20,7 +20,7 @@ public class RelayManager : MonoBehaviour
 
     [Header("UI References")]
     public TMP_Text statusText; 
-    public GameObject startGameButton; // You can leave this unassigned or delete it from the Canvas now
+    public GameObject startGameButton;
 
     private Lobby currentLobby;
     private float heartbeatTimer;
@@ -45,19 +45,18 @@ public class RelayManager : MonoBehaviour
 
         await UnityServices.InitializeAsync(options);
 
-        if (!AuthenticationService.Instance.IsSignedIn)
+        if (!AuthenticationService.Instance.IsSignedIn) // login if not already
         {
             await AuthenticationService.Instance.SignInAnonymouslyAsync();
-            
-            // If AutoConnect is checked in the Inspector, start matchmaking immediately!
-            if (autoConnect)
-            {
-                AutoJoinOrHost();
-            }
-            else
-            {
-                statusText.text = "Ready to play! Select Host or Join.";
-            }
+        }
+
+        if (autoConnect)
+        {
+            AutoJoinOrHost();
+        }
+        else
+        {
+            statusText.text = "Host or Join...";
         }
     }
 
