@@ -26,6 +26,7 @@ public class Chess : MonoBehaviour
         {
             ClickDetector.clickDetector.availableMoves = ClickDetector.clickDetector.availableMoves | (captures & Board.board.blackPieces);
         }
+<<<<<<< Updated upstream
         Debug.Log("From >> 8" + Board.board.displayBitboard(from >> 8));
         if(((from >> 8) & Board.board.allPieces) == 0)   // square is empty
         {
@@ -36,12 +37,29 @@ public class Chess : MonoBehaviour
             {
                 Debug.Log("Pawn can move 2 Square");
                 ClickDetector.clickDetector.availableMoves = ClickDetector.clickDetector.availableMoves | from >> 16;
+=======
+        //Debug.Log("From >> 8" + Board.Instance.displayBitboard(from >> 8));
+        if(((from >> 8) & Board.Instance.allPieces) == 0)   // square is empty
+        {
+            //Debug.Log("Pawn can move 1 Square");
+            ClickDetector.Instance.availableMoves = ClickDetector.Instance.availableMoves | from >> 8;
+            //Debug.Log("From >> 8" + Board.Instance.displayBitboard(16));
+            if((from & Board.Instance.fileB) != 0 && ((from >> 16) & Board.Instance.allPieces) == 0)
+            {
+                //Debug.Log("Pawn can move 2 Square");
+                ClickDetector.Instance.availableMoves = ClickDetector.Instance.availableMoves | from >> 16;
+>>>>>>> Stashed changes
             }
         }
         else
         {
             Debug.Log("pawn can not move");
         }
+    }
+
+    public void knightMoves(ulong from)
+    {
+        
     }
 
     public void movePiece(ulong from, ulong to)
