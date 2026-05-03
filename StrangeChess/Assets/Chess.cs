@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -46,59 +47,16 @@ public class Chess : MonoBehaviour
 
     public void movePiece(ulong from, ulong to)
     {
-        if ((from & Board.board.whitePieces) != 0)
+        pieces piece = Board.board.bitboardToPiece(from);
+        if(piece < pieces.blackPawn)
         {
-            if((to & Board.board.blackPieces) != 0)
+            pieces toPiece = Board.board.bitboardToPiece(from);
+            if(toPiece >= pieces.blackPawn)
             {
-                if ((to & Board.board.blackPawn) != 0)
-            {
-                Board.board.blackPawn = Board.board.blackPawn ^ to;
+                Board.board.pieceBitboards[(int)toPiece] = Board.board.pieceBitboards[(int)toPiece] ^ to;
             }
-            else if ((to & Board.board.blackKnight) != 0)
-            {
-                Board.board.blackKnight = Board.board.blackKnight ^ to;
-            }
-            else if ((to & Board.board.blackBishop) != 0)
-            {
-                Board.board.blackBishop = Board.board.blackBishop ^ to;
-            }
-            else if ((to & Board.board.blackRook) != 0)
-            {
-                Board.board.blackRook = Board.board.blackRook ^ to;
-            }
-            else if ((to & Board.board.blackQueen) != 0)
-            {
-                Board.board.blackQueen = Board.board.blackQueen ^ to;
-            }
-            else if ((to & Board.board.blackKing) != 0)
-            {
-                Board.board.blackKing = Board.board.blackKing ^ to;
-            }
-            }
-            if ((from & Board.board.whitePawn) != 0)
-            {
-                Board.board.whitePawn = (Board.board.whitePawn ^ from) | to;
-            }
-            else if ((from & Board.board.whiteKnight) != 0)
-            {
-                Board.board.whiteKnight = (Board.board.whiteKnight ^ from) | to;
-            }
-            else if ((from & Board.board.whiteBishop) != 0)
-            {
-                Board.board.whiteBishop = (Board.board.whiteBishop ^ from) | to;
-            }
-            else if ((from & Board.board.whiteRook) != 0)
-            {
-                Board.board.whiteRook = (Board.board.whiteRook ^ from) | to;
-            }
-            else if ((from & Board.board.whiteQueen) != 0)
-            {
-                Board.board.whiteQueen = (Board.board.whiteQueen ^ from) | to;
-            }
-            else if ((from & Board.board.whiteKing) != 0)
-            {
-                Board.board.whiteKing = (Board.board.whiteKing ^ from) | to;
-            }
+            Board.board.pieceBitboards[(int)piece] = Board.board.pieceBitboards[(int)piece] ^ from;
+            Board.board.pieceBitboards[(int)piece] = Board.board.pieceBitboards[(int)piece] | to;
         }
     }
 }

@@ -30,10 +30,10 @@ public class ClickDetector : MonoBehaviour
 
                     //  index of which Square clicked on, in BITBOARD
                     ulong from = 1UL << correctIndex;
-                    string selectedPieceString = bitboardToPiece(from);
                     
-                    Debug.Log(correctIndex + " - " + selectedPieceString + " - " + Board.board.displayBitboard(from));
-                    
+                    Debug.Log(correctIndex + " - " + Board.board.bitboardToPiece(from) + " - " + Board.board.displayBitboard(from));
+                    Chess.chess.pawnMoves(from);
+
                     if(isSelected && (from & Board.board.whitePieces) == 0)
                     {
                         if((from & availableMoves) != 0)    // selected piece can move at from
@@ -62,70 +62,4 @@ public class ClickDetector : MonoBehaviour
         return (7 - rank) * 8 + file;
     }
     
-    string bitboardToPiece(ulong from)
-    {
-        if((from & Board.board.allPieces) != 0)
-        {
-            if ((from & Board.board.whitePieces) != 0)
-            {
-                if ((from & Board.board.whitePawn) != 0)
-                {
-                    Chess.chess.pawnMoves(from);
-                    return "whitePawn";
-                }
-                else if ((from & Board.board.whiteKnight) != 0)
-                {
-                    return "whiteKnight";
-                }
-                else if ((from & Board.board.whiteBishop) != 0)
-                {
-                    return "whiteBishop";
-                }
-                else if ((from & Board.board.whiteRook) != 0)
-                {
-                    return "whiteRook";
-                }
-                else if ((from & Board.board.whiteQueen) != 0)
-                {
-                    return "whiteQueen";
-                }
-                else if ((from & Board.board.whiteKing) != 0)
-                {
-                    return "whiteKing";
-                }
-            }
-            else
-            {
-                if ((from & Board.board.blackPawn) != 0)
-                {
-                    return "blackPawn";
-                }
-                else if ((from & Board.board.blackKnight) != 0)
-                {
-                    return "blackKnight";
-                }
-                else if ((from & Board.board.blackBishop) != 0)
-                {
-                    return "blackBishop";
-                }
-                else if ((from & Board.board.blackRook) != 0)
-                {
-                    return "blackRook";
-                }
-                else if ((from & Board.board.blackQueen) != 0)
-                {
-                    return "blackQueen";
-                }
-                else if ((from & Board.board.blackKing) != 0)
-                {
-                    return "blackKing";
-                }
-            }
-        }
-        else
-        {
-            return "No Piece";
-        }
-        return "Unknown piece";
-    }
 }
