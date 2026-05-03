@@ -5,13 +5,13 @@ using UnityEngine;
 
 public class Chess : MonoBehaviour
 {
-    public static Chess chess;
+    public static Chess Instance;
 
     private void Awake()
     {
-        if (chess == null)
+        if (Instance == null)
         {
-            chess = this;
+            Instance = this;
         }
     }
     public void pawnMoves(ulong from)
@@ -20,23 +20,23 @@ public class Chess : MonoBehaviour
         // TODO - En passant
         // DONE - Single Move
         // DONE - Double Move
-        // TODO - Captures
+        // DONE - Captures
 
         ulong captures = from >> 7 | from >> 9;
-        if((captures & Board.board.blackPieces) != 0)
+        if((captures & Board.Instance.blackPieces) != 0)
         {
-            ClickDetector.clickDetector.availableMoves = ClickDetector.clickDetector.availableMoves | (captures & Board.board.blackPieces);
+            ClickDetector.Instance.availableMoves = ClickDetector.Instance.availableMoves | (captures & Board.Instance.blackPieces);
         }
-        Debug.Log("From >> 8" + Board.board.displayBitboard(from >> 8));
-        if(((from >> 8) & Board.board.allPieces) == 0)   // square is empty
+        Debug.Log("From >> 8" + Board.Instance.displayBitboard(from >> 8));
+        if(((from >> 8) & Board.Instance.allPieces) == 0)   // square is empty
         {
             Debug.Log("Pawn can move 1 Square");
-            ClickDetector.clickDetector.availableMoves = ClickDetector.clickDetector.availableMoves | from >> 8;
-            Debug.Log("From >> 8" + Board.board.displayBitboard(16));
-            if((from & Board.board.fileB) != 0 && ((from >> 16) & Board.board.allPieces) == 0)
+            ClickDetector.Instance.availableMoves = ClickDetector.Instance.availableMoves | from >> 8;
+            Debug.Log("From >> 8" + Board.Instance.displayBitboard(16));
+            if((from & Board.Instance.fileB) != 0 && ((from >> 16) & Board.Instance.allPieces) == 0)
             {
                 Debug.Log("Pawn can move 2 Square");
-                ClickDetector.clickDetector.availableMoves = ClickDetector.clickDetector.availableMoves | from >> 16;
+                ClickDetector.Instance.availableMoves = ClickDetector.Instance.availableMoves | from >> 16;
             }
         }
         else
@@ -47,16 +47,18 @@ public class Chess : MonoBehaviour
 
     public void movePiece(ulong from, ulong to)
     {
-        pieces piece = Board.board.bitboardToPiece(from);
-        if(piece < pieces.blackPawn)
+        pieceType piece = Board.Instance.bitboardToPiece(from);
+
+        if(piece == 0)
+            return;
+        if(piece < pieceType.blackPawn)
         {
-            pieces toPiece = Board.board.bitboardToPiece(from);
-            if(toPiece >= pieces.blackPawn)
+            pieceType toPiece = Board.Instance.bitboardToPiece(to);
+            if(toPiece >= pieceType.blackPawn)
             {
-                Board.board.pieceBitboards[(int)toPiece] = Board.board.pieceBitboards[(int)toPiece] ^ to;
+                Board.Instance.pieceBitboards[(int)toPiece] = Board.Instance.pieceBitboards[(int)toPiece] ^ to;
             }
-            Board.board.pieceBitboards[(int)piece] = Board.board.pieceBitboards[(int)piece] ^ from;
-            Board.board.pieceBitboards[(int)piece] = Board.board.pieceBitboards[(int)piece] | to;
+            Board.Instance.pieceBitboards[(int)piece] = (Board.Instance.pieceBitboards[(int)piece] ^ from) | to;
         }
     }
 }

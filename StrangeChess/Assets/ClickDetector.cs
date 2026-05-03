@@ -2,16 +2,16 @@ using UnityEngine;
 
 public class ClickDetector : MonoBehaviour
 {
-    public static ClickDetector clickDetector;
+    public static ClickDetector Instance;
     public bool isSelected = false;
     private ulong selectedPiece = 0;
     public ulong availableMoves = 0;
 
     void Awake()
     {
-        if (clickDetector == null)
+        if (Instance == null)
         {
-            clickDetector = this;
+            Instance = this;
         }
     }
     void Update()
@@ -31,19 +31,19 @@ public class ClickDetector : MonoBehaviour
                     //  index of which Square clicked on, in BITBOARD
                     ulong from = 1UL << correctIndex;
                     
-                    Debug.Log(correctIndex + " - " + Board.board.bitboardToPiece(from) + " - " + Board.board.displayBitboard(from));
-                    Chess.chess.pawnMoves(from);
+                    Debug.Log(correctIndex + " - " + Board.Instance.bitboardToPiece(from) + " - " + Board.Instance.displayBitboard(from));
+                    Chess.Instance.pawnMoves(from);
 
-                    if(isSelected && (from & Board.board.whitePieces) == 0)
+                    if(isSelected && (from & Board.Instance.whitePieces) == 0)
                     {
                         if((from & availableMoves) != 0)    // selected piece can move at from
                         {
-                            Chess.chess.movePiece(selectedPiece, from);
+                            Chess.Instance.movePiece(selectedPiece, from);
                             availableMoves = 0;
                             isSelected = false;
                         }
                     }
-                    else if((from & Board.board.whitePieces) != 0)
+                    else if((from & Board.Instance.whitePieces) != 0)
                     {
                         Debug.Log("Selected");
                         isSelected = true;

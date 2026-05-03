@@ -25358,6 +25358,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b0fb60a66279c0459d352c7c9af18f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isSelected: 0
+  availableMoves: 0
 --- !u!114 &919132148988462391
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -25370,21 +25372,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: caac0f4d8d75b634b928026683d4d590, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  whitePawn: 71776119061217280
-  whiteRook: 9295429630892703744
-  whiteKnight: 4755801206503243776
-  whiteBishop: 2594073385365405696
-  whiteQueen: 1152921504606846976
-  whiteKing: 576460752303423488
-  blackPawn: 65280
-  blackRook: 129
-  blackKnight: 66
-  blackBishop: 36
-  blackQueen: 16
-  blackKing: 8
+  pieceBitboards: 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
   whitePieces: 0
   blackPieces: 0
   allPieces: 0
+  fileB: 71776119061217280
 --- !u!114 &919132148988462392
 MonoBehaviour:
   m_ObjectHideFlags: 0
