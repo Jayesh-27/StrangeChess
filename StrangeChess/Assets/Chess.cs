@@ -17,11 +17,15 @@ public class Chess : MonoBehaviour
     {
         // TODO - Promotion
         // TODO - En passant
-        // Done - Single Move
-        // TODO - Double Move
+        // DONE - Single Move
+        // DONE - Double Move
         // TODO - Captures
 
-        ulong captures = from << 8;
+        ulong captures = from >> 7 | from >> 9;
+        if((captures & Board.board.blackPieces) != 0)
+        {
+            ClickDetector.clickDetector.availableMoves = ClickDetector.clickDetector.availableMoves | (captures & Board.board.blackPieces);
+        }
         Debug.Log("From >> 8" + Board.board.displayBitboard(from >> 8));
         if(((from >> 8) & Board.board.allPieces) == 0)   // square is empty
         {
@@ -44,6 +48,33 @@ public class Chess : MonoBehaviour
     {
         if ((from & Board.board.whitePieces) != 0)
         {
+            if((to & Board.board.blackPieces) != 0)
+            {
+                if ((to & Board.board.blackPawn) != 0)
+            {
+                Board.board.blackPawn = Board.board.blackPawn ^ to;
+            }
+            else if ((to & Board.board.blackKnight) != 0)
+            {
+                Board.board.blackKnight = Board.board.blackKnight ^ to;
+            }
+            else if ((to & Board.board.blackBishop) != 0)
+            {
+                Board.board.blackBishop = Board.board.blackBishop ^ to;
+            }
+            else if ((to & Board.board.blackRook) != 0)
+            {
+                Board.board.blackRook = Board.board.blackRook ^ to;
+            }
+            else if ((to & Board.board.blackQueen) != 0)
+            {
+                Board.board.blackQueen = Board.board.blackQueen ^ to;
+            }
+            else if ((to & Board.board.blackKing) != 0)
+            {
+                Board.board.blackKing = Board.board.blackKing ^ to;
+            }
+            }
             if ((from & Board.board.whitePawn) != 0)
             {
                 Board.board.whitePawn = (Board.board.whitePawn ^ from) | to;
