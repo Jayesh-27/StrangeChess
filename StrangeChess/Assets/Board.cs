@@ -85,63 +85,16 @@ public class Board : MonoBehaviour
 
     public pieceType bitboardToPiece(ulong from)
     {
-        if((from & allPieces) != 0)
+        if ((from & allPieces) == 0) return pieceType.none;
+        
+        for (int i = 1; i <= 12; i++)
         {
-            if ((from & whitePieces) != 0)
+            if ((from & pieceBitboards[i]) != 0) 
             {
-                if ((from & pieceBitboards[(int)pieceType.whitePawn]) != 0)
-                {
-                    return pieceType.whitePawn;
-                }
-                else if ((from & pieceBitboards[(int)pieceType.whiteKnight]) != 0)
-                {
-                    return pieceType.whiteKnight;
-                }
-                else if ((from & pieceBitboards[(int)pieceType.whiteBishop]) != 0)
-                {
-                    return pieceType.whiteBishop;
-                }
-                else if ((from & pieceBitboards[(int)pieceType.whiteRook]) != 0)
-                {
-                    return pieceType.whiteRook;
-                }
-                else if ((from & pieceBitboards[(int)pieceType.whiteQueen]) != 0)
-                {
-                    return pieceType.whiteQueen;
-                }
-                else if ((from & pieceBitboards[(int)pieceType.whiteKing]) != 0)
-                {
-                    return pieceType.whiteKing;
-                }
-            }
-            else
-            {
-                if ((from & pieceBitboards[(int)pieceType.blackPawn]) != 0)
-                {
-                    return pieceType.blackPawn;
-                }
-                else if ((from & pieceBitboards[(int)pieceType.blackKnight]) != 0)
-                {
-                    return pieceType.blackKnight;
-                }
-                else if ((from & pieceBitboards[(int)pieceType.blackBishop]) != 0)
-                {
-                    return pieceType.blackBishop;
-                }
-                else if ((from & pieceBitboards[(int)pieceType.blackRook]) != 0)
-                {
-                    return pieceType.blackRook;
-                }
-                else if ((from & pieceBitboards[(int)pieceType.blackQueen]) != 0)
-                {
-                    return pieceType.blackQueen;
-                }
-                else if ((from & pieceBitboards[(int)pieceType.blackKing]) != 0)
-                {
-                    return pieceType.blackKing;
-                }
+                return (pieceType)i;
             }
         }
-        return 0;
+        
+        return pieceType.none;
     }
 }
