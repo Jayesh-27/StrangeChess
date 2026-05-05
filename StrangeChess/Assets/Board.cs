@@ -28,6 +28,7 @@ public class Board : MonoBehaviour
     [SerializeField] public ulong blackPieces;
     [SerializeField] public ulong allPieces;
     [SerializeField] public ulong[] knightAttacks = new ulong[64];
+    [SerializeField] public ulong[] kingAttacks = new ulong[64];
     [SerializeField] private UnityEngine.Vector3 visualPiecesPositionOffset = new UnityEngine.Vector3(0.000800319016f,-0.0148002654f,0.0781002268f);
 
     [SerializeField] public ulong fileB = 0x000000000000FF00;
@@ -61,6 +62,7 @@ public class Board : MonoBehaviour
     void Start()
     {
         calculateKnightAttacks();
+        calculateKingAttacks();
     }
     
     void Update()
@@ -162,6 +164,34 @@ public class Board : MonoBehaviour
             }
 
             knightAttacks[sq] = moves;
+        }
+    }
+
+    private void calculateKingAttacks()
+    {
+        int[,] offsets = {{0, 1 }, {1, 1 }, {1, 0 }, {1, -1 }, {-1, -1 }, {-1, 0 }, {0, -1 }, {-1, 1}};
+
+        for (int sq = 0; sq < 64; sq++)
+        {
+            ulong moves = 0;
+
+            int file = sq % 8;
+            int rank = sq / 8;
+
+            for (int i = 0; i < 8; i++)
+            {
+                int newFile = file + offsets[i, 0];
+                int newRank = rank + offsets[i, 1];
+
+                if (newFile >= 0 && newFile < 8 &&
+                    newRank >= 0 && newRank < 8)
+                {
+                    int targetIndex = newRank * 8 + newFile;
+                    moves |= 1UL << targetIndex;
+                }
+            }
+
+            kingAttacks[sq] = moves;
         }
     }
 }

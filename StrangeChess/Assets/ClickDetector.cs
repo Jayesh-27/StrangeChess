@@ -58,6 +58,13 @@ public class ClickDetector : MonoBehaviour
                             isSelected = true;
                             selectedPiece = from;
                         }
+                        else if(Board.Instance.bitboardToPiece(from) == pieceType.whiteKing)
+                        {
+                            Chess.Instance.kingMoves(from);
+                            Debug.Log("Selected");
+                            isSelected = true;
+                            selectedPiece = from;
+                        }
                     }
                 }
             }

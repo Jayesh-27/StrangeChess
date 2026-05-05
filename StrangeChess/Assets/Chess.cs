@@ -49,6 +49,12 @@ public class Chess : MonoBehaviour
         ClickDetector.Instance.availableMoves = Board.Instance.knightAttacks[knightIndex] ^ Board.Instance.whitePieces;
     }
 
+    public void kingMoves(ulong from)
+    {
+        int kingIndex = Board.Instance.GetBitboardIndex(from);
+        ClickDetector.Instance.availableMoves = Board.Instance.kingAttacks[kingIndex] ^ Board.Instance.whitePieces;
+    }
+
     public void movePiece(ulong from, ulong to)
     {
         pieceType piece = Board.Instance.bitboardToPiece(from);
