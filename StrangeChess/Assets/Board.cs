@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Numerics;
 using UnityEngine;
+
 public enum pieceType
 {
     none,
@@ -17,15 +19,18 @@ public enum pieceType
     blackQueen,
     blackKing
 }
+
 public class Board : MonoBehaviour
 {
+    [SerializeField] private GameObject[] visualPieces = new GameObject[64];
     [SerializeField] public ulong[] pieceBitboards = new ulong[13];
-                      
     [SerializeField] public ulong whitePieces;
     [SerializeField] public ulong blackPieces;
     [SerializeField] public ulong allPieces;
+    [SerializeField] public ulong[] knightAttacks = new ulong[64];
+    [SerializeField] private UnityEngine.Vector3 visualPiecesPositionOffset = new UnityEngine.Vector3(0.000800319016f,-0.0148002654f,0.0781002268f);
 
-    [SerializeField] public ulong fileB = 0x00FF000000000000;
+    [SerializeField] public ulong fileB = 0x000000000000FF00;
 
     public static Board Instance;
 
@@ -36,27 +41,60 @@ public class Board : MonoBehaviour
             Instance = this;
         }
 
-        pieceBitboards[(int)pieceType.whitePawn] = 0x00FF000000000000;
-        pieceBitboards[(int)pieceType.whiteKnight] = 0x8100000000000000;
-        pieceBitboards[(int)pieceType.whiteBishop] = 0x4200000000000000;
-        pieceBitboards[(int)pieceType.whiteRook] = 0x2400000000000000;
-        pieceBitboards[(int)pieceType.whiteQueen] = 0x1000000000000000;
-        pieceBitboards[(int)pieceType.whiteKing] = 0x0800000000000000;
-        pieceBitboards[(int)pieceType.blackPawn] = 0x000000000000FF00;
-        pieceBitboards[(int)pieceType.blackKnight] = 0x0000000000000042;
-        pieceBitboards[(int)pieceType.blackBishop] = 0x0000000000000024;
-        pieceBitboards[(int)pieceType.blackRook] = 0x0000000000000081;
-        pieceBitboards[(int)pieceType.blackQueen] = 0x0000000000000008;
-        pieceBitboards[(int)pieceType.blackKing] = 0x0000000000000010;
+        pieceBitboards[(int)pieceType.whitePawn]   = 0x000000000000FF00;
+        pieceBitboards[(int)pieceType.whiteKnight] = 0x0000000000000042;
+        pieceBitboards[(int)pieceType.whiteBishop] = 0x0000000000000024;
+        pieceBitboards[(int)pieceType.whiteRook]   = 0x0000000000000081;
+        pieceBitboards[(int)pieceType.whiteQueen]  = 0x0000000000000008;
+        pieceBitboards[(int)pieceType.whiteKing]   = 0x0000000000000010;
+        
+        pieceBitboards[(int)pieceType.blackPawn]   = 0x00FF000000000000;
+        pieceBitboards[(int)pieceType.blackKnight] = 0x4200000000000000;
+        pieceBitboards[(int)pieceType.blackBishop] = 0x2400000000000000;
+        pieceBitboards[(int)pieceType.blackRook]   = 0x8100000000000000;
+        pieceBitboards[(int)pieceType.blackQueen]  = 0x0800000000000000;
+        pieceBitboards[(int)pieceType.blackKing]   = 0x1000000000000000;
+
+        CalculateExtraBitboards();
     }
 
     void Start()
     {
-        Debug.Log(displayBitboard(pieceBitboards[(int)pieceType.whitePawn]));
+        calculateKnightAttacks();
     }
+    
     void Update()
     {
         CalculateExtraBitboards();
+    }
+
+    public void Move3DModel(ulong from, ulong to)
+    {
+        int fromIndex = GetBitboardIndex(from);
+        int toIndex = GetBitboardIndex(to);
+        Debug.Log("Moving Piece from " + fromIndex + " to " + toIndex);
+        if(visualPieces[toIndex] != null)
+        {
+            Destroy(visualPieces[toIndex]);
+            Debug.Log("Destoryed a Piece");
+        }
+        visualPieces[fromIndex].transform.localPosition = ChessManager.Instance.sockets[toIndex].transform.localPosition + visualPiecesPositionOffset;
+        visualPieces[toIndex] = visualPieces[fromIndex];
+        visualPieces[fromIndex] = null;
+        Debug.Log("Moved a Piece");
+    }
+
+    public int GetBitboardIndex(ulong bitboard)
+    {
+        if (bitboard == 0) return -1;
+
+        int index = 0;        
+        while ((bitboard & 1UL) == 0)
+        {
+            bitboard >>= 1;
+            index++;
+        }
+        return index;
     }
 
     public string displayBitboard(ulong bitboard)
@@ -64,7 +102,7 @@ public class Board : MonoBehaviour
         return System.Convert.ToString((long)bitboard, 2).PadLeft(64, '0');
     }
 
-    void CalculateExtraBitboards()
+    public void CalculateExtraBitboards()
     {
         whitePieces =   pieceBitboards[(int)pieceType.whitePawn] | 
                         pieceBitboards[(int)pieceType.whiteKnight] |
@@ -96,5 +134,34 @@ public class Board : MonoBehaviour
         }
         
         return pieceType.none;
+    }
+    private void calculateKnightAttacks()
+    {
+        int[,] offsets = {
+            { 2, 1 }, { 2, -1 }, { -2, 1 }, { -2, -1 },
+            { 1, 2 }, { 1, -2 }, { -1, 2 }, { -1, -2 }};
+
+        for (int sq = 0; sq < 64; sq++)
+        {
+            ulong moves = 0;
+
+            int file = sq % 8;
+            int rank = sq / 8;
+
+            for (int i = 0; i < 8; i++)
+            {
+                int newFile = file + offsets[i, 0];
+                int newRank = rank + offsets[i, 1];
+
+                if (newFile >= 0 && newFile < 8 &&
+                    newRank >= 0 && newRank < 8)
+                {
+                    int targetIndex = newRank * 8 + newFile;
+                    moves |= 1UL << targetIndex;
+                }
+            }
+
+            knightAttacks[sq] = moves;
+        }
     }
 }

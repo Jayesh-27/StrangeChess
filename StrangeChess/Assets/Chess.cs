@@ -22,21 +22,21 @@ public class Chess : MonoBehaviour
         // DONE - Double Move
         // DONE - Captures
 
-        ulong captures = from >> 7 | from >> 9;
+        ulong captures = from << 7 | from << 9;
         if((captures & Board.Instance.blackPieces) != 0)
         {
             ClickDetector.Instance.availableMoves = ClickDetector.Instance.availableMoves | (captures & Board.Instance.blackPieces);
         }
-        Debug.Log("From >> 8" + Board.Instance.displayBitboard(from >> 8));
-        if(((from >> 8) & Board.Instance.allPieces) == 0)   // square is empty
+        //Debug.Log("From << 8" + Board.Instance.displayBitboard(from << 8));
+        if(((from << 8) & Board.Instance.allPieces) == 0)   // square is empty
         {
             Debug.Log("Pawn can move 1 Square");
-            ClickDetector.Instance.availableMoves = ClickDetector.Instance.availableMoves | from >> 8;
-            Debug.Log("From >> 8" + Board.Instance.displayBitboard(16));
-            if((from & Board.Instance.fileB) != 0 && ((from >> 16) & Board.Instance.allPieces) == 0)
+            ClickDetector.Instance.availableMoves = ClickDetector.Instance.availableMoves | from << 8;
+            //Debug.Log("From << 8" + Board.Instance.displayBitboard(16));
+            if((from & Board.Instance.fileB) != 0 && ((from << 16) & Board.Instance.allPieces) == 0)
             {
                 Debug.Log("Pawn can move 2 Square");
-                ClickDetector.Instance.availableMoves = ClickDetector.Instance.availableMoves | from >> 16;
+                ClickDetector.Instance.availableMoves = ClickDetector.Instance.availableMoves | from << 16;
             }
         }
         else
@@ -60,5 +60,6 @@ public class Chess : MonoBehaviour
             }
             Board.Instance.pieceBitboards[(int)piece] = (Board.Instance.pieceBitboards[(int)piece] ^ from) | to;
         }
+        Board.Instance.Move3DModel(from, to);
     }
 }

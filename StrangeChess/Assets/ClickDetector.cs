@@ -25,41 +25,35 @@ public class ClickDetector : MonoBehaviour
             {
                 if (hit.collider.GetComponent<SocketTracker>() != null) // detecting Square NOT Piece
                 {
-                    //  correct index of which SQUARE was clicked
-                    int correctIndex = ToBitboardIndex(hit.collider.GetComponent<SocketTracker>().Square);
+                    int Index = hit.collider.GetComponent<SocketTracker>().Square;
 
                     //  index of which Square clicked on, in BITBOARD
-                    ulong from = 1UL << correctIndex;
+                    ulong from = 1UL << Index;
                     
-                    Debug.Log(correctIndex + " - " + Board.Instance.bitboardToPiece(from) + " - " + Board.Instance.displayBitboard(from));
-                    Chess.Instance.pawnMoves(from);
-
+                    Debug.Log(Index + " - " + Board.Instance.bitboardToPiece(from) + " - " + Board.Instance.displayBitboard(from));
+                    
                     if(isSelected && (from & Board.Instance.whitePieces) == 0)
                     {
                         if((from & availableMoves) != 0)    // selected piece can move at from
                         {
                             Chess.Instance.movePiece(selectedPiece, from);
                             availableMoves = 0;
-                            isSelected = false;
                         }
                     }
-                    else if((from & Board.Instance.whitePieces) != 0)
+                    if(isSelected)
+                        isSelected = !isSelected;
+                    if((from & Board.Instance.whitePieces) != 0)
                     {
-                        Debug.Log("Selected");
-                        isSelected = true;
-                        selectedPiece = from;
+                        if(Board.Instance.bitboardToPiece(from) == pieceType.whitePawn)
+                        {
+                            Chess.Instance.pawnMoves(from);
+                            Debug.Log("Selected");
+                            isSelected = true;
+                            selectedPiece = from;
+                        }
                     }
                 }
             }
         }
-    }
-
-    public int ToBitboardIndex(int i)
-    {
-        int file = i % 8;
-        int rank = i / 8;
-
-        return (7 - rank) * 8 + file;
-    }
-    
+    }    
 }

@@ -24,10 +24,16 @@ public class ChessManager : NetworkBehaviour
     [SerializeField] private GameObject WhiteRigSpawnPoint;
     [SerializeField] private GameObject BlackRigSpawnPoint;
 
+    [SerializeField] public static ChessManager Instance;
+
     private int[] dir = new int[4];
 
     private void Awake()
     {
+        if(Instance == null)
+        {
+            Instance = this;
+        }
         foreach (XRDirectInteractor interactor in interactors)
         {
             interactor.selectEntered.AddListener(onGrab);
