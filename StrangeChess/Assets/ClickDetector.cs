@@ -26,7 +26,7 @@ public class ClickDetector : MonoBehaviour
                 if (hit.collider.GetComponent<SocketTracker>() != null) // detecting Square NOT Piece
                 {
                     int Index = hit.collider.GetComponent<SocketTracker>().Square;
-
+                    Debug.Log(Board.Instance.BitboardToBoardString(Board.Instance.rookMasks[Index]));
                     //  index of which Square clicked on, in BITBOARD
                     ulong from = 1UL << Index;
                     
@@ -38,7 +38,7 @@ public class ClickDetector : MonoBehaviour
                         {
                             Chess.Instance.movePiece(selectedPiece, from);
                             availableMoves = 0;
-                        }
+                        }       //00000000000000000000000000000000000000000000000001000000000000
                     }
                     if(isSelected)
                         isSelected = !isSelected;
@@ -47,24 +47,22 @@ public class ClickDetector : MonoBehaviour
                         if(Board.Instance.bitboardToPiece(from) == pieceType.whitePawn)
                         {
                             Chess.Instance.pawnMoves(from);
-                            Debug.Log("Selected");
-                            isSelected = true;
-                            selectedPiece = from;
-                        } 
+                        }
                         else if(Board.Instance.bitboardToPiece(from) == pieceType.whiteKnight)
                         {
                             Chess.Instance.knightMoves(from);
-                            Debug.Log("Selected");
-                            isSelected = true;
-                            selectedPiece = from;
                         }
                         else if(Board.Instance.bitboardToPiece(from) == pieceType.whiteKing)
                         {
-                            Chess.Instance.kingMoves(from);
-                            Debug.Log("Selected");
-                            isSelected = true;
-                            selectedPiece = from;
+                            Chess.Instance.kingMoves(from);                            
                         }
+                        else if(Board.Instance.bitboardToPiece(from) == pieceType.whiteRook)
+                        {
+                            Chess.Instance.rookMoves(from);
+                        }
+                        Debug.Log("Selected");
+                        isSelected = true;
+                        selectedPiece = from;
                     }
                 }
             }

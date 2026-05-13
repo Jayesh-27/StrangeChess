@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Collections;
 using UnityEngine;
 
 public class Chess : MonoBehaviour
@@ -53,6 +54,17 @@ public class Chess : MonoBehaviour
     {
         int kingIndex = Board.Instance.GetBitboardIndex(from);
         ClickDetector.Instance.availableMoves = Board.Instance.kingAttacks[kingIndex] ^ Board.Instance.whitePieces;
+    }
+
+    public void rookMoves(ulong from)
+    {
+        int rookIndex = Board.Instance.GetBitboardIndex(from);
+        // ulong attacks = Board.Instance.GetRookAttacks(rookIndex, Board.Instance.allPieces);
+
+        // // remove your own pieces
+        // attacks &= ~Board.Instance.whitePieces;
+
+        // ClickDetector.Instance.availableMoves |= attacks;
     }
 
     public void movePiece(ulong from, ulong to)

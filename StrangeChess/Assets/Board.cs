@@ -35,6 +35,9 @@ public class Board : MonoBehaviour
 
     public static Board Instance;
 
+    [SerializeField] public ulong[] rookMasks = new ulong[64];
+    [SerializeField] public ulong[] rookMagics = new ulong[64];   // fill with real magic numbers
+    [SerializeField] public ulong[][] rookAttackTable = new ulong[64][];
     void Awake()
     {
         if(Board.Instance == null)
@@ -63,6 +66,7 @@ public class Board : MonoBehaviour
     {
         calculateKnightAttacks();
         calculateKingAttacks();
+        calculateRookAttacks();
     }
     
     void Update()
@@ -106,18 +110,18 @@ public class Board : MonoBehaviour
 
     public void CalculateExtraBitboards()
     {
-        whitePieces =   pieceBitboards[(int)pieceType.whitePawn] | 
-                        pieceBitboards[(int)pieceType.whiteKnight] |
-                        pieceBitboards[(int)pieceType.whiteBishop] |
-                        pieceBitboards[(int)pieceType.whiteRook] |
-                        pieceBitboards[(int)pieceType.whiteQueen] |
+        whitePieces =   pieceBitboards[(int)pieceType.whitePawn]| 
+                        pieceBitboards[(int)pieceType.whiteKnight]|
+                        pieceBitboards[(int)pieceType.whiteBishop]|
+                        pieceBitboards[(int)pieceType.whiteRook]|
+                        pieceBitboards[(int)pieceType.whiteQueen]|
                         pieceBitboards[(int)pieceType.whiteKing];
 
-        blackPieces =   pieceBitboards[(int)pieceType.blackPawn] | 
-                        pieceBitboards[(int)pieceType.blackKnight] |
-                        pieceBitboards[(int)pieceType.blackBishop] |
-                        pieceBitboards[(int)pieceType.blackRook] |
-                        pieceBitboards[(int)pieceType.blackQueen] |
+        blackPieces =   pieceBitboards[(int)pieceType.blackPawn]| 
+                        pieceBitboards[(int)pieceType.blackKnight]|
+                        pieceBitboards[(int)pieceType.blackBishop]|
+                        pieceBitboards[(int)pieceType.blackRook]|
+                        pieceBitboards[(int)pieceType.blackQueen]|
                         pieceBitboards[(int)pieceType.blackKing];
 
         allPieces = whitePieces | blackPieces;
@@ -193,5 +197,75 @@ public class Board : MonoBehaviour
 
             kingAttacks[sq] = moves;
         }
+    }
+    private void calculateRookAttacks()
+    {
+        int[][] allRows = new int[8][];
+        int[][] allCols = new int[8][];
+
+        for (int i = 0; i < 8; i++)
+        {
+            allRows[i] = new int[8];
+            allCols[i] = new int[8];
+        }
+
+        // calculate all rows and cols
+        for(int i = 0; i < 8; i++)
+        {            
+            for(int j = 0; j < 8; j++)
+            {
+                allRows[i][j] = (i * 8) + j;
+                allCols[j][i] = (i * 8) + j;
+            }
+        }
+
+        allRows[0][0] = 0;
+        // create rook mask
+        for(int i = 0; i < 64; i++)
+        {
+            int row = i / 8;
+            int col = i % 8;
+
+            ulong mask = 0;
+
+            foreach (int r in allRows[row])
+            {
+                mask |= indexToBitboard(r);
+            }
+
+            foreach (int c in allCols[col])
+            {
+                mask |= indexToBitboard(c);
+            }
+
+            mask = mask ^ indexToBitboard(i);
+            rookMasks[i] = mask;
+        }
+        for (int i = 0; i < 64; i++)
+        {
+            rookAttackTable[i] = new ulong[4096];
+            //rookAttackTable[i] = 
+        }
+    }
+
+    public ulong indexToBitboard(int index)
+    {
+        return 1UL << index;
+    }
+    public string BitboardToBoardString(ulong bb)
+    {
+        string board = "";
+
+        for (int row = 7; row >= 0; row--)
+        {
+            for (int col = 0; col < 8; col++)
+            {
+                int index = row * 8 + col;
+                board += (((bb >> index) & 1UL) != 0 ? "1" : "0") + "\t";
+            }
+            board += "\n";
+        }
+
+        return board;
     }
 }
