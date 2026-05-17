@@ -36,8 +36,8 @@ public class Board : MonoBehaviour
     public static Board Instance;
 
     [SerializeField] public ulong[] rookMasks = new ulong[64];
-    [SerializeField] public ulong[] rookMagics = new ulong[64];   // fill with real magic numbers
-    [SerializeField] public ulong[][] rookAttackTable = new ulong[64][];
+    [SerializeField] public ulong[] rookBlockersMasks = new ulong[64];
+    public System.Collections.Generic.Dictionary<ulong, ulong>[] rookAttackMap = new System.Collections.Generic.Dictionary<ulong, ulong>[64];
     void Awake()
     {
         if(Board.Instance == null)
@@ -200,6 +200,11 @@ public class Board : MonoBehaviour
     }
     private void calculateRookAttacks()
     {
+        for (int i = 0; i < 64; i++)
+        {
+            rookAttackMap[i] = new System.Collections.Generic.Dictionary<ulong, ulong>();
+        }
+
         int[][] allRows = new int[8][];
         int[][] allCols = new int[8][];
 
@@ -219,32 +224,61 @@ public class Board : MonoBehaviour
             }
         }
 
-        allRows[0][0] = 0;
         // create rook mask
         for(int i = 0; i < 64; i++)
         {
             int row = i / 8;
             int col = i % 8;
 
+            // calculating rook mask
             ulong mask = 0;
-
             foreach (int r in allRows[row])
             {
-                mask |= indexToBitboard(r);
+                if (r != i) mask |= indexToBitboard(r);
             }
-
             foreach (int c in allCols[col])
             {
-                mask |= indexToBitboard(c);
+                if (c != i) mask |= indexToBitboard(c);
             }
-
-            mask = mask ^ indexToBitboard(i);
             rookMasks[i] = mask;
-        }
-        for (int i = 0; i < 64; i++)
-        {
-            rookAttackTable[i] = new ulong[4096];
-            //rookAttackTable[i] = 
+
+            rookBlockersMasks[i] = rookMasks[i];
+            rookBlockersMasks[i] &= ~indexToBitboard(allRows[row][0]);
+            rookBlockersMasks[i] &= ~indexToBitboard(allRows[row][7]);
+            rookBlockersMasks[i] &= ~indexToBitboard(allCols[col][0]);
+            rookBlockersMasks[i] &= ~indexToBitboard(allCols[col][7]);
+
+            ulong blockers = 0;
+            do {
+                ulong attacks = 0;
+                // Right
+                for(int r = col + 1; r < 8; r++) {
+                    ulong sq = indexToBitboard(row * 8 + r);
+                    attacks |= sq;
+                    if ((blockers & sq) != 0) break;
+                }
+                // Left
+                for(int r = col - 1; r >= 0; r--) {
+                    ulong sq = indexToBitboard(row * 8 + r);
+                    attacks |= sq;
+                    if ((blockers & sq) != 0) break;
+                }
+                // Up
+                for(int r = row + 1; r < 8; r++) {
+                    ulong sq = indexToBitboard(r * 8 + col);
+                    attacks |= sq;
+                    if ((blockers & sq) != 0) break;
+                }
+                // Down
+                for(int r = row - 1; r >= 0; r--) {
+                    ulong sq = indexToBitboard(r * 8 + col);
+                    attacks |= sq;
+                    if ((blockers & sq) != 0) break;
+                }
+                rookAttackMap[i][blockers] = attacks;
+
+                blockers = (blockers - rookBlockersMasks[i]) & rookBlockersMasks[i];
+            } while (blockers != 0);
         }
     }
 
@@ -265,7 +299,6 @@ public class Board : MonoBehaviour
             }
             board += "\n";
         }
-
         return board;
     }
 }

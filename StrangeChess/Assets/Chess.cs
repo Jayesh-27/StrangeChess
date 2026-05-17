@@ -59,12 +59,10 @@ public class Chess : MonoBehaviour
     public void rookMoves(ulong from)
     {
         int rookIndex = Board.Instance.GetBitboardIndex(from);
-        // ulong attacks = Board.Instance.GetRookAttacks(rookIndex, Board.Instance.allPieces);
-
-        // // remove your own pieces
-        // attacks &= ~Board.Instance.whitePieces;
-
-        // ClickDetector.Instance.availableMoves |= attacks;
+        ulong blockers = Board.Instance.allPieces & Board.Instance.rookBlockersMasks[rookIndex];
+        ulong attacks = Board.Instance.rookAttackMap[rookIndex][blockers];
+        attacks &= ~Board.Instance.whitePieces;
+        ClickDetector.Instance.availableMoves |= attacks;
     }
 
     public void movePiece(ulong from, ulong to)

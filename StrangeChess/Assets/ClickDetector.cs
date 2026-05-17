@@ -26,7 +26,7 @@ public class ClickDetector : MonoBehaviour
                 if (hit.collider.GetComponent<SocketTracker>() != null) // detecting Square NOT Piece
                 {
                     int Index = hit.collider.GetComponent<SocketTracker>().Square;
-                    Debug.Log(Board.Instance.BitboardToBoardString(Board.Instance.rookMasks[Index]));
+                    Debug.Log(Board.Instance.BitboardToBoardString(Board.Instance.rookBlockersMasks[Index]));
                     //  index of which Square clicked on, in BITBOARD
                     ulong from = 1UL << Index;
                     
