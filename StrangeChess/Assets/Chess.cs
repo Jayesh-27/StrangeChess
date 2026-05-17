@@ -59,9 +59,25 @@ public class Chess : MonoBehaviour
     public void rookMoves(ulong from)
     {
         int rookIndex = Board.Instance.GetBitboardIndex(from);
-        ulong blockers = Board.Instance.allPieces & Board.Instance.rookBlockersMasks[rookIndex];
-        ulong attacks = Board.Instance.rookAttackMap[rookIndex][blockers];
+        
+        // 1. Get current board occupancy (Wait, `allPieces` is only updated once in Awake?
+        // Wait, from prior messages, `allPieces` is updated via `CalculateExtraBitboards()` in `Board.cs`.
+        // Let's use it).
+        ulong allPieces = Board.Instance.allPieces;
+
+        // 2. Identify the blockers relevant to this specific rook's rays
+        ulong blockers = allPieces & Board.Instance.rookBlockersMasks[rookIndex];
+
+        // 3. Hash the blocker configuration to an index using the magic multiplier
+        int magicIndex = (int)((blockers * Board.rookMagics[rookIndex]) >> (64 - Board.rookBlockerBitCounts[rookIndex]));
+
+        // 4. Retrieve the instantly generated O(1) pseudo-legal attack map
+        ulong attacks = Board.Instance.rookAttackTable[rookIndex][magicIndex];
+
+        // 5. Remove friendly pieces (we can't capture our own color)
+        // using & ~ instead of ^. Assuming White to move!
         attacks &= ~Board.Instance.whitePieces;
+
         ClickDetector.Instance.availableMoves |= attacks;
     }
 

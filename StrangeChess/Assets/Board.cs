@@ -37,7 +37,42 @@ public class Board : MonoBehaviour
 
     [SerializeField] public ulong[] rookMasks = new ulong[64];
     [SerializeField] public ulong[] rookBlockersMasks = new ulong[64];
-    public System.Collections.Generic.Dictionary<ulong, ulong>[] rookAttackMap = new System.Collections.Generic.Dictionary<ulong, ulong>[64];
+    [SerializeField] public ulong[][] rookAttackTable = new ulong[64][];
+    
+    // Magic Bitboard data
+    public static readonly ulong[] rookMagics = new ulong[64] {
+        0xa8002c000108020UL, 0x6c00049b00020081UL, 0x100200010090040UL, 0x2480041000800801UL,
+        0x280028004000800UL, 0x900410008040022UL, 0x280020001001080UL, 0x288000204100080UL,
+        0xa000800080400034UL, 0x4808020004000UL, 0x2290802004801000UL, 0x411000d00100020UL,
+        0x402800800040080UL, 0xb000401004208UL, 0x2409000100040200UL, 0x1002100004082UL,
+        0x22878001e24000UL, 0x1090810021004010UL, 0x801030040200012UL, 0x500808008001000UL,
+        0xa08018014000880UL, 0x8000808004000200UL, 0x201008080010200UL, 0x801020000441091UL,
+        0x800080204005UL, 0x1040200040100048UL, 0x120200402082UL, 0xd14880480100080UL,
+        0x12040280080080UL, 0x100040080020080UL, 0x9020010080800200UL, 0x813241200148449UL,
+        0x491604001800080UL, 0x100401000402001UL, 0x4820010021001040UL, 0x400402202000812UL,
+        0x209009005000802UL, 0x810800601800400UL, 0x4301083214000150UL, 0x204026458e001401UL,
+        0x40204000808000UL, 0x8001008040010020UL, 0x8410820820420010UL, 0x1003001000090020UL,
+        0x804040008008080UL, 0x12000810020004UL, 0x1000100200040208UL, 0x430000a044020001UL,
+        0x2800090234003UL, 0xe0000400022011UL, 0x200000f100020411UL, 0x9800041002020004UL,
+        0x2c00004002020088UL, 0x800000400080200UL, 0x3020008100100040UL, 0x640000810040080UL,
+        0x8010000008002100UL, 0x8002000000404400UL, 0x8040000008008400UL, 0x4010000000408100UL,
+        0x4000000000204800UL, 0x1000000000406200UL, 0x2000000000004100UL, 0x208000000040008UL
+    };
+
+    public static readonly int[] rookBlockerBitCounts = new int[64] {
+        12, 11, 11, 11, 11, 11, 11, 12,
+        11, 10, 10, 10, 10, 10, 10, 11,
+        11, 10, 10, 10, 10, 10, 10, 11,
+        11, 10, 10, 10, 10, 10, 10, 11,
+        11, 10, 10, 10, 10, 10, 10, 11,
+        11, 10, 10, 10, 10, 10, 10, 11,
+        11, 10, 10, 10, 10, 10, 10, 11,
+        12, 11, 11, 11, 11, 11, 11, 12
+    };
+
+    [SerializeField] private bool displayRookAttackTable = false;
+    [SerializeField] private int a = 0;
+    [SerializeField] private int b = 0;
     void Awake()
     {
         if(Board.Instance == null)
@@ -71,6 +106,11 @@ public class Board : MonoBehaviour
     
     void Update()
     {
+        if(displayRookAttackTable)
+        {
+            displayRookAttackTable = false;
+            Debug.Log(BitboardToBoardString(rookAttackTable[a][b]));
+        }
         CalculateExtraBitboards();
     }
 
@@ -200,11 +240,6 @@ public class Board : MonoBehaviour
     }
     private void calculateRookAttacks()
     {
-        for (int i = 0; i < 64; i++)
-        {
-            rookAttackMap[i] = new System.Collections.Generic.Dictionary<ulong, ulong>();
-        }
-
         int[][] allRows = new int[8][];
         int[][] allCols = new int[8][];
 
@@ -224,6 +259,7 @@ public class Board : MonoBehaviour
             }
         }
 
+        allRows[0][0] = 0;
         // create rook mask
         for(int i = 0; i < 64; i++)
         {
@@ -234,52 +270,87 @@ public class Board : MonoBehaviour
             ulong mask = 0;
             foreach (int r in allRows[row])
             {
-                if (r != i) mask |= indexToBitboard(r);
+                mask |= indexToBitboard(r);
             }
             foreach (int c in allCols[col])
             {
-                if (c != i) mask |= indexToBitboard(c);
+                mask |= indexToBitboard(c);
             }
+            mask = mask ^ indexToBitboard(i);
             rookMasks[i] = mask;
 
             rookBlockersMasks[i] = rookMasks[i];
-            rookBlockersMasks[i] &= ~indexToBitboard(allRows[row][0]);
-            rookBlockersMasks[i] &= ~indexToBitboard(allRows[row][7]);
-            rookBlockersMasks[i] &= ~indexToBitboard(allCols[col][0]);
-            rookBlockersMasks[i] &= ~indexToBitboard(allCols[col][7]);
+            rookBlockersMasks[i] ^= indexToBitboard(allRows[row][0]);
+            rookBlockersMasks[i] ^= indexToBitboard(allCols[col][0]);
+            rookBlockersMasks[i] ^= indexToBitboard(allRows[row][7]);
+            rookBlockersMasks[i] ^= indexToBitboard(allCols[col][7]);
 
+            // Initialize the inner jagged array for this square's attack table (1 << bitCount permutations)
+            // This grants O(1) constant time lookups!
+            int entryCount = 1 << rookBlockerBitCounts[i];
+            rookAttackTable[i] = new ulong[entryCount];
+
+            // Iterate through every subset of the blockers mask using the Carry-Rippler trick
             ulong blockers = 0;
-            do {
-                ulong attacks = 0;
-                // Right
-                for(int r = col + 1; r < 8; r++) {
-                    ulong sq = indexToBitboard(row * 8 + r);
-                    attacks |= sq;
-                    if ((blockers & sq) != 0) break;
-                }
-                // Left
-                for(int r = col - 1; r >= 0; r--) {
-                    ulong sq = indexToBitboard(row * 8 + r);
-                    attacks |= sq;
-                    if ((blockers & sq) != 0) break;
-                }
-                // Up
-                for(int r = row + 1; r < 8; r++) {
-                    ulong sq = indexToBitboard(r * 8 + col);
-                    attacks |= sq;
-                    if ((blockers & sq) != 0) break;
-                }
-                // Down
-                for(int r = row - 1; r >= 0; r--) {
-                    ulong sq = indexToBitboard(r * 8 + col);
-                    attacks |= sq;
-                    if ((blockers & sq) != 0) break;
-                }
-                rookAttackMap[i][blockers] = attacks;
+            do
+            {
+                // Multiply blockers by the magic number to scramble it, then shift right to create a dense index
+                int magicIndex = (int)((blockers * rookMagics[i]) >> (64 - rookBlockerBitCounts[i]));
 
+                // Compute exact physical rays for this blocker configuration and store them in the hash table
+                rookAttackTable[i][magicIndex] = GetSlowRookAttacks(i, blockers);
+
+                // Advance to the next subset permutation of the blocker mask
                 blockers = (blockers - rookBlockersMasks[i]) & rookBlockersMasks[i];
-            } while (blockers != 0);
+            } 
+            while (blockers != 0);
         }
+    }
+
+    /// <summary>
+    /// Calculates exact physical rook attacks on the fly using standard raycasting.
+    /// Considers LERF bitboard mapping (0 = A1, 63 = H8).
+    /// </summary>
+    public ulong GetSlowRookAttacks(int square, ulong blockers)
+    {
+        ulong attacks = 0UL;
+        int rank = square / 8;
+        int file = square % 8;
+
+        // North (Rank increases)
+        for (int r = rank + 1; r < 8; r++)
+        {
+            ulong sqMask = 1UL << (r * 8 + file);
+            attacks |= sqMask;
+            // Stop parsing further in this direction if we hit a blocking piece
+            if ((blockers & sqMask) != 0) break;
+        }
+        
+        // South (Rank decreases)
+        for (int r = rank - 1; r >= 0; r--)
+        {
+            ulong sqMask = 1UL << (r * 8 + file);
+            attacks |= sqMask;
+            if ((blockers & sqMask) != 0) break;
+        }
+        
+        // East (File increases)
+        for (int f = file + 1; f < 8; f++)
+        {
+            ulong sqMask = 1UL << (rank * 8 + f);
+            attacks |= sqMask;
+            if ((blockers & sqMask) != 0) break;
+        }
+        
+        // West (File decreases)
+        for (int f = file - 1; f >= 0; f--)
+        {
+            ulong sqMask = 1UL << (rank * 8 + f);
+            attacks |= sqMask;
+            if ((blockers & sqMask) != 0) break;
+        }
+
+        return attacks;
     }
 
     public ulong indexToBitboard(int index)
