@@ -26,7 +26,7 @@ public class ClickDetector : MonoBehaviour
                 if (hit.collider.GetComponent<SocketTracker>() != null) // detecting Square NOT Piece
                 {
                     int Index = hit.collider.GetComponent<SocketTracker>().Square;
-                    Debug.Log(Board.Instance.BitboardToBoardString(Board.Instance.rookBlockersMasks[Index]));
+                    //Debug.Log(Board.Instance.BitboardToBoardString(Board.Instance.rookBlockersMasks[Index]));
                     //  index of which Square clicked on, in BITBOARD
                     ulong from = 1UL << Index;
                     
@@ -44,6 +44,7 @@ public class ClickDetector : MonoBehaviour
                         isSelected = !isSelected;
                     if((from & Board.Instance.whitePieces) != 0)
                     {
+                        availableMoves = 0;
                         if(Board.Instance.bitboardToPiece(from) == pieceType.whitePawn)
                         {
                             Chess.Instance.pawnMoves(from);

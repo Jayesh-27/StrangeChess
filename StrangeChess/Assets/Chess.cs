@@ -47,13 +47,13 @@ public class Chess : MonoBehaviour
     public void knightMoves(ulong from)
     {
         int knightIndex = Board.Instance.GetBitboardIndex(from);
-        ClickDetector.Instance.availableMoves = Board.Instance.knightAttacks[knightIndex] ^ Board.Instance.whitePieces;
+        ClickDetector.Instance.availableMoves = Board.Instance.knightAttacks[knightIndex] & ~Board.Instance.whitePieces;
     }
 
     public void kingMoves(ulong from)
     {
         int kingIndex = Board.Instance.GetBitboardIndex(from);
-        ClickDetector.Instance.availableMoves = Board.Instance.kingAttacks[kingIndex] ^ Board.Instance.whitePieces;
+        ClickDetector.Instance.availableMoves = Board.Instance.kingAttacks[kingIndex] & ~Board.Instance.whitePieces;
     }
 
     public void rookMoves(ulong from)
@@ -78,7 +78,7 @@ public class Chess : MonoBehaviour
         // using & ~ instead of ^. Assuming White to move!
         attacks &= ~Board.Instance.whitePieces;
 
-        ClickDetector.Instance.availableMoves |= attacks;
+        ClickDetector.Instance.availableMoves = attacks;
     }
 
     public void movePiece(ulong from, ulong to)
