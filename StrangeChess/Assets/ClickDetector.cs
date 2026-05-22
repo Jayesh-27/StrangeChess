@@ -30,7 +30,6 @@ public class ClickDetector : MonoBehaviour
                     //Debug.Log(Board.Instance.BitboardToBoardString(Board.Instance.rookBlockersMasks[Index]));
                     //  index of which Square clicked on, in BITBOARD
                     ulong from = 1UL << Index;
-                    
                     Debug.Log(Index + " - " + Board.Instance.bitboardToPiece(from) + " - " + Board.Instance.displayBitboard(from));
                     
                     if(isSelected)

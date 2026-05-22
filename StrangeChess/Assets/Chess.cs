@@ -111,8 +111,10 @@ public class Chess : MonoBehaviour
 
         ulong attacks = Board.Instance.bishopAttackTable[bishopIndex][magicIndex];
 
-        attacks &= ~Board.Instance.whitePieces;
-
+        if(ClickDetector.Instance.isWhiteTurn)
+            attacks &= ~Board.Instance.whitePieces;
+        else
+            attacks &= ~Board.Instance.blackPieces;
         ClickDetector.Instance.availableMoves = attacks;
     }
 
@@ -171,31 +173,70 @@ public class Chess : MonoBehaviour
         ClickDetector.Instance.availableMoves = attacks;
     }
 
+
     public void movePiece(ulong from, ulong to)
     {
         pieceType piece = Board.Instance.bitboardToPiece(from);
-
-        if(piece == 0)
+        if (piece == 0)
             return;
-        if(piece < pieceType.blackPawn)
+
+        if (piece < pieceType.blackPawn)
         {
             pieceType toPiece = Board.Instance.bitboardToPiece(to);
-            if(toPiece >= pieceType.blackPawn)
+            if (toPiece >= pieceType.blackPawn)
             {
-                Board.Instance.pieceBitboards[(int)toPiece] = Board.Instance.pieceBitboards[(int)toPiece] ^ to;     // Removing Captured Piece
+                // Remove captured black piece
+                Board.Instance.pieceBitboards[(int)toPiece] &= ~to;
             }
         }
-        else if(piece > pieceType.whiteKing && piece != pieceType.none)
+        else if (piece > pieceType.whiteKing && piece != pieceType.none)
         {
             pieceType toPiece = Board.Instance.bitboardToPiece(to);
-            if(toPiece <= pieceType.whiteKing)
+            if (toPiece <= pieceType.whiteKing)
             {
-                Board.Instance.pieceBitboards[(int)toPiece] = Board.Instance.pieceBitboards[(int)toPiece] ^ to;     // Removing Captured Piece
+                // Remove captured white piece
+                Board.Instance.pieceBitboards[(int)toPiece] &= ~to;
             }
         }
-        Board.Instance.pieceBitboards[(int)piece] = (Board.Instance.pieceBitboards[(int)piece] ^ from) | to;    // Moving Piece
+
+        // Clear source square and set destination for the moving piece
+        Board.Instance.pieceBitboards[(int)piece] &= ~from;
+        Board.Instance.pieceBitboards[(int)piece] |= to;
+
         Board.Instance.Move3DModel(from, to);
 
         ClickDetector.Instance.isWhiteTurn = !ClickDetector.Instance.isWhiteTurn;
+        Board.Instance.CalculateExtraBitboards();
     }
+
+
+    // OLD MOVE PIECE FUNCTION
+    // public void movePiece(ulong from, ulong to)
+    // {
+    //     pieceType piece = Board.Instance.bitboardToPiece(from);
+
+    //     if(piece == 0)
+    //         return;
+    //     if(piece < pieceType.blackPawn)
+    //     {
+    //         pieceType toPiece = Board.Instance.bitboardToPiece(to);
+    //         if(toPiece >= pieceType.blackPawn)
+    //         {
+    //             Board.Instance.pieceBitboards[(int)toPiece] = Board.Instance.pieceBitboards[(int)toPiece] ^ to;     // Removing Captured Piece
+    //         }
+    //     }
+    //     else if(piece > pieceType.whiteKing && piece != pieceType.none)
+    //     {
+    //         pieceType toPiece = Board.Instance.bitboardToPiece(to);
+    //         if(toPiece <= pieceType.whiteKing)
+    //         {
+    //             Board.Instance.pieceBitboards[(int)toPiece] = Board.Instance.pieceBitboards[(int)toPiece] ^ to;     // Removing Captured Piece
+    //         }
+    //     }
+    //     Board.Instance.pieceBitboards[(int)piece] = (Board. Instance.pieceBitboards[(int)piece] ^ from) | to;    // Moving Piece
+    //     Board.Instance.Move3DModel(from, to);
+
+    //     ClickDetector.Instance.isWhiteTurn = !ClickDetector.Instance.isWhiteTurn;
+    //     Board.Instance.CalculateExtraBitboards();
+    // }
 }
