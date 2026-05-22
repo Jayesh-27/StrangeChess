@@ -38,7 +38,7 @@ public class ClickDetector : MonoBehaviour
                         {
                             Chess.Instance.movePiece(selectedPiece, from);
                             availableMoves = 0;
-                        }       //00000000000000000000000000000000000000000000000001000000000000
+                        }
                     }
                     if(isSelected)
                         isSelected = !isSelected;
@@ -56,6 +56,10 @@ public class ClickDetector : MonoBehaviour
                         else if(Board.Instance.bitboardToPiece(from) == pieceType.whiteKing)
                         {
                             Chess.Instance.kingMoves(from);                            
+                        }
+                        else if(Board.Instance.bitboardToPiece(from) == pieceType.whiteBishop)
+                        {
+                            Chess.Instance.bishopMoves(from);
                         }
                         else if(Board.Instance.bitboardToPiece(from) == pieceType.whiteRook)
                         {

@@ -56,19 +56,34 @@ public class Chess : MonoBehaviour
         ClickDetector.Instance.availableMoves = Board.Instance.kingAttacks[kingIndex] & ~Board.Instance.whitePieces;
     }
 
+    public void bishopMoves(ulong from)
+    {
+        int bishopIndex = Board.Instance.GetBitboardIndex(from);
+        
+        ulong allPieces = Board.Instance.allPieces;
+
+        ulong blockers = allPieces & Board.Instance.bishopBlockersMasks[bishopIndex];
+
+        int magicIndex = (int)((blockers * Board.bishopMagics[bishopIndex]) >> (64 - Board.bishopBlockerBitCounts[bishopIndex]));
+
+        ulong attacks = Board.Instance.bishopAttackTable[bishopIndex][magicIndex];
+
+        attacks &= ~Board.Instance.whitePieces;
+
+        ClickDetector.Instance.availableMoves = attacks;
+    }
+
     public void rookMoves(ulong from)
     {
         int rookIndex = Board.Instance.GetBitboardIndex(from);
         
-        // 1. Get current board occupancy (Wait, `allPieces` is only updated once in Awake?
-        // Wait, from prior messages, `allPieces` is updated via `CalculateExtraBitboards()` in `Board.cs`.
-        // Let's use it).
+        // 1. Get current board occupancy
         ulong allPieces = Board.Instance.allPieces;
 
-        // 2. Identify the blockers relevant to this specific rook's rays
+        // 2. Identify the blockerMask relevant to this specific rook's position/sqaure
         ulong blockers = allPieces & Board.Instance.rookBlockersMasks[rookIndex];
 
-        // 3. Hash the blocker configuration to an index using the magic multiplier
+        // 3. Get index using the magic 
         int magicIndex = (int)((blockers * Board.rookMagics[rookIndex]) >> (64 - Board.rookBlockerBitCounts[rookIndex]));
 
         // 4. Retrieve the instantly generated O(1) pseudo-legal attack map

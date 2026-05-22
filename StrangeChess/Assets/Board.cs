@@ -39,6 +39,40 @@ public class Board : MonoBehaviour
     [SerializeField] public ulong[] rookBlockersMasks = new ulong[64];
     [SerializeField] public ulong[][] rookAttackTable = new ulong[64][];
     
+    [SerializeField] public ulong[] bishopMasks = new ulong[64];
+    [SerializeField] public ulong[] bishopBlockersMasks = new ulong[64];
+    [SerializeField] public ulong[][] bishopAttackTable = new ulong[64][];
+
+    public static readonly ulong[] bishopMagics = new ulong[64] {
+        0x10040080B20200UL, 0x42301409005800UL, 0x3008808410808000UL, 0x1008204050008802UL, 
+        0x414152001800410UL, 0x214300808000000UL, 0x21144200408A0UL, 0x41008044200501UL, 
+        0xBA81120208011410UL, 0x300208104488084UL, 0x8080160802018A20UL, 0x2200022082100000UL, 
+        0x904E020211448002UL, 0x4000884110110412UL, 0x10000090C8084000UL, 0x442202100550UL, 
+        0x810420A101000A2UL, 0x501000044400C412UL, 0x8010000204184008UL, 0x8080824808210080UL, 
+        0x2000422010020UL, 0x800214202012000UL, 0x8808B00100882000UL, 0x428104022180UL, 
+        0x900210A64085080FUL, 0x900808000441C801UL, 0xC220890041040UL, 0x808008020002UL, 
+        0x31080401004000UL, 0x680810020806000UL, 0x400988802123000UL, 0x520200820141UL, 
+        0x410901102040420UL, 0x2109000020240UL, 0x2203000880880UL, 0x1000020080080081UL, 
+        0x800440400404100UL, 0x4040020141000UL, 0x40818800200E0UL, 0x10C410428024400UL, 
+        0x2504108809000420UL, 0x5140401C8110420UL, 0x2020202100100UL, 0x2100002028009420UL, 
+        0x5401082104005040UL, 0x1022408100100UL, 0x8812404100890UL, 0x802045040800208UL, 
+        0x4000443084100002UL, 0x2002088241100300UL, 0x94004864100102UL, 0x5091084484044846UL, 
+        0xC0080B10240024UL, 0x8444040810644000UL, 0x2020020441042C00UL, 0x1711100101182018UL, 
+        0x8840484804100200UL, 0xA04404484828086BUL, 0x40010024320801UL, 0x5108420229UL, 
+        0x4400100144105405UL, 0x200024810703228UL, 0x8420090950040840UL, 0x8010012800840848UL
+    };
+
+    public static readonly int[] bishopBlockerBitCounts = new int[64] {
+        6, 5, 5, 5, 5, 5, 5, 6,
+        5, 5, 5, 5, 5, 5, 5, 5,
+        5, 5, 7, 7, 7, 7, 5, 5,
+        5, 5, 7, 9, 9, 7, 5, 5,
+        5, 5, 7, 9, 9, 7, 5, 5,
+        5, 5, 7, 7, 7, 7, 5, 5,
+        5, 5, 5, 5, 5, 5, 5, 5,
+        6, 5, 5, 5, 5, 5, 5, 6
+    };
+
     // Magic Bitboard data
     public static readonly ulong[] rookMagics = new ulong[64] {
         0x80002040008890UL, 0x40400010002000UL, 0x8801000828a2000UL, 0x500100009002044UL,
@@ -102,6 +136,7 @@ public class Board : MonoBehaviour
         calculateKnightAttacks();
         calculateKingAttacks();
         calculateRookAttacks();
+        calculateBishopAttacks();
     }
     
     void Update()
@@ -240,6 +275,7 @@ public class Board : MonoBehaviour
     }
     private void calculateRookAttacks()
     {
+        #region creating and filling all rows and cols arrays
         int[][] allRows = new int[8][];
         int[][] allCols = new int[8][];
 
@@ -259,8 +295,14 @@ public class Board : MonoBehaviour
             }
         }
 
-        allRows[0][0] = 0;
+        #endregion
+
+        allRows[0][0] = 0;      // may be this line is doing nothing idk..
         // create rook mask
+        
+
+        #region creating rook mask, blockers mask, and attack table for every square
+        //running this loop for every square
         for(int i = 0; i < 64; i++)
         {
             int row = i / 8;
@@ -290,6 +332,7 @@ public class Board : MonoBehaviour
 
             // Initialize the inner jagged array for this square's attack table (1 << bitCount permutations)
             // This grants O(1) constant time lookups!
+            //  Creating a dynamic sized array to save memory
             int entryCount = 1 << rookBlockerBitCounts[i];
             rookAttackTable[i] = new ulong[entryCount];
 
@@ -298,16 +341,18 @@ public class Board : MonoBehaviour
             do
             {
                 // Multiply blockers by the magic number to scramble it, then shift right to create a dense index
+                // finding the index using magic
                 int magicIndex = (int)((blockers * rookMagics[i]) >> (64 - rookBlockerBitCounts[i]));
 
                 // Compute exact physical rays for this blocker configuration and store them in the hash table
                 rookAttackTable[i][magicIndex] = GetSlowRookAttacks(i, blockers);
 
-                // Advance to the next subset permutation of the blocker mask
+                // Advance to the next subset permutation of the blocker mask  -  carry-rippler trick
                 blockers = (blockers - rookBlockersMasks[i]) & rookBlockersMasks[i];
             } 
             while (blockers != 0);
         }
+        #endregion
     }
 
     /// <summary>
@@ -349,6 +394,80 @@ public class Board : MonoBehaviour
         for (int f = file - 1; f >= 0; f--)
         {
             ulong sqMask = 1UL << (rank * 8 + f);
+            attacks |= sqMask;
+            if ((blockers & sqMask) != 0) break;
+        }
+
+        return attacks;
+    }
+
+    private void calculateBishopAttacks()
+    {
+        for(int i = 0; i < 64; i++)
+        {
+            int rank = i / 8;
+            int file = i % 8;
+
+            // calculating bishop mask
+            ulong mask = 0;
+            for (int r = rank + 1, f = file + 1; r <= 6 && f <= 6; r++, f++) mask |= indexToBitboard(r * 8 + f);
+            for (int r = rank + 1, f = file - 1; r <= 6 && f >= 1; r++, f--) mask |= indexToBitboard(r * 8 + f);
+            for (int r = rank - 1, f = file + 1; r >= 1 && f <= 6; r--, f++) mask |= indexToBitboard(r * 8 + f);
+            for (int r = rank - 1, f = file - 1; r >= 1 && f >= 1; r--, f--) mask |= indexToBitboard(r * 8 + f);
+
+            bishopMasks[i] = mask;
+            bishopBlockersMasks[i] = mask;
+
+            int entryCount = 1 << bishopBlockerBitCounts[i];
+            bishopAttackTable[i] = new ulong[entryCount];
+
+            ulong blockers = 0;
+            do
+            {
+                int magicIndex = (int)((blockers * bishopMagics[i]) >> (64 - bishopBlockerBitCounts[i]));
+
+                bishopAttackTable[i][magicIndex] = GetSlowBishopAttacks(i, blockers);
+
+                blockers = (blockers - bishopBlockersMasks[i]) & bishopBlockersMasks[i];
+            } 
+            while (blockers != 0);
+        }
+    }
+
+    public ulong GetSlowBishopAttacks(int square, ulong blockers)
+    {
+        ulong attacks = 0UL;
+        int rank = square / 8;
+        int file = square % 8;
+
+        // North-East
+        for (int r = rank + 1, f = file + 1; r < 8 && f < 8; r++, f++)
+        {
+            ulong sqMask = 1UL << (r * 8 + f);
+            attacks |= sqMask;
+            if ((blockers & sqMask) != 0) break;
+        }
+        
+        // North-West
+        for (int r = rank + 1, f = file - 1; r < 8 && f >= 0; r++, f--)
+        {
+            ulong sqMask = 1UL << (r * 8 + f);
+            attacks |= sqMask;
+            if ((blockers & sqMask) != 0) break;
+        }
+        
+        // South-East
+        for (int r = rank - 1, f = file + 1; r >= 0 && f < 8; r--, f++)
+        {
+            ulong sqMask = 1UL << (r * 8 + f);
+            attacks |= sqMask;
+            if ((blockers & sqMask) != 0) break;
+        }
+        
+        // South-West
+        for (int r = rank - 1, f = file - 1; r >= 0 && f >= 0; r--, f--)
+        {
+            ulong sqMask = 1UL << (r * 8 + f);
             attacks |= sqMask;
             if ((blockers & sqMask) != 0) break;
         }
