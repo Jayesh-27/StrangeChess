@@ -83,7 +83,7 @@ public class Chess : MonoBehaviour
         // 2. Identify the blockerMask relevant to this specific rook's position/sqaure
         ulong blockers = allPieces & Board.Instance.rookBlockersMasks[rookIndex];
 
-        // 3. Get index using the magic 
+        // 3. Get index using the magic                     
         int magicIndex = (int)((blockers * Board.rookMagics[rookIndex]) >> (64 - Board.rookBlockerBitCounts[rookIndex]));
 
         // 4. Retrieve the instantly generated O(1) pseudo-legal attack map
@@ -91,6 +91,31 @@ public class Chess : MonoBehaviour
 
         // 5. Remove friendly pieces (we can't capture our own color)
         // using & ~ instead of ^. Assuming White to move!
+        attacks &= ~Board.Instance.whitePieces;
+
+        ClickDetector.Instance.availableMoves = attacks;
+    }
+
+    public void queenMoves(ulong from)
+    {
+        int index = Board.Instance.GetBitboardIndex(from);
+        
+        ulong allPieces = Board.Instance.allPieces;
+
+        // Calculate Rook-like attacks (Horizontal & Vertical)
+        ulong rBlockers = allPieces & Board.Instance.rookBlockersMasks[index];
+        int rMagicIndex = (int)((rBlockers * Board.rookMagics[index]) >> (64 - Board.rookBlockerBitCounts[index]));
+        ulong rookAttacks = Board.Instance.rookAttackTable[index][rMagicIndex];
+
+        // Calculate Bishop-like attacks (Diagonals)
+        ulong bBlockers = allPieces & Board.Instance.bishopBlockersMasks[index];
+        int bMagicIndex = (int)((bBlockers * Board.bishopMagics[index]) >> (64 - Board.bishopBlockerBitCounts[index]));
+        ulong bishopAttacks = Board.Instance.bishopAttackTable[index][bMagicIndex];
+
+        // The Queen's moves are a combination of both
+        ulong attacks = rookAttacks | bishopAttacks;
+
+        // Remove friendly pieces (so we don't capture our own)
         attacks &= ~Board.Instance.whitePieces;
 
         ClickDetector.Instance.availableMoves = attacks;
