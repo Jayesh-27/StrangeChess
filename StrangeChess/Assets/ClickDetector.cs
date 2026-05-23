@@ -77,7 +77,7 @@ public class ClickDetector : MonoBehaviour
                         }
                         else if(Board.Instance.bitboardToPiece(from) == pieceType.whiteRook)
                         {
-                            Chess.Instance.rookMoves(from);
+                            availableMoves = Chess.Instance.rookMoves(from);
                         }
                         else if(Board.Instance.bitboardToPiece(from) == pieceType.whiteQueen)
                         {
