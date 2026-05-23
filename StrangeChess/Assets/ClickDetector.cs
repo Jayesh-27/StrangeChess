@@ -38,23 +38,22 @@ public class ClickDetector : MonoBehaviour
                         {
                             if((from & availableMoves) != 0)    // selected piece can move at from
                             {
-                                Debug.Log("Moved");
+                                //Debug.Log("Moved");
                                 Chess.Instance.movePiece(selectedPiece, from);
                                 availableMoves = 0;
                             }
                             isSelected = false;
-                            Debug.Log("unselected");                            
+                            //Debug.Log("unselected");                            
                         }
                         else if(!isWhiteTurn && (from & Board.Instance.blackPieces) == 0)
                         {
                             if((from & availableMoves) != 0)    // selected piece can move at from
                             {
-                                Debug.Log("Moved");
                                 Chess.Instance.movePiece(selectedPiece, from);
                                 availableMoves = 0;
                             }
                             isSelected = false;
-                            Debug.Log("unselected");                            
+                            //Debug.Log("unselected");                            
                         }
                     }
                     if(isWhiteTurn && (from & Board.Instance.whitePieces) != 0)
@@ -84,7 +83,7 @@ public class ClickDetector : MonoBehaviour
                         {
                             Chess.Instance.queenMoves(from);
                         }
-                        Debug.Log("Selected");
+                        //Debug.Log("Selected");
                         isSelected = true;
                         selectedPiece = from;
                     }

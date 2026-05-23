@@ -157,12 +157,12 @@ public class Board : MonoBehaviour
         if(visualPieces[toIndex] != null)
         {
             Destroy(visualPieces[toIndex]);
-            Debug.Log("Destoryed a Piece");
+            //Debug.Log("Destoryed a Piece");
         }
         visualPieces[fromIndex].transform.localPosition = ChessManager.Instance.sockets[toIndex].transform.localPosition + visualPiecesPositionOffset;
         visualPieces[toIndex] = visualPieces[fromIndex];
         visualPieces[fromIndex] = null;
-        Debug.Log("Moved a Piece");
+        //Debug.Log("Moved a Piece");
     }
 
     public int GetBitboardIndex(ulong bitboard)
