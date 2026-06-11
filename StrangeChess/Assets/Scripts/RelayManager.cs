@@ -85,15 +85,23 @@ public class RelayManager : MonoBehaviour
             // 1. Try to find any open lobby first
             currentLobby = await LobbyService.Instance.QuickJoinLobbyAsync();
 
-            // If we succeed, extract the code and join as a Client
-            string relayCode = currentLobby.Data["RelayCode"].Value;
-            
-            JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(relayCode);
-            RelayServerData relayServerData = new RelayServerData(joinAllocation, "dtls");
-            NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
+            // If we succeed, extract the code and join as a client.
+            try
+            {
+                string relayCode = currentLobby.Data["RelayCode"].Value;
 
-            NetworkManager.Singleton.StartClient();
-            statusText.text = "Match found! Joining game...";
+                JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(relayCode);
+                RelayServerData relayServerData = new RelayServerData(joinAllocation, "dtls");
+                NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
+
+                NetworkManager.Singleton.StartClient();
+                statusText.text = "Match found! Joining game...";
+            }
+            catch (RelayServiceException e)
+            {
+                Debug.LogWarning($"Lobby was found, but Relay join failed: {e.Message}. Hosting instead...");
+                StartHost();
+            }
         }
         catch (LobbyServiceException)
         {
@@ -150,14 +158,23 @@ public class RelayManager : MonoBehaviour
         {
             statusText.text = "Searching for a room...";
             currentLobby = await LobbyService.Instance.QuickJoinLobbyAsync();
-            string relayCode = currentLobby.Data["RelayCode"].Value;
-            
-            JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(relayCode);
-            RelayServerData relayServerData = new RelayServerData(joinAllocation, "dtls");
-            NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
 
-            NetworkManager.Singleton.StartClient();
-            statusText.text = "Joined successfully!";
+            try
+            {
+                string relayCode = currentLobby.Data["RelayCode"].Value;
+
+                JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(relayCode);
+                RelayServerData relayServerData = new RelayServerData(joinAllocation, "dtls");
+                NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
+
+                NetworkManager.Singleton.StartClient();
+                statusText.text = "Joined successfully!";
+            }
+            catch (RelayServiceException e)
+            {
+                Debug.LogWarning($"Relay join failed: {e.Message}");
+                statusText.text = "Room found, but it is no longer available.";
+            }
         }
         catch (LobbyServiceException e)
         {
@@ -189,7 +206,7 @@ public class RelayManager : MonoBehaviour
             }
 
             // Load the actual gameplay scene
-            NetworkManager.Singleton.SceneManager.LoadScene("Chess", UnityEngine.SceneManagement.LoadSceneMode.Single);
+            NetworkManager.Singleton.SceneManager.LoadScene("VR Chess", UnityEngine.SceneManagement.LoadSceneMode.Single);
         }
     }
 

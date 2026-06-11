@@ -9,6 +9,8 @@ public class Chess : MonoBehaviour
     public static Chess Instance;
     public ulong whiteAttacks = 280375465082880;
     public ulong blackAttacks = 16711680;
+    
+    ulong[] pieceBitboardsTemp = new ulong[13];
 
     private void Awake()
     {
@@ -16,6 +18,28 @@ public class Chess : MonoBehaviour
         {
             Instance = this;
         }
+    }
+    
+    public ulong pawnAttacks(ulong from)
+    {
+        const ulong fileA = 0x0101010101010101UL;
+        const ulong fileH = 0x8080808080808080UL;
+        ulong notFileA = ~fileA;
+        ulong notFileH = ~fileH;
+        ulong leftCap;
+        ulong rightCap;
+
+        if(ClickDetector.Instance.isWhiteTurn)
+        {
+            leftCap = (from & notFileH) >> 7; // from black perspective
+            rightCap = (from & notFileA) >> 9;
+        }
+        else
+        {
+            leftCap = (from & notFileA) << 7;
+            rightCap = (from & notFileH) << 9;
+        }
+        return leftCap | rightCap;
     }
     public void pawnMoves(ulong from)
     {
@@ -101,7 +125,21 @@ public class Chess : MonoBehaviour
         }
     }
 
-    public void bishopMoves(ulong from)
+    public void kingMovesTemp(ulong from)
+    {
+        // TODO Castle
+        int kingIndex = Board.Instance.GetBitboardIndex(from);
+        if((from & Board.Instance.whitePieces) != 0)      // Selected White King
+        {
+            ClickDetector.Instance.availableMoves = Board.Instance.kingAttacks[kingIndex] & ~Board.Instance.whitePieces;    // Dont go on squares occupied by white pieces
+        }
+        else if((from & Board.Instance.blackPieces) != 0) // Selected Black King
+        {
+            ClickDetector.Instance.availableMoves = Board.Instance.kingAttacks[kingIndex] & ~Board.Instance.blackPieces;    // Dont go on squares occupied by black pieces
+        }
+    }
+
+    public ulong bishopMoves(ulong from)
     {
         int bishopIndex = Board.Instance.GetBitboardIndex(from);
         
@@ -117,7 +155,7 @@ public class Chess : MonoBehaviour
             attacks &= ~Board.Instance.whitePieces;
         else
             attacks &= ~Board.Instance.blackPieces;
-        ClickDetector.Instance.availableMoves = attacks;
+        return attacks;
     }
 
     public ulong rookMoves(ulong from)
@@ -146,7 +184,7 @@ public class Chess : MonoBehaviour
         return attacks;
     }
 
-    public void queenMoves(ulong from)
+    public ulong queenMoves(ulong from)
     {
         int index = Board.Instance.GetBitboardIndex(from);
         
@@ -172,7 +210,7 @@ public class Chess : MonoBehaviour
         else
             attacks &= ~Board.Instance.blackPieces;
 
-        ClickDetector.Instance.availableMoves = attacks;
+        return attacks;
     }
 
 
@@ -211,30 +249,91 @@ public class Chess : MonoBehaviour
         Board.Instance.CalculateExtraBitboards();
     }
 
-    public ulong checkLegalMoves(ulong moves)
+    public ulong checkLegalMoves(ulong from, ulong moves)
     {
-        ulong king = ClickDetector.Instance.isWhiteTurn ? Board.Instance.pieceBitboards[(int)pieceType.whiteKing] : Board.Instance.pieceBitboards[(int)pieceType.blackKing];
-        ulong enemyAttacks = calculateAttacks();
-        if((king & enemyAttacks) != 0)
+        ulong legalMoves = 0;
+        while (moves != 0)
         {
+            ulong king = ClickDetector.Instance.isWhiteTurn ? pieceBitboardsTemp[(int)pieceType.whiteKing] : pieceBitboardsTemp[(int)pieceType.blackKing];
+            ulong move = moves & ~(moves - 1);
             
-        }
+            Array.Copy(Board.Instance.pieceBitboards, pieceBitboardsTemp, 13);
+            movePieceTemp(from, move);
+            ulong enemyAttacks = calculateAttacks();
 
-        return 0;
+            if((king & enemyAttacks) == 0)
+            {
+                legalMoves |= move;
+            }
+            moves &= moves - 1;
+        }
+        return legalMoves;
+    }
+
+    void Update()
+    {
+        Debug.Log(Board.Instance.BitboardToBoardString(calculateAttacks()));
     }
 
     public ulong calculateAttacks()
     {
         ulong attacks = 0;
-        ulong rooks = ClickDetector.Instance.isWhiteTurn ? Board.Instance.pieceBitboards[(int)pieceType.blackRook] : Board.Instance.pieceBitboards[(int)pieceType.whiteRook];
 
-        while (rooks != 0)
+        int pieceIndex = ClickDetector.Instance.isWhiteTurn ? 7 : 1;
+        for(int i = 0; i < 6; i++)
         {
-            ulong rook = rooks & ~(rooks - 1);
+            ulong pieces = ClickDetector.Instance.isWhiteTurn ? pieceBitboardsTemp[pieceIndex] : pieceBitboardsTemp[pieceIndex];
+            while (pieces != 0)
+            {
+                ulong piece = pieces & ~(pieces - 1);
 
-            attacks = rookMoves(rook);
-            rooks &= rooks - 1;
+                if(pieceIndex == 1 || pieceIndex == 7)
+                    attacks |= pawnAttacks(piece);
+                else if(pieceIndex == 2 || pieceIndex == 8)
+                    attacks |= Board.Instance.knightAttacks[Board.Instance.GetBitboardIndex(piece)];
+                else if(pieceIndex == 3 || pieceIndex == 9)
+                    attacks |= bishopMoves(piece);
+                else if(pieceIndex == 4 || pieceIndex == 10)
+                    attacks |= rookMoves(piece);
+                else if(pieceIndex == 5 || pieceIndex == 11)
+                    attacks |= queenMoves(piece);
+                else if(pieceIndex == 6 || pieceIndex == 12)
+                    attacks |= Board.Instance.kingAttacks[Board.Instance.GetBitboardIndex(piece)];
+                pieces &= pieces - 1;
+            }
+            pieceIndex++;
         }
+
         return attacks;
+    }
+
+    public void movePieceTemp(ulong from, ulong to)
+    {
+        pieceType piece = Board.Instance.bitboardToPiece(from);
+        if (piece == 0)
+            return;
+
+        if (piece < pieceType.blackPawn)
+        {
+            pieceType toPiece = Board.Instance.bitboardToPiece(to);
+            if (toPiece >= pieceType.blackPawn)
+            {
+                // Remove captured black piece
+                pieceBitboardsTemp[(int)toPiece] &= ~to;
+            }
+        }
+        else if (piece > pieceType.whiteKing && piece != pieceType.none)
+        {
+            pieceType toPiece = Board.Instance.bitboardToPiece(to);
+            if (toPiece <= pieceType.whiteKing)
+            {
+                // Remove captured white piece
+                pieceBitboardsTemp[(int)toPiece] &= ~to;
+            }
+        }
+
+        // Clear source square and set destination for the moving piece
+        pieceBitboardsTemp[(int)piece] &= ~from;
+        pieceBitboardsTemp[(int)piece] |= to;
     }
 }
