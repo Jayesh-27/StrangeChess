@@ -40,6 +40,9 @@ public class ClickDetector : MonoBehaviour
                             {
                                 //Debug.Log("Moved");
                                 Chess.Instance.movePiece(selectedPiece, from);
+                                Board.Instance.Move3DModel(selectedPiece, from);
+
+                                ClickDetector.Instance.isWhiteTurn = !ClickDetector.Instance.isWhiteTurn;
                                 availableMoves = 0;
                             }
                             isSelected = false;
@@ -50,6 +53,9 @@ public class ClickDetector : MonoBehaviour
                             if((from & availableMoves) != 0)    // selected piece can move at from
                             {
                                 Chess.Instance.movePiece(selectedPiece, from);
+                                Board.Instance.Move3DModel(selectedPiece, from);
+
+                                ClickDetector.Instance.isWhiteTurn = !ClickDetector.Instance.isWhiteTurn;
                                 availableMoves = 0;
                             }
                             isSelected = false;
@@ -66,7 +72,7 @@ public class ClickDetector : MonoBehaviour
                         }
                         else if(Board.Instance.bitboardToPiece(from) == pieceType.whiteKnight)
                         {
-                            Chess.Instance.knightMoves(from);
+                            availableMoves = Chess.Instance.knightMoves(from);
                             availableMoves = Chess.Instance.checkLegalMoves(from, availableMoves);
                         }
                         else if(Board.Instance.bitboardToPiece(from) == pieceType.whiteKing)
@@ -103,13 +109,13 @@ public class ClickDetector : MonoBehaviour
                         }
                         else if(Board.Instance.bitboardToPiece(from) == pieceType.blackKnight)
                         {
-                            Chess.Instance.knightMoves(from);
+                            availableMoves = Chess.Instance.knightMoves(from);
                             availableMoves = Chess.Instance.checkLegalMoves(from, availableMoves);
                         }
                         else if(Board.Instance.bitboardToPiece(from) == pieceType.blackKing)
                         {
                             Chess.Instance.kingMoves(from);       
-                            //availableMoves = Chess.Instance.checkLegalMoves(from, availableMoves);                     
+                            availableMoves = Chess.Instance.checkLegalMoves(from, availableMoves);                     
                         }
                         else if(Board.Instance.bitboardToPiece(from) == pieceType.blackBishop)
                         {

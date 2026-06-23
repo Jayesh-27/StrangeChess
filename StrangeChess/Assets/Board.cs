@@ -41,6 +41,9 @@ public class Board : MonoBehaviour
     [SerializeField] public ulong[] bishopBlockersMasks = new ulong[64];
     [SerializeField] public ulong[][] bishopAttackTable = new ulong[64][];
 
+    [SerializeField] private bool displayBitboardBool = false;
+    [SerializeField] private ulong bitboardToDisplay = 0;
+
     public static readonly ulong[] bishopMagics = new ulong[64] {
         0x10040080B20200UL, 0x42301409005800UL, 0x3008808410808000UL, 0x1008204050008802UL, 
         0x414152001800410UL, 0x214300808000000UL, 0x21144200408A0UL, 0x41008044200501UL, 
@@ -101,6 +104,7 @@ public class Board : MonoBehaviour
         11, 10, 10, 10, 10, 10, 10, 11,
         12, 11, 11, 11, 11, 11, 11, 12
     };
+    
     void Awake()
     {
         if(Board.Instance == null)
@@ -135,6 +139,11 @@ public class Board : MonoBehaviour
     
     void Update()
     {
+        if(displayBitboardBool)
+        {
+            Debug.Log(BitboardToBoardString(bitboardToDisplay));
+            displayBitboardBool = false;
+        }
         CalculateExtraBitboards();
     }
 
