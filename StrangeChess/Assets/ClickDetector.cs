@@ -40,6 +40,9 @@ public class ClickDetector : MonoBehaviour
                             {
                                 //Debug.Log("Moved");
                                 Chess.Instance.movePiece(selectedPiece, from);
+                                Board.Instance.Move3DModel(selectedPiece, from);
+
+                                ClickDetector.Instance.isWhiteTurn = !ClickDetector.Instance.isWhiteTurn;
                                 availableMoves = 0;
                             }
                             isSelected = false;
@@ -50,6 +53,9 @@ public class ClickDetector : MonoBehaviour
                             if((from & availableMoves) != 0)    // selected piece can move at from
                             {
                                 Chess.Instance.movePiece(selectedPiece, from);
+                                Board.Instance.Move3DModel(selectedPiece, from);
+
+                                ClickDetector.Instance.isWhiteTurn = !ClickDetector.Instance.isWhiteTurn;
                                 availableMoves = 0;
                             }
                             isSelected = false;
@@ -62,26 +68,32 @@ public class ClickDetector : MonoBehaviour
                         if(Board.Instance.bitboardToPiece(from) == pieceType.whitePawn)
                         {
                             Chess.Instance.pawnMoves(from);
+                            availableMoves = Chess.Instance.checkLegalMoves(from, availableMoves);
                         }
                         else if(Board.Instance.bitboardToPiece(from) == pieceType.whiteKnight)
                         {
-                            Chess.Instance.knightMoves(from);
+                            availableMoves = Chess.Instance.knightMoves(from);
+                            availableMoves = Chess.Instance.checkLegalMoves(from, availableMoves);
                         }
                         else if(Board.Instance.bitboardToPiece(from) == pieceType.whiteKing)
                         {
-                            Chess.Instance.kingMoves(from);                            
+                            Chess.Instance.kingMoves(from);      
+                            availableMoves = Chess.Instance.checkLegalMoves(from, availableMoves);                      
                         }
                         else if(Board.Instance.bitboardToPiece(from) == pieceType.whiteBishop)
                         {
-                            Chess.Instance.bishopMoves(from);
+                            availableMoves = Chess.Instance.bishopMoves(from);
+                            availableMoves = Chess.Instance.checkLegalMoves(from, availableMoves);
                         }
                         else if(Board.Instance.bitboardToPiece(from) == pieceType.whiteRook)
                         {
-                            Chess.Instance.rookMoves(from);
+                            availableMoves = Chess.Instance.rookMoves(from);
+                            availableMoves = Chess.Instance.checkLegalMoves(from, availableMoves);
                         }
                         else if(Board.Instance.bitboardToPiece(from) == pieceType.whiteQueen)
                         {
-                            Chess.Instance.queenMoves(from);
+                            availableMoves = Chess.Instance.queenMoves(from);
+                            availableMoves = Chess.Instance.checkLegalMoves(from, availableMoves);
                         }
                         //Debug.Log("Selected");
                         isSelected = true;
@@ -93,32 +105,38 @@ public class ClickDetector : MonoBehaviour
                         if(Board.Instance.bitboardToPiece(from) == pieceType.blackPawn)
                         {
                             Chess.Instance.pawnMoves(from);
+                            availableMoves = Chess.Instance.checkLegalMoves(from, availableMoves);
                         }
                         else if(Board.Instance.bitboardToPiece(from) == pieceType.blackKnight)
                         {
-                            Chess.Instance.knightMoves(from);
+                            availableMoves = Chess.Instance.knightMoves(from);
+                            availableMoves = Chess.Instance.checkLegalMoves(from, availableMoves);
                         }
                         else if(Board.Instance.bitboardToPiece(from) == pieceType.blackKing)
                         {
-                            Chess.Instance.kingMoves(from);                            
+                            Chess.Instance.kingMoves(from);       
+                            availableMoves = Chess.Instance.checkLegalMoves(from, availableMoves);                     
                         }
                         else if(Board.Instance.bitboardToPiece(from) == pieceType.blackBishop)
                         {
-                            Chess.Instance.bishopMoves(from);
+                            availableMoves = Chess.Instance.bishopMoves(from);
+                            availableMoves = Chess.Instance.checkLegalMoves(from, availableMoves);
                         }
                         else if(Board.Instance.bitboardToPiece(from) == pieceType.blackRook)
                         {
-                            Chess.Instance.rookMoves(from);
+                            availableMoves = Chess.Instance.rookMoves(from);
+                            availableMoves = Chess.Instance.checkLegalMoves(from, availableMoves);
                         }
                         else if(Board.Instance.bitboardToPiece(from) == pieceType.blackQueen)
                         {
-                            Chess.Instance.queenMoves(from);
+                            availableMoves = Chess.Instance.queenMoves(from);
+                            availableMoves = Chess.Instance.checkLegalMoves(from, availableMoves);
                         }
                         Debug.Log("Selected");
                         isSelected = true;
                         selectedPiece = from;
                     }
-                    Debug.Log(Board.Instance.BitboardToBoardString(Board.Instance.allPieces));
+                    Debug.Log("AVAILABLE MOVES \n\n" + Board.Instance.BitboardToBoardString(availableMoves));
                 }
             }
         }

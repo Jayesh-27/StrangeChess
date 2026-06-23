@@ -23,15 +23,13 @@ public enum pieceType
 public class Board : MonoBehaviour
 {
     [SerializeField] private GameObject[] visualPieces = new GameObject[64];
-    [SerializeField] public ulong[] pieceBitboards = new ulong[13];
+    [SerializeField] public ulong[] pieceBitboards = new ulong[13];     // main bitboards
     [SerializeField] public ulong whitePieces;
     [SerializeField] public ulong blackPieces;
     [SerializeField] public ulong allPieces;
     [SerializeField] public ulong[] knightAttacks = new ulong[64];
     [SerializeField] public ulong[] kingAttacks = new ulong[64];
     [SerializeField] private UnityEngine.Vector3 visualPiecesPositionOffset = new UnityEngine.Vector3(0.000800319016f,-0.0148002654f,0.0781002268f);
-
-    [SerializeField] public ulong fileB = 0x000000000000FF00;
 
     public static Board Instance;
 
@@ -42,6 +40,9 @@ public class Board : MonoBehaviour
     [SerializeField] public ulong[] bishopMasks = new ulong[64];
     [SerializeField] public ulong[] bishopBlockersMasks = new ulong[64];
     [SerializeField] public ulong[][] bishopAttackTable = new ulong[64][];
+
+    [SerializeField] private bool displayBitboardBool = false;
+    [SerializeField] private ulong bitboardToDisplay = 0;
 
     public static readonly ulong[] bishopMagics = new ulong[64] {
         0x10040080B20200UL, 0x42301409005800UL, 0x3008808410808000UL, 0x1008204050008802UL, 
@@ -103,10 +104,7 @@ public class Board : MonoBehaviour
         11, 10, 10, 10, 10, 10, 10, 11,
         12, 11, 11, 11, 11, 11, 11, 12
     };
-
-    [SerializeField] private bool displayRookAttackTable = false;
-    [SerializeField] private int a = 0;
-    [SerializeField] private int b = 0;
+    
     void Awake()
     {
         if(Board.Instance == null)
@@ -141,10 +139,10 @@ public class Board : MonoBehaviour
     
     void Update()
     {
-        if(displayRookAttackTable)
+        if(displayBitboardBool)
         {
-            displayRookAttackTable = false;
-            Debug.Log(BitboardToBoardString(rookAttackTable[a][b]));
+            Debug.Log(BitboardToBoardString(bitboardToDisplay));
+            displayBitboardBool = false;
         }
         CalculateExtraBitboards();
     }
@@ -216,6 +214,7 @@ public class Board : MonoBehaviour
         
         return pieceType.none;
     }
+    
     private void calculateKnightAttacks()
     {
         int[,] offsets = {
@@ -273,6 +272,7 @@ public class Board : MonoBehaviour
             kingAttacks[sq] = moves;
         }
     }
+    
     private void calculateRookAttacks()
     {
         #region creating and filling all rows and cols arrays
@@ -355,12 +355,10 @@ public class Board : MonoBehaviour
         #endregion
     }
 
-    /// <summary>
-    /// Calculates exact physical rook attacks on the fly using standard raycasting.
-    /// Considers LERF bitboard mapping (0 = A1, 63 = H8).
-    /// </summary>
     public ulong GetSlowRookAttacks(int square, ulong blockers)
     {
+        /// Calculates exact physical rook attacks on the fly using standard raycasting.
+        /// Considers LERF bitboard mapping (0 = A1, 63 = H8).
         ulong attacks = 0UL;
         int rank = square / 8;
         int file = square % 8;
@@ -479,6 +477,7 @@ public class Board : MonoBehaviour
     {
         return 1UL << index;
     }
+    
     public string BitboardToBoardString(ulong bb)
     {
         string board = "";

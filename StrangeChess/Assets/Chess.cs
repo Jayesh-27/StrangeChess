@@ -7,6 +7,8 @@ using UnityEngine;
 public class Chess : MonoBehaviour
 {
     public static Chess Instance;
+    public ulong whiteAttacks = 280375465082880;
+    public ulong blackAttacks = 16711680;
 
     private void Awake()
     {
@@ -15,6 +17,29 @@ public class Chess : MonoBehaviour
             Instance = this;
         }
     }
+    
+    public ulong pawnAttacks(ulong from)
+    {
+        const ulong fileA = 0x0101010101010101UL;
+        const ulong fileH = 0x8080808080808080UL;
+        ulong notFileA = ~fileA;
+        ulong notFileH = ~fileH;
+        ulong leftCap;
+        ulong rightCap;
+
+        if(ClickDetector.Instance.isWhiteTurn)
+        {
+            leftCap = (from & notFileH) >> 7; // from black perspective
+            rightCap = (from & notFileA) >> 9;
+        }
+        else
+        {
+            leftCap = (from & notFileA) << 7;
+            rightCap = (from & notFileH) << 9;
+        }
+        return leftCap | rightCap;
+    }
+    
     public void pawnMoves(ulong from)
     {
         // Only: single move, double move, captures for both colors (no promotion/en-passant)
@@ -72,17 +97,19 @@ public class Chess : MonoBehaviour
         ClickDetector.Instance.availableMoves |= moves;
     }
 
-    public void knightMoves(ulong from)
+    public ulong knightMoves(ulong from)
     {
         int knightIndex = Board.Instance.GetBitboardIndex(from);
+        ulong moves = 0;
         if((from & Board.Instance.whitePieces) != 0)      // Selected White Knight
         {
-            ClickDetector.Instance.availableMoves = Board.Instance.knightAttacks[knightIndex] & ~Board.Instance.whitePieces;    // Dont go on squares occupied by white pieces
+            moves = Board.Instance.knightAttacks[knightIndex] & ~Board.Instance.whitePieces;    // Dont go on squares occupied by white pieces
         }
         else if((from & Board.Instance.blackPieces) != 0) // Selected Black Knight
         {
-            ClickDetector.Instance.availableMoves = Board.Instance.knightAttacks[knightIndex] & ~Board.Instance.blackPieces;    // Dont go on squares occupied by black pieces
+            moves = Board.Instance.knightAttacks[knightIndex] & ~Board.Instance.blackPieces;    // Dont go on squares occupied by black pieces
         }
+        return moves;
     }
 
     public void kingMoves(ulong from)
@@ -99,11 +126,11 @@ public class Chess : MonoBehaviour
         }
     }
 
-    public void bishopMoves(ulong from)
+    public ulong bishopMoves(ulong from, ulong simAll = 0)
     {
         int bishopIndex = Board.Instance.GetBitboardIndex(from);
         
-        ulong allPieces = Board.Instance.allPieces;
+        ulong allPieces = simAll != 0 ? simAll : Board.Instance.allPieces;
 
         ulong blockers = allPieces & Board.Instance.bishopBlockersMasks[bishopIndex];
 
@@ -115,15 +142,15 @@ public class Chess : MonoBehaviour
             attacks &= ~Board.Instance.whitePieces;
         else
             attacks &= ~Board.Instance.blackPieces;
-        ClickDetector.Instance.availableMoves = attacks;
+        return attacks;
     }
 
-    public void rookMoves(ulong from)
+    public ulong rookMoves(ulong from, ulong simAll = 0)
     {
         int rookIndex = Board.Instance.GetBitboardIndex(from);
         
         // 1. Get current board occupancy
-        ulong allPieces = Board.Instance.allPieces;
+        ulong allPieces = simAll != 0 ? simAll : Board.Instance.allPieces;
 
         // 2. Identify the blockerMask relevant to this specific rook's position/sqaure
         ulong blockers = allPieces & Board.Instance.rookBlockersMasks[rookIndex];
@@ -141,14 +168,14 @@ public class Chess : MonoBehaviour
         else
             attacks &= ~Board.Instance.blackPieces;
 
-        ClickDetector.Instance.availableMoves = attacks;
+        return attacks;
     }
 
-    public void queenMoves(ulong from)
+    public ulong queenMoves(ulong from, ulong simAll = 0)
     {
         int index = Board.Instance.GetBitboardIndex(from);
         
-        ulong allPieces = Board.Instance.allPieces;
+        ulong allPieces = simAll != 0 ? simAll : Board.Instance.allPieces;
 
         // Calculate Rook-like attacks (Horizontal & Vertical)
         ulong rBlockers = allPieces & Board.Instance.rookBlockersMasks[index];
@@ -170,73 +197,74 @@ public class Chess : MonoBehaviour
         else
             attacks &= ~Board.Instance.blackPieces;
 
-        ClickDetector.Instance.availableMoves = attacks;
+        return attacks;
     }
 
-
     public void movePiece(ulong from, ulong to)
-    {
-        pieceType piece = Board.Instance.bitboardToPiece(from);
-        if (piece == 0)
-            return;
+    {        
+        if(Board.Instance.bitboardToPiece(to) != pieceType.none)        // if there is a piece on to's place
+            Board.Instance.pieceBitboards[(int)Board.Instance.bitboardToPiece(to)] &= ~to;      // removing to from to's pieceType
+        Board.Instance.pieceBitboards[(int)Board.Instance.bitboardToPiece(from)] |= to;     // adding from to to's pieceType
+        Board.Instance.pieceBitboards[(int)Board.Instance.bitboardToPiece(from)] &= ~from;  // removing from from from's pieceType
 
-        if (piece < pieceType.blackPawn)
-        {
-            pieceType toPiece = Board.Instance.bitboardToPiece(to);
-            if (toPiece >= pieceType.blackPawn)
-            {
-                // Remove captured black piece
-                Board.Instance.pieceBitboards[(int)toPiece] &= ~to;
-            }
-        }
-        else if (piece > pieceType.whiteKing && piece != pieceType.none)
-        {
-            pieceType toPiece = Board.Instance.bitboardToPiece(to);
-            if (toPiece <= pieceType.whiteKing)
-            {
-                // Remove captured white piece
-                Board.Instance.pieceBitboards[(int)toPiece] &= ~to;
-            }
-        }
-
-        // Clear source square and set destination for the moving piece
-        Board.Instance.pieceBitboards[(int)piece] &= ~from;
-        Board.Instance.pieceBitboards[(int)piece] |= to;
-
-        Board.Instance.Move3DModel(from, to);
-
-        ClickDetector.Instance.isWhiteTurn = !ClickDetector.Instance.isWhiteTurn;
         Board.Instance.CalculateExtraBitboards();
     }
 
+    public ulong checkLegalMoves(ulong startSquare, ulong moves)
+    {
+        ulong legalMoves = 0;
+        while (moves != 0)
+        {
+            ulong targetSquare = moves & ~(moves - 1);
+            pieceType capturedPiece = Board.Instance.bitboardToPiece(targetSquare);
 
-    // OLD MOVE PIECE FUNCTION
-    // public void movePiece(ulong from, ulong to)
-    // {
-    //     pieceType piece = Board.Instance.bitboardToPiece(from);
+            movePiece(startSquare, targetSquare);
+            
+            if(isKingSafe())
+                legalMoves |= targetSquare;
+                
+            unmakeMove(startSquare, targetSquare, capturedPiece);
 
-    //     if(piece == 0)
-    //         return;
-    //     if(piece < pieceType.blackPawn)
-    //     {
-    //         pieceType toPiece = Board.Instance.bitboardToPiece(to);
-    //         if(toPiece >= pieceType.blackPawn)
-    //         {
-    //             Board.Instance.pieceBitboards[(int)toPiece] = Board.Instance.pieceBitboards[(int)toPiece] ^ to;     // Removing Captured Piece
-    //         }
-    //     }
-    //     else if(piece > pieceType.whiteKing && piece != pieceType.none)
-    //     {
-    //         pieceType toPiece = Board.Instance.bitboardToPiece(to);
-    //         if(toPiece <= pieceType.whiteKing)
-    //         {
-    //             Board.Instance.pieceBitboards[(int)toPiece] = Board.Instance.pieceBitboards[(int)toPiece] ^ to;     // Removing Captured Piece
-    //         }
-    //     }
-    //     Board.Instance.pieceBitboards[(int)piece] = (Board. Instance.pieceBitboards[(int)piece] ^ from) | to;    // Moving Piece
-    //     Board.Instance.Move3DModel(from, to);
+            moves &= moves - 1;
+        }
+        return legalMoves;
+    }
 
-    //     ClickDetector.Instance.isWhiteTurn = !ClickDetector.Instance.isWhiteTurn;
-    //     Board.Instance.CalculateExtraBitboards();
-    // }
+    private bool isKingSafe()
+    {
+        bool isWhiteTurn = ClickDetector.Instance.isWhiteTurn;
+        ulong king = isWhiteTurn ? Board.Instance.pieceBitboards[6] : Board.Instance.pieceBitboards[12];
+
+        //checking is king safe from knights
+        ulong knightCheck = knightMoves(king);
+        if(isWhiteTurn)
+        {
+            if((knightCheck & Board.Instance.pieceBitboards[(int)pieceType.blackKnight]) != 0)
+            {
+                Debug.Log("King is under attack by black knight");
+                return false;
+            }
+        }
+        else
+        {
+            if((knightCheck & Board.Instance.pieceBitboards[(int)pieceType.whiteKnight]) != 0)
+            {
+                Debug.Log("King is under attack by black knight");
+                return false;
+            }
+        }
+        return true;
+    }
+    private void unmakeMove(ulong startSquare, ulong targetSquare, pieceType capturedPiece)
+    {
+        // 1. Move the piece back from targetSquare to startSquare
+        Board.Instance.pieceBitboards[(int)Board.Instance.bitboardToPiece(targetSquare)] |= startSquare;
+        Board.Instance.pieceBitboards[(int)Board.Instance.bitboardToPiece(targetSquare)] &= ~targetSquare;
+        
+        // 2. Restore the captured piece exactly where it was (targetSquare)
+        if(capturedPiece != pieceType.none)
+            Board.Instance.pieceBitboards[(int)capturedPiece] |= targetSquare;
+
+        Board.Instance.CalculateExtraBitboards();
+    }
 }
