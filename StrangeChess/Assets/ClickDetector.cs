@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.XR.Interaction.Toolkit;
 
 public class ClickDetector : MonoBehaviour
 {
@@ -39,6 +40,14 @@ public class ClickDetector : MonoBehaviour
                             if((from & availableMoves) != 0)    // selected piece can move at from
                             {
                                 //Debug.Log("Moved");
+                                if(Board.Instance.bitboardToPiece(selectedPiece) == pieceType.whiteKing && (from & (1UL << 6)) != 0)
+                                {
+                                    Board.Instance.Move3DModel(1UL << 7, 1UL << 5);
+                                }
+                                else if(Board.Instance.bitboardToPiece(selectedPiece) == pieceType.whiteKing && (from & (1UL << 2)) != 0)
+                                {
+                                    Board.Instance.Move3DModel(1UL << 0, 1UL << 3);
+                                }
                                 Chess.Instance.movePiece(selectedPiece, from);
                                 Board.Instance.Move3DModel(selectedPiece, from);
 
@@ -52,6 +61,14 @@ public class ClickDetector : MonoBehaviour
                         {
                             if((from & availableMoves) != 0)    // selected piece can move at from
                             {
+                                if(Board.Instance.bitboardToPiece(selectedPiece) == pieceType.blackKing && (from & (1UL << 62)) != 0)
+                                {
+                                    Board.Instance.Move3DModel(1UL << 63, 1UL << 61);
+                                }
+                                else if(Board.Instance.bitboardToPiece(selectedPiece) == pieceType.blackKing && (from & (1UL << 58)) != 0)
+                                {
+                                    Board.Instance.Move3DModel(1UL << 56, 1UL << 59);
+                                }
                                 Chess.Instance.movePiece(selectedPiece, from);
                                 Board.Instance.Move3DModel(selectedPiece, from);
 
@@ -78,7 +95,7 @@ public class ClickDetector : MonoBehaviour
                         else if(Board.Instance.bitboardToPiece(from) == pieceType.whiteKing)
                         {
                             Chess.Instance.kingMoves(from);      
-                            availableMoves = Chess.Instance.checkLegalMoves(from, availableMoves);                      
+                            availableMoves = Chess.Instance.checkLegalMoves(from, availableMoves);
                         }
                         else if(Board.Instance.bitboardToPiece(from) == pieceType.whiteBishop)
                         {

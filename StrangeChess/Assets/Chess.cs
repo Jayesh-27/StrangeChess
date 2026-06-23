@@ -9,6 +9,14 @@ public class Chess : MonoBehaviour
     public static Chess Instance;
     public ulong whiteAttacks = 280375465082880;
     public ulong blackAttacks = 16711680;
+    public int castlingRights = 15;
+    ulong wKing  = 1UL << 4;
+    ulong bKing  = 1UL << 60;
+    ulong waRook = 1UL << 0;
+    ulong whRook = 1UL << 7;
+    ulong baRook = 1UL << 56;
+    ulong bhRook = 1UL << 63;
+    ulong castlingAllChecks = 0x9100000000000091;
 
     private void Awake()
     {
@@ -114,15 +122,58 @@ public class Chess : MonoBehaviour
 
     public void kingMoves(ulong from)
     {
-        // TODO Castle
         int kingIndex = Board.Instance.GetBitboardIndex(from);
         if((from & Board.Instance.whitePieces) != 0)      // Selected White King
         {
             ClickDetector.Instance.availableMoves = Board.Instance.kingAttacks[kingIndex] & ~Board.Instance.whitePieces;    // Dont go on squares occupied by white pieces
+            
+            // KINGSIDE CASTLE
+            if((castlingRights & 1) != 0 
+            && isSquareSafe(1UL << 4) // e1
+            && isSquareSafe(1UL << 5) // f1
+            && isSquareSafe(1UL << 6) // g1
+            && (Board.Instance.allPieces & (1UL << 5)) == 0 
+            && (Board.Instance.allPieces & (1UL << 6)) == 0)
+            {
+                ClickDetector.Instance.availableMoves |= 1UL << 6;
+            }
+            if((castlingRights & 2) != 0 
+            && isSquareSafe(1UL << 4) 
+            && isSquareSafe(1UL << 3) 
+            && isSquareSafe(1UL << 2)
+            && (Board.Instance.allPieces & (1UL << 3)) == 0 
+            && (Board.Instance.allPieces & (1UL << 2)) == 0
+            && (Board.Instance.allPieces & (1UL << 1)) == 0)
+            {
+                ClickDetector.Instance.availableMoves |= 1UL << 2;
+            }
         }
         else if((from & Board.Instance.blackPieces) != 0) // Selected Black King
         {
-            ClickDetector.Instance.availableMoves = Board.Instance.kingAttacks[kingIndex] & ~Board.Instance.blackPieces;    // Dont go on squares occupied by black pieces
+            ClickDetector.Instance.availableMoves = Board.Instance.kingAttacks[kingIndex] & ~Board.Instance.blackPieces;    
+            
+            // KINGSIDE CASTLE
+            if((castlingRights & 4) != 0 
+            && isSquareSafe(1UL << 60) // e8
+            && isSquareSafe(1UL << 61) // f8
+            && isSquareSafe(1UL << 62) // g8
+            && (Board.Instance.allPieces & (1UL << 61)) == 0 
+            && (Board.Instance.allPieces & (1UL << 62)) == 0)
+            {
+                ClickDetector.Instance.availableMoves |= 1UL << 62;
+            }
+
+            // QUEENSIDE CASTLE
+            if((castlingRights & 8) != 0 
+            && isSquareSafe(1UL << 60) // e8
+            && isSquareSafe(1UL << 59) // d8
+            && isSquareSafe(1UL << 58) // c8
+            && (Board.Instance.allPieces & (1UL << 59)) == 0 
+            && (Board.Instance.allPieces & (1UL << 58)) == 0
+            && (Board.Instance.allPieces & (1UL << 57)) == 0) // b8 (must be empty, but doesn't need to be safe)
+            {
+                ClickDetector.Instance.availableMoves |= 1UL << 58;
+            }
         }
     }
 
@@ -201,7 +252,7 @@ public class Chess : MonoBehaviour
     }
 
     public void movePiece(ulong startSquare, ulong targetSquare)
-    {        
+    {
         pieceType movingPiece = Board.Instance.bitboardToPiece(startSquare);
         pieceType capturedPiece = Board.Instance.bitboardToPiece(targetSquare);
 
@@ -211,6 +262,50 @@ public class Chess : MonoBehaviour
         Board.Instance.pieceBitboards[(int)movingPiece] |= targetSquare;     
         Board.Instance.pieceBitboards[(int)movingPiece] &= ~startSquare;  
 
+        if(movingPiece == pieceType.whiteKing && targetSquare == 1Ul << 6)
+        {
+            movePiece(1Ul << 7, 1Ul << 5);
+        }
+        else if(movingPiece == pieceType.whiteKing && targetSquare == 1Ul << 2)
+        {
+            movePiece(1Ul << 0, 1Ul << 3);
+        }
+        else if(movingPiece == pieceType.blackKing && targetSquare == 1UL << 62) // Black Kingside
+        {
+            movePiece(1UL << 63, 1UL << 61); // Move h8 rook to f8
+        }
+        else if(movingPiece == pieceType.blackKing && targetSquare == 1UL << 58) // Black Queenside
+        {
+            movePiece(1UL << 56, 1UL << 59); // Move a8 rook to d8
+        }
+        // just castling rights cheecks
+        if (((startSquare | targetSquare) & castlingAllChecks) != 0)
+        {
+            if (startSquare == wKing)
+            {
+                castlingRights &= 12;
+            }
+            else if (startSquare == bKing)
+            {
+                castlingRights &= 3;
+            }
+            if (startSquare == waRook || targetSquare == waRook)
+            {
+                castlingRights &= 13;
+            }
+            if (startSquare == whRook || targetSquare == whRook)
+            {
+                castlingRights &= 14;
+            }
+            if (startSquare == baRook || targetSquare == baRook)
+            {
+                castlingRights &= 7;
+            }
+            if (startSquare == bhRook || targetSquare == bhRook)
+            {
+                castlingRights &= 11;
+            }
+        }
         Board.Instance.CalculateExtraBitboards();
     }
 
@@ -222,48 +317,25 @@ public class Chess : MonoBehaviour
             ulong targetSquare = moves & ~(moves - 1);
             pieceType capturedPiece = Board.Instance.bitboardToPiece(targetSquare);
 
+            int castlingRightsTemp = castlingRights;
             movePiece(startSquare, targetSquare);
             
-            if(isKingSafe())
+            ulong SquareToCheck = ClickDetector.Instance.isWhiteTurn ? Board.Instance.pieceBitboards[(int)pieceType.whiteKing] : Board.Instance.pieceBitboards[(int)pieceType.blackKing];
+            if(isSquareSafe(SquareToCheck))
                 legalMoves |= targetSquare;
                 
             unmakeMove(startSquare, targetSquare, capturedPiece);
+            castlingRights = castlingRightsTemp;
 
             moves &= moves - 1;
         }
         return legalMoves;
     }
 
-    // private bool isKingSafe()
-    // {
-    //     bool isWhiteTurn = ClickDetector.Instance.isWhiteTurn;
-    //     ulong king = isWhiteTurn ? Board.Instance.pieceBitboards[6] : Board.Instance.pieceBitboards[12];
-
-    //     //checking is king safe from knights
-    //     ulong knightCheck = knightMoves(king);
-    //     if(isWhiteTurn)
-    //     {
-    //         if((knightCheck & Board.Instance.pieceBitboards[(int)pieceType.blackKnight]) != 0)
-    //         {
-    //             Debug.Log("King is under attack by black knight");
-    //             return false;
-    //         }
-    //     }
-    //     else
-    //     {
-    //         if((knightCheck & Board.Instance.pieceBitboards[(int)pieceType.whiteKnight]) != 0)
-    //         {
-    //             Debug.Log("King is under attack by black knight");
-    //             return false;
-    //         }
-    //     }
-    //     return true;
-    // }
-
-    private bool isKingSafe()
+    private bool isSquareSafe(ulong king)
     {
         bool isWhiteTurn = ClickDetector.Instance.isWhiteTurn;
-        ulong king = isWhiteTurn ? Board.Instance.pieceBitboards[(int)pieceType.whiteKing] : Board.Instance.pieceBitboards[(int)pieceType.blackKing];
+        //king = isWhiteTurn ? Board.Instance.pieceBitboards[(int)pieceType.whiteKing] : Board.Instance.pieceBitboards[(int)pieceType.blackKing];
         int kingIndex = Board.Instance.GetBitboardIndex(king);
 
         // 1. Get enemy bitboards
@@ -317,14 +389,37 @@ public class Chess : MonoBehaviour
 
     private void unmakeMove(ulong startSquare, ulong targetSquare, pieceType capturedPiece)
     {
-        // CACHE the piece type to avoid running the bitboard loop multiple times
         pieceType movedPiece = Board.Instance.bitboardToPiece(targetSquare);
 
         // 1. Move the piece back from targetSquare to startSquare
         Board.Instance.pieceBitboards[(int)movedPiece] |= startSquare;
         Board.Instance.pieceBitboards[(int)movedPiece] &= ~targetSquare;
         
-        // 2. Restore the captured piece exactly where it was (targetSquare)
+        // 2. Undo Castling Rooks!
+        if (movedPiece == pieceType.whiteKing && targetSquare == (1UL << 6)) // Kingside
+        {
+            // Move Rook from f1 back to h1
+            Board.Instance.pieceBitboards[(int)pieceType.whiteRook] |= (1UL << 7);
+            Board.Instance.pieceBitboards[(int)pieceType.whiteRook] &= ~(1UL << 5);
+        }
+        else if (movedPiece == pieceType.whiteKing && targetSquare == (1UL << 2)) // Queenside
+        {
+            // Move Rook from d1 back to a1
+            Board.Instance.pieceBitboards[(int)pieceType.whiteRook] |= (1UL << 0);
+            Board.Instance.pieceBitboards[(int)pieceType.whiteRook] &= ~(1UL << 3);
+        }
+        else if (movedPiece == pieceType.blackKing && targetSquare == (1UL << 62)) // Black Kingside
+        {
+            // Move Rook from f8 back to h8
+            Board.Instance.pieceBitboards[(int)pieceType.blackRook] |= (1UL << 63);
+            Board.Instance.pieceBitboards[(int)pieceType.blackRook] &= ~(1UL << 61);
+        }
+        else if (movedPiece == pieceType.blackKing && targetSquare == (1UL << 58)) // Black Queenside
+        {
+            // Move Rook from d8 back to a8
+            Board.Instance.pieceBitboards[(int)pieceType.blackRook] |= (1UL << 56);
+            Board.Instance.pieceBitboards[(int)pieceType.blackRook] &= ~(1UL << 59);
+        }
         if(capturedPiece != pieceType.none)
             Board.Instance.pieceBitboards[(int)capturedPiece] |= targetSquare;
 
