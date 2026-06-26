@@ -558,6 +558,7 @@ public class Board : MonoBehaviour
         int rank = 7; // Rank 8 (Index 56-63)
         int file = 0; // File A
 
+        // --- 1. PIECE PLACEMENT ---
         foreach (char c in boardLayout)
         {
             if (c == '/')
@@ -581,16 +582,44 @@ public class Board : MonoBehaviour
         }
 
         CalculateExtraBitboards();
-        ClickDetector.Instance.isWhiteTurn = (fenParts[1] == "w");
+        
+        // --- 2. ACTIVE COLOR ---
+        if (fenParts.Length > 1) 
+            ClickDetector.Instance.isWhiteTurn = (fenParts[1] == "w");
+
+        // --- 3. CASTLING RIGHTS ---
         Chess.Instance.castlingRights = 0;
-        if (fenParts[2] != "-")
+        if (fenParts.Length > 2 && fenParts[2] != "-")
         {
             if (fenParts[2].Contains('K')) Chess.Instance.castlingRights |= 1;
             if (fenParts[2].Contains('Q')) Chess.Instance.castlingRights |= 2;
             if (fenParts[2].Contains('k')) Chess.Instance.castlingRights |= 4;
             if (fenParts[2].Contains('q')) Chess.Instance.castlingRights |= 8;
         }
-        // We will parse castling (fenParts[2]) and en passant (fenParts[3]) next.
+
+        // --- 4. EN PASSANT TARGET SQUARE ---
+        if (fenParts.Length > 3 && fenParts[3] != "-")
+        {
+            int epFile = fenParts[3][0] - 'a'; // converts 'a' to 0, 'b' to 1...
+            int epRank = fenParts[3][1] - '1'; // converts '1' to 0, '2' to 1...
+            Chess.Instance.enPassantTarget = epRank * 8 + epFile;
+        }
+        else
+        {
+            Chess.Instance.enPassantTarget = -1;
+        }
+
+        // --- 5. HALFMOVE CLOCK ---
+        if (fenParts.Length > 4)
+        {
+            Chess.Instance.halfmoveClock = int.Parse(fenParts[4]);
+        }
+
+        // --- 6. FULLMOVE NUMBER ---
+        if (fenParts.Length > 5)
+        {
+            Chess.Instance.fullmoveNumber = int.Parse(fenParts[5]);
+        }
     }
 
     public void DestroyVisualPiece(int index)

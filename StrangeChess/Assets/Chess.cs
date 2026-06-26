@@ -42,6 +42,8 @@ public class Chess : MonoBehaviour
     [SerializeField] public int moveIndex = 0;
 
     public int enPassantTarget = -1;
+    public int halfmoveClock = 0;
+    public int fullmoveNumber = 1;
 
     private void Awake()
     {
@@ -399,7 +401,7 @@ public class Chess : MonoBehaviour
         return legalMoves;
     }
 
-    private bool isSquareSafe(ulong king)
+    public bool isSquareSafe(ulong king)
     {
         bool isWhiteTurn = ClickDetector.Instance.isWhiteTurn;
         //king = isWhiteTurn ? Board.Instance.pieceBitboards[(int)pieceType.whiteKing] : Board.Instance.pieceBitboards[(int)pieceType.blackKing];
@@ -454,7 +456,7 @@ public class Chess : MonoBehaviour
         return true; 
     }
 
-    private void unmakeMove(ulong startSquare, ulong targetSquare, pieceType capturedPiece, pieceType originalMovedPiece)
+    public void unmakeMove(ulong startSquare, ulong targetSquare, pieceType capturedPiece, pieceType originalMovedPiece)
     {
         int startIndex = Board.Instance.GetBitboardIndex(startSquare);
         int targetIndex = Board.Instance.GetBitboardIndex(targetSquare);
