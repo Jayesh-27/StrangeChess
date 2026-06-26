@@ -48,8 +48,31 @@ public class ClickDetector : MonoBehaviour
                                 {
                                     Board.Instance.Move3DModel(1UL << 0, 1UL << 3);
                                 }
+                                int fromIndex = Board.Instance.GetBitboardIndex(selectedPiece);
+                                int toIndex = Board.Instance.GetBitboardIndex(from);
+                                pieceType movingPiece = Board.Instance.bitboardToPiece(selectedPiece);
+                                pieceType targetPiece = Board.Instance.bitboardToPiece(from);
+
+                                // --- VISUAL ROUTING ---
+                                if (movingPiece == pieceType.whitePawn && toIndex >= 56)
+                                {
+                                    Board.Instance.PromoteVisualPiece(fromIndex, toIndex, true);
+                                }
+                                else if (movingPiece == pieceType.blackPawn && toIndex <= 7)
+                                {
+                                    Board.Instance.PromoteVisualPiece(fromIndex, toIndex, false);
+                                }
+                                else 
+                                {
+                                    // Normal mesh teleporting for standard moves
+                                    Board.Instance.Move3DModel(selectedPiece, from);
+                                }
+
+                                // En Passant Visual Destruction 
+                                if (movingPiece == pieceType.whitePawn && targetPiece == pieceType.none && (toIndex == fromIndex + 7 || toIndex == fromIndex + 9)) Board.Instance.DestroyVisualPiece(toIndex - 8);
+                                else if (movingPiece == pieceType.blackPawn && targetPiece == pieceType.none && (toIndex == fromIndex - 7 || toIndex == fromIndex - 9)) Board.Instance.DestroyVisualPiece(toIndex + 8);
+
                                 Chess.Instance.movePiece(selectedPiece, from);
-                                Board.Instance.Move3DModel(selectedPiece, from);
 
                                 ClickDetector.Instance.isWhiteTurn = !ClickDetector.Instance.isWhiteTurn;
                                 availableMoves = 0;
@@ -69,8 +92,31 @@ public class ClickDetector : MonoBehaviour
                                 {
                                     Board.Instance.Move3DModel(1UL << 56, 1UL << 59);
                                 }
+                                int fromIndex = Board.Instance.GetBitboardIndex(selectedPiece);
+                                int toIndex = Board.Instance.GetBitboardIndex(from);
+                                pieceType movingPiece = Board.Instance.bitboardToPiece(selectedPiece);
+                                pieceType targetPiece = Board.Instance.bitboardToPiece(from);
+
+                                // --- VISUAL ROUTING ---
+                                if (movingPiece == pieceType.whitePawn && toIndex >= 56)
+                                {
+                                    Board.Instance.PromoteVisualPiece(fromIndex, toIndex, true);
+                                }
+                                else if (movingPiece == pieceType.blackPawn && toIndex <= 7)
+                                {
+                                    Board.Instance.PromoteVisualPiece(fromIndex, toIndex, false);
+                                }
+                                else 
+                                {
+                                    // Normal mesh teleporting for standard moves
+                                    Board.Instance.Move3DModel(selectedPiece, from);
+                                }
+
+                                // En Passant Visual Destruction 
+                                if (movingPiece == pieceType.whitePawn && targetPiece == pieceType.none && (toIndex == fromIndex + 7 || toIndex == fromIndex + 9)) Board.Instance.DestroyVisualPiece(toIndex - 8);
+                                else if (movingPiece == pieceType.blackPawn && targetPiece == pieceType.none && (toIndex == fromIndex - 7 || toIndex == fromIndex - 9)) Board.Instance.DestroyVisualPiece(toIndex + 8);
+
                                 Chess.Instance.movePiece(selectedPiece, from);
-                                Board.Instance.Move3DModel(selectedPiece, from);
 
                                 ClickDetector.Instance.isWhiteTurn = !ClickDetector.Instance.isWhiteTurn;
                                 availableMoves = 0;
@@ -84,7 +130,7 @@ public class ClickDetector : MonoBehaviour
                         availableMoves = 0;
                         if(Board.Instance.bitboardToPiece(from) == pieceType.whitePawn)
                         {
-                            Chess.Instance.pawnMoves(from);
+                            availableMoves = Chess.Instance.pawnMoves(from);
                             availableMoves = Chess.Instance.checkLegalMoves(from, availableMoves);
                         }
                         else if(Board.Instance.bitboardToPiece(from) == pieceType.whiteKnight)
@@ -94,7 +140,7 @@ public class ClickDetector : MonoBehaviour
                         }
                         else if(Board.Instance.bitboardToPiece(from) == pieceType.whiteKing)
                         {
-                            Chess.Instance.kingMoves(from);      
+                            availableMoves = Chess.Instance.kingMoves(from);      
                             availableMoves = Chess.Instance.checkLegalMoves(from, availableMoves);
                         }
                         else if(Board.Instance.bitboardToPiece(from) == pieceType.whiteBishop)
@@ -121,7 +167,7 @@ public class ClickDetector : MonoBehaviour
                         availableMoves = 0;
                         if(Board.Instance.bitboardToPiece(from) == pieceType.blackPawn)
                         {
-                            Chess.Instance.pawnMoves(from);
+                            availableMoves = Chess.Instance.pawnMoves(from);
                             availableMoves = Chess.Instance.checkLegalMoves(from, availableMoves);
                         }
                         else if(Board.Instance.bitboardToPiece(from) == pieceType.blackKnight)
@@ -131,7 +177,7 @@ public class ClickDetector : MonoBehaviour
                         }
                         else if(Board.Instance.bitboardToPiece(from) == pieceType.blackKing)
                         {
-                            Chess.Instance.kingMoves(from);       
+                            availableMoves = Chess.Instance.kingMoves(from);       
                             availableMoves = Chess.Instance.checkLegalMoves(from, availableMoves);                     
                         }
                         else if(Board.Instance.bitboardToPiece(from) == pieceType.blackBishop)
@@ -157,5 +203,5 @@ public class ClickDetector : MonoBehaviour
                 }
             }
         }
-    }    
+    }
 }

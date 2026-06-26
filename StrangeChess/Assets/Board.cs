@@ -22,6 +22,8 @@ public enum pieceType
 
 public class Board : MonoBehaviour
 {
+    [SerializeField] public GameObject whiteQueenPrefab;
+    [SerializeField] public GameObject blackQueenPrefab;
     [SerializeField] private GameObject[] visualPieces = new GameObject[64];
     [SerializeField] public ulong[] pieceBitboards = new ulong[13];     // main bitboards
     [SerializeField] public ulong whitePieces;
@@ -44,6 +46,8 @@ public class Board : MonoBehaviour
     [SerializeField] private bool displayBitboardBool = false;
     [SerializeField] private ulong bitboardToDisplay = 0;
 
+    [SerializeField] public pieceType[] boardSquares = new pieceType[64];
+    
     public static readonly ulong[] bishopMagics = new ulong[64] {
         0x10040080B20200UL, 0x42301409005800UL, 0x3008808410808000UL, 0x1008204050008802UL, 
         0x414152001800410UL, 0x214300808000000UL, 0x21144200408A0UL, 0x41008044200501UL, 
@@ -105,12 +109,69 @@ public class Board : MonoBehaviour
         12, 11, 11, 11, 11, 11, 11, 12
     };
     
+    private static readonly int[] DeBruijnIndex = {
+    0,  1, 48,  2, 57, 49, 28,  3,
+    61, 58, 50, 42, 38, 29, 17,  4,
+    62, 55, 59, 36, 53, 51, 43, 22,
+    45, 39, 33, 30, 24, 18, 12,  5,
+    63, 47, 56, 27, 60, 41, 37, 16,
+    54, 35, 52, 21, 44, 32, 23, 11,
+    46, 26, 40, 15, 34, 20, 31, 10,
+    25, 14, 19,  9, 13,  8,  7,  6
+    };
+
+    public static readonly Dictionary<char, pieceType> pieceFromSymbol = new Dictionary<char, pieceType>()
+    {
+        ['k'] = pieceType.blackKing, ['p'] = pieceType.blackPawn, ['n'] = pieceType.blackKnight,
+        ['b'] = pieceType.blackBishop, ['r'] = pieceType.blackRook, ['q'] = pieceType.blackQueen,
+        ['K'] = pieceType.whiteKing, ['P'] = pieceType.whitePawn, ['N'] = pieceType.whiteKnight,
+        ['B'] = pieceType.whiteBishop, ['R'] = pieceType.whiteRook, ['Q'] = pieceType.whiteQueen
+    };
+
+
+
+
     void Awake()
     {
         if(Board.Instance == null)
         {
             Instance = this;
         }
+
+        boardSquares[0]  = pieceType.whiteRook;
+        boardSquares[1]  = pieceType.whiteKnight;
+        boardSquares[2]  = pieceType.whiteBishop;
+        boardSquares[3]  = pieceType.whiteQueen;
+        boardSquares[4]  = pieceType.whiteKing;
+        boardSquares[5]  = pieceType.whiteBishop;
+        boardSquares[6]  = pieceType.whiteKnight;
+        boardSquares[7]  = pieceType.whiteRook;
+        boardSquares[8]  = pieceType.whitePawn;
+        boardSquares[9]  = pieceType.whitePawn;
+        boardSquares[10] = pieceType.whitePawn;
+        boardSquares[11] = pieceType.whitePawn;
+        boardSquares[12] = pieceType.whitePawn;
+        boardSquares[13] = pieceType.whitePawn;
+        boardSquares[14] = pieceType.whitePawn;
+        boardSquares[15] = pieceType.whitePawn;
+
+        boardSquares[48] = pieceType.blackPawn;
+        boardSquares[49] = pieceType.blackPawn;
+        boardSquares[50] = pieceType.blackPawn;
+        boardSquares[51] = pieceType.blackPawn;
+        boardSquares[52] = pieceType.blackPawn;
+        boardSquares[53] = pieceType.blackPawn;
+        boardSquares[54] = pieceType.blackPawn;
+        boardSquares[55] = pieceType.blackPawn;
+        boardSquares[56] = pieceType.blackRook;
+        boardSquares[57] = pieceType.blackKnight;
+        boardSquares[58] = pieceType.blackBishop;
+        boardSquares[59] = pieceType.blackQueen;
+        boardSquares[60] = pieceType.blackKing;
+        boardSquares[61] = pieceType.blackBishop;
+        boardSquares[62] = pieceType.blackKnight;
+        boardSquares[63] = pieceType.blackRook;
+
 
         pieceBitboards[(int)pieceType.whitePawn]   = 0x000000000000FF00;
         pieceBitboards[(int)pieceType.whiteKnight] = 0x0000000000000042;
@@ -135,6 +196,8 @@ public class Board : MonoBehaviour
         calculateKingAttacks();
         calculateRookAttacks();
         calculateBishopAttacks();
+
+        LoadFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     }
     
     void Update()
@@ -166,14 +229,8 @@ public class Board : MonoBehaviour
     public int GetBitboardIndex(ulong bitboard)
     {
         if (bitboard == 0) return -1;
-
-        int index = 0;        
-        while ((bitboard & 1UL) == 0)
-        {
-            bitboard >>= 1;
-            index++;
-        }
-        return index;
+        // Isolate the least significant 1 bit, multiply by De Bruijn magic, and shift
+        return DeBruijnIndex[((bitboard & (ulong)-(long)bitboard) * 0x03f79d71b4cb0a89UL) >> 58];
     }
 
     public string displayBitboard(ulong bitboard)
@@ -202,17 +259,8 @@ public class Board : MonoBehaviour
 
     public pieceType bitboardToPiece(ulong from)
     {
-        if ((from & allPieces) == 0) return pieceType.none;
-        
-        for (int i = 1; i <= 12; i++)
-        {
-            if ((from & pieceBitboards[i]) != 0) 
-            {
-                return (pieceType)i;
-            }
-        }
-        
-        return pieceType.none;
+        int index = GetBitboardIndex(from);
+        return boardSquares[index];
     }
     
     private void calculateKnightAttacks()
@@ -492,5 +540,83 @@ public class Board : MonoBehaviour
             board += "\n";
         }
         return board;
+    }
+
+    public void ClearBoard()
+    {
+        for (int i = 0; i < 64; i++) boardSquares[i] = pieceType.none;
+        for (int i = 0; i < 13; i++) pieceBitboards[i] = 0;
+        whitePieces = blackPieces = allPieces = 0;
+    }
+
+    public void LoadFEN(string fen)
+    {
+        ClearBoard();
+        string[] fenParts = fen.Split(' ');
+        string boardLayout = fenParts[0];
+
+        int rank = 7; // Rank 8 (Index 56-63)
+        int file = 0; // File A
+
+        foreach (char c in boardLayout)
+        {
+            if (c == '/')
+            {
+                rank--;
+                file = 0;
+            }
+            else if (char.IsDigit(c))
+            {
+                file += (int)char.GetNumericValue(c); // Skip empty squares
+            }
+            else
+            {
+                int squareIndex = rank * 8 + file;
+                pieceType piece = pieceFromSymbol[c];
+
+                boardSquares[squareIndex] = piece;
+                pieceBitboards[(int)piece] |= (1UL << squareIndex);
+                file++;
+            }
+        }
+
+        CalculateExtraBitboards();
+        ClickDetector.Instance.isWhiteTurn = (fenParts[1] == "w");
+        Chess.Instance.castlingRights = 0;
+        if (fenParts[2] != "-")
+        {
+            if (fenParts[2].Contains('K')) Chess.Instance.castlingRights |= 1;
+            if (fenParts[2].Contains('Q')) Chess.Instance.castlingRights |= 2;
+            if (fenParts[2].Contains('k')) Chess.Instance.castlingRights |= 4;
+            if (fenParts[2].Contains('q')) Chess.Instance.castlingRights |= 8;
+        }
+        // We will parse castling (fenParts[2]) and en passant (fenParts[3]) next.
+    }
+
+    public void DestroyVisualPiece(int index)
+    {
+        if (visualPieces[index] != null)
+        {
+            Destroy(visualPieces[index]);
+            visualPieces[index] = null;
+        }
+    }
+    
+    public void PromoteVisualPiece(int fromIndex, int toIndex, bool isWhite)
+    {
+        // 1. Cache the parent transform BEFORE we destroy the pawn
+        Transform pieceParent = visualPieces[fromIndex].transform.parent;
+
+        // 2. Now it is safe to destroy the visual meshes
+        DestroyVisualPiece(fromIndex); // Kill the Pawn mesh
+        DestroyVisualPiece(toIndex);   // Kill the captured mesh (if any)
+
+        // 3. Spawn the Queen using the cached parent
+        GameObject prefab = isWhite ? whiteQueenPrefab : blackQueenPrefab;
+        GameObject newQueen = Instantiate(prefab, pieceParent);
+        
+        // 4. Assign and position it
+        visualPieces[toIndex] = newQueen;
+        newQueen.transform.localPosition = ChessManager.Instance.sockets[toIndex].transform.localPosition + visualPiecesPositionOffset;
     }
 }
