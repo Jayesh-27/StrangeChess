@@ -12,7 +12,7 @@ public class Perft : MonoBehaviour
         if (runOnStart)
         {
             // Delay by 1 second to ensure Board.cs completes LoadFEN in its Start() method
-            Invoke("RunTest", 1f); 
+            Invoke("RunTest", 1f);
         }
     }
 

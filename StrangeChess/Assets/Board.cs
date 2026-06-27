@@ -1,6 +1,4 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Numerics;
 using UnityEngine;
 
 public enum pieceType
@@ -22,18 +20,20 @@ public enum pieceType
 
 public class Board : MonoBehaviour
 {
+    public static Board Instance;
+
     [SerializeField] public GameObject whiteQueenPrefab;
     [SerializeField] public GameObject blackQueenPrefab;
+    
     [SerializeField] private GameObject[] visualPieces = new GameObject[64];
     [SerializeField] public ulong[] pieceBitboards = new ulong[13];     // main bitboards
     [SerializeField] public ulong whitePieces;
     [SerializeField] public ulong blackPieces;
     [SerializeField] public ulong allPieces;
+    
     [SerializeField] public ulong[] knightAttacks = new ulong[64];
     [SerializeField] public ulong[] kingAttacks = new ulong[64];
-    [SerializeField] private UnityEngine.Vector3 visualPiecesPositionOffset = new UnityEngine.Vector3(0.000800319016f,-0.0148002654f,0.0781002268f);
-
-    public static Board Instance;
+    [SerializeField] private Vector3 visualPiecesPositionOffset = new Vector3(0.000800319016f,-0.0148002654f,0.0781002268f);
 
     [SerializeField] public ulong[] rookMasks = new ulong[64];
     [SerializeField] public ulong[] rookBlockersMasks = new ulong[64];
@@ -120,16 +120,12 @@ public class Board : MonoBehaviour
     25, 14, 19,  9, 13,  8,  7,  6
     };
 
-    public static readonly Dictionary<char, pieceType> pieceFromSymbol = new Dictionary<char, pieceType>()
-    {
+    public static readonly Dictionary<char, pieceType> pieceFromSymbol = new Dictionary<char, pieceType>() {
         ['k'] = pieceType.blackKing, ['p'] = pieceType.blackPawn, ['n'] = pieceType.blackKnight,
         ['b'] = pieceType.blackBishop, ['r'] = pieceType.blackRook, ['q'] = pieceType.blackQueen,
         ['K'] = pieceType.whiteKing, ['P'] = pieceType.whitePawn, ['N'] = pieceType.whiteKnight,
         ['B'] = pieceType.whiteBishop, ['R'] = pieceType.whiteRook, ['Q'] = pieceType.whiteQueen
     };
-
-
-
 
     void Awake()
     {
@@ -207,7 +203,7 @@ public class Board : MonoBehaviour
             Debug.Log(BitboardToBoardString(bitboardToDisplay));
             displayBitboardBool = false;
         }
-        CalculateExtraBitboards();
+        //CalculateExtraBitboards();
     }
 
     public void Move3DModel(ulong from, ulong to)

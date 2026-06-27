@@ -38,7 +38,6 @@ public class Chess : MonoBehaviour
     ulong castlingAllChecks = 0x9100000000000091;    
 
     [SerializeField] public ushort[] moveList = new ushort[256];
-
     [SerializeField] public int moveIndex = 0;
 
     public int enPassantTarget = -1;
@@ -368,7 +367,8 @@ public class Chess : MonoBehaviour
             if (capturedPiece != pieceType.none) Board.Instance.whitePieces ^= targetSquare;
             if (isEnPassant) Board.Instance.whitePieces &= ~(1UL << epCaptureIndex); 
         }        
-        Board.Instance.allPieces = Board.Instance.whitePieces | Board.Instance.blackPieces;
+        //Board.Instance.allPieces = Board.Instance.whitePieces | Board.Instance.blackPieces;
+        Board.Instance.CalculateExtraBitboards();
     }
 
     public ulong checkLegalMoves(ulong startSquare, ulong moves)
@@ -551,7 +551,8 @@ public class Chess : MonoBehaviour
             else Board.Instance.whitePieces |= (1UL << epCaptureIndex);
         }
 
-        Board.Instance.allPieces = Board.Instance.whitePieces | Board.Instance.blackPieces;
+        //Board.Instance.allPieces = Board.Instance.whitePieces | Board.Instance.blackPieces;
+        Board.Instance.CalculateExtraBitboards();
     }
 
     public void GenerateAllMoves()
