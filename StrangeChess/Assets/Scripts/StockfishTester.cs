@@ -61,7 +61,7 @@ public class StockfishTester : MonoBehaviour
     {
         uciInput.WriteLine("uci");
         uciInput.WriteLine("setoption name UCI_LimitStrength value true");
-        uciInput.WriteLine("setoption name UCI_Elo value 1320");
+        uciInput.WriteLine("setoption name UCI_Elo value 3190");
         uciInput.WriteLine("isready");
     }
 
@@ -85,13 +85,25 @@ public class StockfishTester : MonoBehaviour
 
         while (outputQueue.TryDequeue(out string message))
         {
-            if (message.StartsWith("bestmove"))
+            if (message == "readyok")
+            {
+                UnityEngine.Debug.Log("<color=#FFD700>--- STOCKFISH IS READY TO PLAY ---</color>");
+            }
+            else if (message.StartsWith("bestmove"))
             {
                 string[] parts = message.Split(' ');
                 string moveString = parts[1]; 
                 
+                // --- THE FIX: CHECKMATE DETECTION ---
+                if (moveString == "(none)")
+                {
+                    UnityEngine.Debug.Log("<color=#FF0000>GAME OVER! Stockfish says: (none). It has been checkmated or stalemated!</color>");
+                    isEngineRunning = false; // Stop the engine loop
+                    break; 
+                }
+                
                 ExecuteStockfishMove(moveString);
-                isCalculating = false; // Unlock it for the next turn!
+                isCalculating = false; 
             }
         }
     }

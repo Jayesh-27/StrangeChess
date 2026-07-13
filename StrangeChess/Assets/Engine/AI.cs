@@ -147,8 +147,8 @@ public class AI : MonoBehaviour
         ushort bestMove = 0;
         bool isWhite = ClickDetector.Instance.isWhiteTurn;
         
-        // Set the worst possible starting scores
-        int bestScore = isWhite ? negativeInfinity : positiveInfinity;
+        // In Negamax, the root always wants to maximize the score
+        int bestScore = negativeInfinity;
         int alpha = negativeInfinity;
         int beta = positiveInfinity;
 
@@ -166,39 +166,23 @@ public class AI : MonoBehaviour
             pieceType originalPiece = Board.Instance.boardSquares[fromIndex];
             pieceType capturedPiece = Board.Instance.boardSquares[toIndex]; 
 
-            // Execute Move
             Chess.Instance.movePiece(fromSquare, toSquare);
-
             ulong ourKing = isWhite ? Board.Instance.pieceBitboards[(int)pieceType.whiteKing] : Board.Instance.pieceBitboards[(int)pieceType.blackKing];
-            bool isLegal = Chess.Instance.isSquareSafe(ourKing);
-
-            if (isLegal)
+            
+            if (Chess.Instance.isSquareSafe(ourKing))
             {
-                // Swap turns and dive into the tree
+                // Dive into the tree with Negamax!
                 ClickDetector.Instance.isWhiteTurn = !isWhite;
-                int score = Search(depth - 1, 1, alpha, beta);
+                // Flip the sign and swap Alpha/Beta
+                int score = -Search(depth - 1, 1, -beta, -alpha);
                 ClickDetector.Instance.isWhiteTurn = isWhite;
 
-                // White wants the highest score possible
-                if (isWhite)
+                if (score > bestScore)
                 {
-                    if (score > bestScore)
-                    {
-                        bestScore = score;
-                        bestMove = move;
-                    }
-                    alpha = Mathf.Max(alpha, bestScore);
+                    bestScore = score;
+                    bestMove = move;
                 }
-                // Black wants the lowest score possible
-                else
-                {
-                    if (score < bestScore)
-                    {
-                        bestScore = score;
-                        bestMove = move;
-                    }
-                    beta = Mathf.Min(beta, bestScore);
-                }
+                if (bestScore > alpha) alpha = bestScore;
             }
 
             // Restore physical board state
@@ -212,123 +196,73 @@ public class AI : MonoBehaviour
 
     private int Search(int depth, int ply, int alpha, int beta)
     {
-        // Base Case: We reached the end of the future timeline. Return the static score!
-        if (depth == 0) return EvaluateBoard();
+        if (depth == 0) 
+        {
+            // Negamax requires the evaluation to be relative to the side to move!
+            int eval = EvaluateBoard();
+            return ClickDetector.Instance.isWhiteTurn ? eval : -eval;
+        }
 
         Chess.Instance.GenerateAllMoves(ply);
         int currentMoveCount = Chess.Instance.moveCount[ply];
         bool isWhite = ClickDetector.Instance.isWhiteTurn;
         
         int legalMovesPlayed = 0;
+        int bestScore = negativeInfinity;
 
-        if (isWhite)
+        // ONE unified loop for both White and Black!
+        for (int i = 0; i < currentMoveCount; i++)
         {
-            int maxScore = negativeInfinity;
-            for (int i = 0; i < currentMoveCount; i++)
+            ushort move = Chess.Instance.moveList[ply][i];
+            int fromIndex = move & 0x3F;
+            int toIndex = (move >> 6) & 0x3F;
+            ulong fromSquare = 1UL << fromIndex;
+            ulong toSquare = 1UL << toIndex;
+
+            int savedCastling = Chess.Instance.castlingRights;
+            int savedEP = Chess.Instance.enPassantTarget;
+            pieceType originalPiece = Board.Instance.boardSquares[fromIndex];
+            pieceType capturedPiece = Board.Instance.boardSquares[toIndex]; 
+
+            Chess.Instance.movePiece(fromSquare, toSquare);
+            ulong ourKing = isWhite ? Board.Instance.pieceBitboards[(int)pieceType.whiteKing] : Board.Instance.pieceBitboards[(int)pieceType.blackKing];
+
+            if (Chess.Instance.isSquareSafe(ourKing))
             {
-                ushort move = Chess.Instance.moveList[ply][i];
-                int fromIndex = move & 0x3F;
-                int toIndex = (move >> 6) & 0x3F;
-                ulong fromSquare = 1UL << fromIndex;
-                ulong toSquare = 1UL << toIndex;
-
-                int savedCastling = Chess.Instance.castlingRights;
-                int savedEP = Chess.Instance.enPassantTarget;
-                pieceType originalPiece = Board.Instance.boardSquares[fromIndex];
-                pieceType capturedPiece = Board.Instance.boardSquares[toIndex]; 
-
-                Chess.Instance.movePiece(fromSquare, toSquare);
-                bool isLegal = Chess.Instance.isSquareSafe(Board.Instance.pieceBitboards[(int)pieceType.whiteKing]);
-
-                if (isLegal)
+                legalMovesPlayed++;
+                ClickDetector.Instance.isWhiteTurn = !isWhite;
+                
+                // The Negamax Recursion
+                int score = -Search(depth - 1, ply + 1, -beta, -alpha);
+                
+                ClickDetector.Instance.isWhiteTurn = isWhite;
+                
+                if (score > bestScore) bestScore = score;
+                if (bestScore > alpha) alpha = bestScore;
+                
+                // Alpha-Beta Pruning
+                if (alpha >= beta)
                 {
-                    legalMovesPlayed++;
-                    ClickDetector.Instance.isWhiteTurn = false;
-                    int eval = Search(depth - 1, ply + 1, alpha, beta);
-                    ClickDetector.Instance.isWhiteTurn = true;
-                    
-                    maxScore = Mathf.Max(maxScore, eval);
-                    alpha = Mathf.Max(alpha, eval);
-                    
-                    // ALPHA-BETA PRUNING: Stop searching this branch if it's already worse than a previous option!
-                    if (beta <= alpha)
-                    {
-                        Chess.Instance.unmakeMove(fromSquare, toSquare, capturedPiece, originalPiece);
-                        Chess.Instance.castlingRights = savedCastling;
-                        Chess.Instance.enPassantTarget = savedEP;
-                        break; 
-                    }
+                    Chess.Instance.unmakeMove(fromSquare, toSquare, capturedPiece, originalPiece);
+                    Chess.Instance.castlingRights = savedCastling;
+                    Chess.Instance.enPassantTarget = savedEP;
+                    break; 
                 }
+            }
 
-                Chess.Instance.unmakeMove(fromSquare, toSquare, capturedPiece, originalPiece);
-                Chess.Instance.castlingRights = savedCastling;
-                Chess.Instance.enPassantTarget = savedEP;
-            }
-            
-            // Checkmate & Stalemate Detection
-            if (legalMovesPlayed == 0)
-            {
-                if (!Chess.Instance.isSquareSafe(Board.Instance.pieceBitboards[(int)pieceType.whiteKing]))
-                    return negativeInfinity + ply; // Checkmate (Adding ply makes the AI prefer faster mates)
-                else
-                    return 0; // Stalemate is a draw (0 points)
-            }
-            return maxScore;
+            Chess.Instance.unmakeMove(fromSquare, toSquare, capturedPiece, originalPiece);
+            Chess.Instance.castlingRights = savedCastling;
+            Chess.Instance.enPassantTarget = savedEP;
         }
-        else // Black's Turn (The Minimizer)
+
+        if (legalMovesPlayed == 0)
         {
-            int minScore = positiveInfinity;
-            for (int i = 0; i < currentMoveCount; i++)
-            {
-                ushort move = Chess.Instance.moveList[ply][i];
-                int fromIndex = move & 0x3F;
-                int toIndex = (move >> 6) & 0x3F;
-                ulong fromSquare = 1UL << fromIndex;
-                ulong toSquare = 1UL << toIndex;
-
-                int savedCastling = Chess.Instance.castlingRights;
-                int savedEP = Chess.Instance.enPassantTarget;
-                pieceType originalPiece = Board.Instance.boardSquares[fromIndex];
-                pieceType capturedPiece = Board.Instance.boardSquares[toIndex]; 
-
-                Chess.Instance.movePiece(fromSquare, toSquare);
-                bool isLegal = Chess.Instance.isSquareSafe(Board.Instance.pieceBitboards[(int)pieceType.blackKing]);
-
-                if (isLegal)
-                {
-                    legalMovesPlayed++;
-                    ClickDetector.Instance.isWhiteTurn = true;
-                    int eval = Search(depth - 1, ply + 1, alpha, beta);
-                    ClickDetector.Instance.isWhiteTurn = false;
-                    
-                    minScore = Mathf.Min(minScore, eval);
-                    beta = Mathf.Min(beta, eval);
-                    
-                    // ALPHA-BETA PRUNING
-                    if (beta <= alpha)
-                    {
-                        Chess.Instance.unmakeMove(fromSquare, toSquare, capturedPiece, originalPiece);
-                        Chess.Instance.castlingRights = savedCastling;
-                        Chess.Instance.enPassantTarget = savedEP;
-                        break; 
-                    }
-                }
-
-                Chess.Instance.unmakeMove(fromSquare, toSquare, capturedPiece, originalPiece);
-                Chess.Instance.castlingRights = savedCastling;
-                Chess.Instance.enPassantTarget = savedEP;
-            }
-
-            // Checkmate & Stalemate Detection
-            if (legalMovesPlayed == 0)
-            {
-                if (!Chess.Instance.isSquareSafe(Board.Instance.pieceBitboards[(int)pieceType.blackKing]))
-                    return positiveInfinity - ply; // Checkmate
-                else
-                    return 0; // Stalemate
-            }
-            return minScore;
+            ulong ourKing = isWhite ? Board.Instance.pieceBitboards[(int)pieceType.whiteKing] : Board.Instance.pieceBitboards[(int)pieceType.blackKing];
+            if (!Chess.Instance.isSquareSafe(ourKing)) return negativeInfinity + ply; 
+            else return 0; 
         }
+        
+        return bestScore;
     }
 
     public int EvaluateBoard()
