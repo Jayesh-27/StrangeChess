@@ -9,6 +9,7 @@ public class StockfishTester : MonoBehaviour
     public static StockfishTester Instance; // Added Singleton for easy access!
 
     [SerializeField] private bool canStockfishPlay = false;
+    public string stockfishEvalString = "0.00";
     private Process stockfishProcess;
     private StreamWriter uciInput;
     private bool isEngineRunning = false;
@@ -88,6 +89,11 @@ public class StockfishTester : MonoBehaviour
             if (message == "readyok")
             {
                 UnityEngine.Debug.Log("<color=#FFD700>--- STOCKFISH IS READY TO PLAY ---</color>");
+            }
+            // --- CATCH THE EVALUATION ---
+            else if (message.StartsWith("info") && message.Contains("score"))
+            {
+                ParseEvaluation(message);
             }
             else if (message.StartsWith("bestmove"))
             {
@@ -195,6 +201,36 @@ public class StockfishTester : MonoBehaviour
         {
             uciInput.WriteLine("quit");
             stockfishProcess.Close();
+        }
+    }
+
+    private void ParseEvaluation(string message)
+    {
+        string[] parts = message.Split(' ');
+        for (int i = 0; i < parts.Length; i++)
+        {
+            if (parts[i] == "score")
+            {
+                string type = parts[i + 1]; // "cp" (centipawns) or "mate"
+                int rawScore = int.Parse(parts[i + 2]);
+
+                // Stockfish evaluates from the perspective of whoever's turn it is.
+                // Standard chess UIs always show positive for White and negative for Black.
+                // If moveHistory is an ODD number, Black is currently thinking, so we flip the sign!
+                bool isBlackTurn = (moveHistory.Count % 2 != 0);
+                if (isBlackTurn) rawScore = -rawScore;
+
+                if (type == "cp") 
+                {
+                    float eval = rawScore / 100f; // Convert 150 to 1.50 pawns
+                    stockfishEvalString = eval > 0 ? $"+{eval:F2}" : $"{eval:F2}";
+                }
+                else if (type == "mate") 
+                {
+                    stockfishEvalString = rawScore > 0 ? $"M{rawScore}" : $"-M{Mathf.Abs(rawScore)}";
+                }
+                break;
+            }
         }
     }
 }

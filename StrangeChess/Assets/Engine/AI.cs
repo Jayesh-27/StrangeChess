@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Diagnostics;
 
 public class AI : MonoBehaviour
 {
@@ -10,8 +11,11 @@ public class AI : MonoBehaviour
     [SerializeField] const int bishopValue = 320;
     [SerializeField] const int rookValue = 500;
     [SerializeField] const int queenValue = 900;
-    [SerializeField] private int depth = 4;
-
+    [SerializeField] private int depth = 32;
+    public long timeLimitMs = 1000;
+    private Stopwatch searchTimer = new Stopwatch();
+    private bool isTimeUp = false;
+    private int nodesSinceTimerCheck = 0;
     [SerializeField] private static readonly int[] knightPST = {
         -50, -40, -30, -30, -30, -30, -40, -50,
         -40, -20,   0,   0,   0,   0, -20, -40,
@@ -83,8 +87,7 @@ public class AI : MonoBehaviour
     }
 
     private void Update()
-    {
-        // PRESS SPACEBAR TO MAKE THE AI PLAY A MOVE!
+    {        
         if (Input.GetKeyDown(KeyCode.Space))
         {
             PlayBestMove(depth); // Searches depth half-moves into the future
@@ -98,12 +101,12 @@ public class AI : MonoBehaviour
 
     public void PlayBestMove(int depth)
     {
-        Debug.Log("AI is thinking...");
+        UnityEngine.Debug.Log("AI is thinking...");
         ushort bestMove = GetBestMove(depth);
         
         if (bestMove == 0) 
         {
-            Debug.Log("Game Over! No legal moves available.");
+            UnityEngine.Debug.Log("Game Over! No legal moves available.");
             return;
         }
 
@@ -136,75 +139,114 @@ public class AI : MonoBehaviour
         ClickDetector.Instance.availableMoves = 0;
         ClickDetector.Instance.isSelected = false;
         
-        Debug.Log($"AI Played Move: {fromIndex} -> {toIndex}");
+        UnityEngine.Debug.Log($"AI Played Move: {fromIndex} -> {toIndex}");
     }
 
-    public ushort GetBestMove(int depth)
+    public ushort GetBestMove(int maxDepth)
     {
-        Chess.Instance.GenerateAllMoves(0);
-        int currentMoveCount = Chess.Instance.moveCount[0];
+        // 1. Reset the clocks!
+        searchTimer.Restart();
+        isTimeUp = false;
+        nodesSinceTimerCheck = 0;
         
-        ushort bestMove = 0;
+        Chess.Instance.GenerateAllMoves(0);
+        int currentMoveCount = Chess.Instance.moveCount[0];            
+        OrderMoves(0, currentMoveCount); 
+        
+        ushort absoluteBestMove = 0;
         bool isWhite = ClickDetector.Instance.isWhiteTurn;
         
-        // In Negamax, the root always wants to maximize the score
-        int bestScore = negativeInfinity;
-        int alpha = negativeInfinity;
-        int beta = positiveInfinity;
-
-        for (int i = 0; i < currentMoveCount; i++)
+        // --- ITERATIVE DEEPENING LOOP ---
+        for (int currentDepth = 1; currentDepth <= maxDepth; currentDepth++)
         {
-            ushort move = Chess.Instance.moveList[0][i];
-            int fromIndex = move & 0x3F;
-            int toIndex = (move >> 6) & 0x3F;
-            ulong fromSquare = 1UL << fromIndex;
-            ulong toSquare = 1UL << toIndex;
+            int bestScore = negativeInfinity;
+            int alpha = negativeInfinity;
+            int beta = positiveInfinity;
+            ushort bestMoveThisDepth = 0;
 
-            // Backups
-            int savedCastling = Chess.Instance.castlingRights;
-            int savedEP = Chess.Instance.enPassantTarget;
-            pieceType originalPiece = Board.Instance.boardSquares[fromIndex];
-            pieceType capturedPiece = Board.Instance.boardSquares[toIndex]; 
-
-            Chess.Instance.movePiece(fromSquare, toSquare);
-            ulong ourKing = isWhite ? Board.Instance.pieceBitboards[(int)pieceType.whiteKing] : Board.Instance.pieceBitboards[(int)pieceType.blackKing];
-            
-            if (Chess.Instance.isSquareSafe(ourKing))
+            for (int i = 0; i < currentMoveCount; i++)
             {
-                // Dive into the tree with Negamax!
-                ClickDetector.Instance.isWhiteTurn = !isWhite;
-                // Flip the sign and swap Alpha/Beta
-                int score = -Search(depth - 1, 1, -beta, -alpha);
-                ClickDetector.Instance.isWhiteTurn = isWhite;
+                ushort move = Chess.Instance.moveList[0][i];
+                int fromIndex = move & 0x3F;
+                int toIndex = (move >> 6) & 0x3F;
+                ulong fromSquare = 1UL << fromIndex;
+                ulong toSquare = 1UL << toIndex;
 
-                if (score > bestScore)
+                int savedCastling = Chess.Instance.castlingRights;
+                int savedEP = Chess.Instance.enPassantTarget;
+                pieceType originalPiece = Board.Instance.boardSquares[fromIndex];
+                pieceType capturedPiece = Board.Instance.boardSquares[toIndex]; 
+
+                Chess.Instance.movePiece(fromSquare, toSquare);
+                ulong ourKing = isWhite ? Board.Instance.pieceBitboards[(int)pieceType.whiteKing] : Board.Instance.pieceBitboards[(int)pieceType.blackKing];
+                
+                if (Chess.Instance.isSquareSafe(ourKing))
                 {
-                    bestScore = score;
-                    bestMove = move;
+                    ClickDetector.Instance.isWhiteTurn = !isWhite;
+                    int score = -Search(currentDepth - 1, 1, -beta, -alpha);
+                    ClickDetector.Instance.isWhiteTurn = isWhite;
+
+                    // THE ABORT: If time ran out mid-search, this score is corrupted. Throw it away!
+                    if (isTimeUp) 
+                    {
+                        Chess.Instance.unmakeMove(fromSquare, toSquare, capturedPiece, originalPiece);
+                        Chess.Instance.castlingRights = savedCastling;
+                        Chess.Instance.enPassantTarget = savedEP;
+                        break;
+                    }
+
+                    if (score > bestScore)
+                    {
+                        bestScore = score;
+                        bestMoveThisDepth = move;
+                    }
+                    if (bestScore > alpha) alpha = bestScore;
                 }
-                if (bestScore > alpha) alpha = bestScore;
+
+                Chess.Instance.unmakeMove(fromSquare, toSquare, capturedPiece, originalPiece);
+                Chess.Instance.castlingRights = savedCastling;
+                Chess.Instance.enPassantTarget = savedEP;
             }
 
-            // Restore physical board state
-            Chess.Instance.unmakeMove(fromSquare, toSquare, capturedPiece, originalPiece);
-            Chess.Instance.castlingRights = savedCastling;
-            Chess.Instance.enPassantTarget = savedEP;
+            // If time is up, break the depth loop so we don't accidentally save an incomplete depth
+            if (isTimeUp) break;
+
+            // Otherwise, this depth finished successfully! Save it as our safety net.
+            absoluteBestMove = bestMoveThisDepth;
+            UnityEngine.Debug.Log($"Depth {currentDepth} completed! Eval: {bestScore / 100f:F2}");
+
+            // --- MOVE ORDERING MAGIC ---
+            // Shove the best move we just found to the absolute front of the array (Index 0) for the next depth!
+            for (int i = 0; i < currentMoveCount; i++)
+            {
+                if (Chess.Instance.moveList[0][i] == absoluteBestMove)
+                {
+                    ushort temp = Chess.Instance.moveList[0][0];
+                    Chess.Instance.moveList[0][0] = absoluteBestMove;
+                    Chess.Instance.moveList[0][i] = temp;
+                    break;
+                }
+            }
         }
 
-        return bestMove;
+        searchTimer.Stop();
+        return absoluteBestMove;
     }
-
+    
     private int Search(int depth, int ply, int alpha, int beta)
     {
+        CheckTime();
+        if (isTimeUp) return 0;
+
         if (depth == 0) 
         {
-            // Negamax requires the evaluation to be relative to the side to move!
-            int eval = EvaluateBoard();
-            return ClickDetector.Instance.isWhiteTurn ? eval : -eval;
+            return QuiescenceSearch(ply, alpha, beta);
         }
 
         Chess.Instance.GenerateAllMoves(ply);
         int currentMoveCount = Chess.Instance.moveCount[ply];
+    
+        OrderMoves(ply, currentMoveCount);
         bool isWhite = ClickDetector.Instance.isWhiteTurn;
         
         int legalMovesPlayed = 0;
@@ -265,6 +307,155 @@ public class AI : MonoBehaviour
         return bestScore;
     }
 
+    private int QuiescenceSearch(int ply, int alpha, int beta)
+    {
+        CheckTime();
+        if (isTimeUp) return 0;
+
+        // 1. The "Stand Pat" Evaluation
+        int standPat = EvaluateBoard();
+        standPat = ClickDetector.Instance.isWhiteTurn ? standPat : -standPat;
+
+        // If our baseline score is already too good, the opponent will avoid this branch. Prune!
+        if (standPat >= beta) return beta;
+        
+        // If our baseline score is better than alpha, update our minimum expectations.
+        if (alpha < standPat) alpha = standPat;
+
+        // 2. Generate Moves
+        Chess.Instance.GenerateAllMoves(ply);
+        int currentMoveCount = Chess.Instance.moveCount[ply];    
+        OrderMoves(ply, currentMoveCount);
+        bool isWhite = ClickDetector.Instance.isWhiteTurn;
+
+        for (int i = 0; i < currentMoveCount; i++)
+        {
+            ushort move = Chess.Instance.moveList[ply][i];
+            int flag = move >> 12;
+
+            // --- THE MAGIC FILTER ---
+            // We ONLY care about captures in Quiescence Search!
+            // In your moveFlag enum: 4 = Capture, 5 = EPCapture, 12-15 = PromotionCaptures
+            bool isCapture = (flag == 4 || flag == 5 || flag >= 12);
+            if (!isCapture) continue; // Skip quiet moves!
+
+            int fromIndex = move & 0x3F;
+            int toIndex = (move >> 6) & 0x3F;
+            ulong fromSquare = 1UL << fromIndex;
+            ulong toSquare = 1UL << toIndex;
+
+            int savedCastling = Chess.Instance.castlingRights;
+            int savedEP = Chess.Instance.enPassantTarget;
+            pieceType originalPiece = Board.Instance.boardSquares[fromIndex];
+            pieceType capturedPiece = Board.Instance.boardSquares[toIndex]; 
+
+            Chess.Instance.movePiece(fromSquare, toSquare);
+            ulong ourKing = isWhite ? Board.Instance.pieceBitboards[(int)pieceType.whiteKing] : Board.Instance.pieceBitboards[(int)pieceType.blackKing];
+
+            if (Chess.Instance.isSquareSafe(ourKing))
+            {
+                ClickDetector.Instance.isWhiteTurn = !isWhite;
+                
+                // Recursively call QS, NOT the main Search!
+                int score = -QuiescenceSearch(ply + 1, -beta, -alpha);
+                
+                ClickDetector.Instance.isWhiteTurn = isWhite;
+
+                if (score >= beta)
+                {
+                    Chess.Instance.unmakeMove(fromSquare, toSquare, capturedPiece, originalPiece);
+                    Chess.Instance.castlingRights = savedCastling;
+                    Chess.Instance.enPassantTarget = savedEP;
+                    return beta; // Prune!
+                }
+                if (score > alpha) alpha = score;
+            }
+
+            Chess.Instance.unmakeMove(fromSquare, toSquare, capturedPiece, originalPiece);
+            Chess.Instance.castlingRights = savedCastling;
+            Chess.Instance.enPassantTarget = savedEP;
+        }
+
+        return alpha;
+    }
+
+    // --- MOVE ORDERING ---
+    private void OrderMoves(int ply, int currentMoveCount)
+    {
+        // 1. Assign a score to every move
+        for (int i = 0; i < currentMoveCount; i++)
+        {
+            Chess.Instance.moveScores[ply][i] = ScoreMove(Chess.Instance.moveList[ply][i]);
+        }
+
+        // 2. Selection Sort: Push the highest-scoring moves to the front of the array
+        for (int i = 0; i < currentMoveCount - 1; i++)
+        {
+            int maxIndex = i;
+            for (int j = i + 1; j < currentMoveCount; j++)
+            {
+                if (Chess.Instance.moveScores[ply][j] > Chess.Instance.moveScores[ply][maxIndex])
+                {
+                    maxIndex = j;
+                }
+            }
+
+            // Swap Scores
+            int tempScore = Chess.Instance.moveScores[ply][i];
+            Chess.Instance.moveScores[ply][i] = Chess.Instance.moveScores[ply][maxIndex];
+            Chess.Instance.moveScores[ply][maxIndex] = tempScore;
+
+            // Swap Moves
+            ushort tempMove = Chess.Instance.moveList[ply][i];
+            Chess.Instance.moveList[ply][i] = Chess.Instance.moveList[ply][maxIndex];
+            Chess.Instance.moveList[ply][maxIndex] = tempMove;
+        }
+    }
+
+    private int ScoreMove(ushort move)
+    {
+        int score = 0;
+        int fromIndex = move & 0x3F;
+        int toIndex = (move >> 6) & 0x3F;
+        int flag = move >> 12;
+
+        bool isCapture = (flag == 4 || flag == 5 || flag >= 12);
+
+        if (isCapture)
+        {
+            pieceType attacker = Board.Instance.boardSquares[fromIndex];
+            pieceType victim = Board.Instance.boardSquares[toIndex];
+
+            // If it is En Passant, the target square is empty, so we manually assign the victim as a Pawn
+            if (flag == 5) victim = (attacker == pieceType.whitePawn) ? pieceType.blackPawn : pieceType.whitePawn;
+
+            // MVV-LVA Formula: (Victim Value * 10) - Attacker Value
+            // Example: Pawn taking Queen = (900 * 10) - 100 = 8900 score!
+            score = 10 * GetPieceValue(victim) - GetPieceValue(attacker);
+        }
+
+        // Massive bonus for promoting to a Queen (almost as good as capturing one)
+        if (flag == 11 || flag == 15) // PromoteToQueen, PromoteToQueenAndCapture
+        {
+            score += 90000; 
+        }
+
+        return score;
+    }
+
+    private int GetPieceValue(pieceType piece)
+    {
+        switch (piece)
+        {
+            case pieceType.whitePawn: case pieceType.blackPawn: return pawnValue;
+            case pieceType.whiteKnight: case pieceType.blackKnight: return knightValue;
+            case pieceType.whiteBishop: case pieceType.blackBishop: return bishopValue;
+            case pieceType.whiteRook: case pieceType.blackRook: return rookValue;
+            case pieceType.whiteQueen: case pieceType.blackQueen: return queenValue;
+            default: return 0;
+        }
+    }
+
     public int EvaluateBoard()
     {
         int score = 0;
@@ -273,7 +464,7 @@ public class AI : MonoBehaviour
         return score;
     }
 
-    private int MaterialValueEvaluation()
+    public int MaterialValueEvaluation()
     {
         int tempScore = 0;
 
@@ -328,6 +519,18 @@ public class AI : MonoBehaviour
         }
 
         return tempScore;
+    }
+    private void CheckTime()
+    {
+        nodesSinceTimerCheck++;
+        if (nodesSinceTimerCheck > 2048) 
+        {
+            nodesSinceTimerCheck = 0;
+            if (searchTimer.ElapsedMilliseconds >= timeLimitMs)
+            {
+                isTimeUp = true;
+            }
+        }
     }
 }
 

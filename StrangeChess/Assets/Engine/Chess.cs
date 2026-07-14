@@ -37,11 +37,9 @@ public class Chess : MonoBehaviour
     ulong bhRook = 1UL << 63;
     ulong castlingAllChecks = 0x9100000000000091;    
 
-    // [SerializeField] public ushort[] moveList = new ushort[256];
-    // [SerializeField] public int moveIndex = 0;
-
     public const int MAX_DEPTH = 64; // The maximum number of turns the AI can look ahead
     public ushort[][] moveList;
+    public int[][] moveScores;
     public int[] moveCount = new int[MAX_DEPTH];
 
     public int enPassantTarget = -1;
@@ -57,9 +55,11 @@ public class Chess : MonoBehaviour
 
         // Pre-allocate the memory for all possible search depths
         moveList = new ushort[MAX_DEPTH][];
+        moveScores = new int[MAX_DEPTH][];
         for(int i = 0; i < MAX_DEPTH; i++)
         {
             moveList[i] = new ushort[256];
+            moveScores[i] = new int[256];
         }
     }
     
