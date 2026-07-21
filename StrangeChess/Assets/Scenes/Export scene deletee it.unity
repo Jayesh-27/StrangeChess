@@ -21260,6 +21260,7 @@ GameObject:
   - component: {fileID: 3843739836482685963}
   - component: {fileID: 1348126154542830656}
   - component: {fileID: 6110847142422181383}
+  - component: {fileID: 6110847142422181384}
   m_Layer: 0
   m_Name: 'Chess '
   m_TagString: Untagged
@@ -25464,6 +25465,7 @@ MonoBehaviour:
   enPassantTarget: -1
   halfmoveClock: 0
   fullmoveNumber: 1
+  currentZobristKey: 0
 --- !u!33 &5535403708336207849
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -26188,14 +26190,36 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3177070135019872924}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a426b4891d01f72438fecf5533ede58c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  canStockfishPlay: 1
+  canStockfishPlay: 0
   stockfishEvalString: 0.00
   moveHistory: []
+--- !u!114 &6110847142422181384
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3177070135019872924}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 136f95587d3718a40b2d298de4dd2a1a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startTournament: 1
+  startingElo: 1400
+  eloStep: 100
+  gamesPerMatch: 2
+  myEngineTimeMs: 1000
+  stockfishTimeMs: 1000
+  currentElo: 0
+  matchGameCount: 0
+  matchScore: 0
+  isMyEngineWhite: 1
 --- !u!1 &6119028481383615640
 GameObject:
   m_ObjectHideFlags: 0

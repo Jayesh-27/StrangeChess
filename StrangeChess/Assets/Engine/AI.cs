@@ -1,6 +1,16 @@
 using UnityEngine;
 using System.Diagnostics;
 
+
+public struct TTEntry
+{
+    public ulong key;
+    public int score;
+    public int depth;
+    public int flag; // 0 = Exact, 1 = Alpha (Upper bound), 2 = Beta (Lower bound)
+    public ushort bestMove;
+}
+
 public class AI : MonoBehaviour
 {
     public static AI Instance;
@@ -81,6 +91,11 @@ public class AI : MonoBehaviour
     const int positiveInfinity = 9999999;
     const int negativeInfinity = -9999999;
 
+    // In AI.cs
+    public TTEntry[] transpositionTable = new TTEntry[1048576]; // 1 Million entries (Size must be a power of 2)
+    private int ttMask = 1048576 - 1; // Used for fast modulo: hash & ttMask
+
+
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -90,7 +105,7 @@ public class AI : MonoBehaviour
     {        
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            PlayBestMove(depth); // Searches depth half-moves into the future
+            PlayBestMove(depth);
         }
 
         if(!ClickDetector.Instance.isWhiteTurn)
@@ -263,6 +278,7 @@ public class AI : MonoBehaviour
 
             int savedCastling = Chess.Instance.castlingRights;
             int savedEP = Chess.Instance.enPassantTarget;
+            ulong savedHash = Chess.Instance.currentZobristKey;
             pieceType originalPiece = Board.Instance.boardSquares[fromIndex];
             pieceType capturedPiece = Board.Instance.boardSquares[toIndex]; 
 
@@ -288,6 +304,7 @@ public class AI : MonoBehaviour
                     Chess.Instance.unmakeMove(fromSquare, toSquare, capturedPiece, originalPiece);
                     Chess.Instance.castlingRights = savedCastling;
                     Chess.Instance.enPassantTarget = savedEP;
+                    Chess.Instance.currentZobristKey = savedHash;
                     break; 
                 }
             }
@@ -295,6 +312,7 @@ public class AI : MonoBehaviour
             Chess.Instance.unmakeMove(fromSquare, toSquare, capturedPiece, originalPiece);
             Chess.Instance.castlingRights = savedCastling;
             Chess.Instance.enPassantTarget = savedEP;
+            Chess.Instance.currentZobristKey = savedHash;
         }
 
         if (legalMovesPlayed == 0)
@@ -346,6 +364,7 @@ public class AI : MonoBehaviour
 
             int savedCastling = Chess.Instance.castlingRights;
             int savedEP = Chess.Instance.enPassantTarget;
+            ulong savedHash = Chess.Instance.currentZobristKey;
             pieceType originalPiece = Board.Instance.boardSquares[fromIndex];
             pieceType capturedPiece = Board.Instance.boardSquares[toIndex]; 
 
@@ -366,6 +385,7 @@ public class AI : MonoBehaviour
                     Chess.Instance.unmakeMove(fromSquare, toSquare, capturedPiece, originalPiece);
                     Chess.Instance.castlingRights = savedCastling;
                     Chess.Instance.enPassantTarget = savedEP;
+                    Chess.Instance.currentZobristKey = savedHash;
                     return beta; // Prune!
                 }
                 if (score > alpha) alpha = score;
@@ -374,6 +394,7 @@ public class AI : MonoBehaviour
             Chess.Instance.unmakeMove(fromSquare, toSquare, capturedPiece, originalPiece);
             Chess.Instance.castlingRights = savedCastling;
             Chess.Instance.enPassantTarget = savedEP;
+            Chess.Instance.currentZobristKey = savedHash;
         }
 
         return alpha;

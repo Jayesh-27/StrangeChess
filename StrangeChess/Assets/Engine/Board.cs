@@ -618,6 +618,8 @@ public class Board : MonoBehaviour
         {
             Chess.Instance.fullmoveNumber = int.Parse(fenParts[5]);
         }
+
+        Chess.Instance.currentZobristKey = Chess.Instance.GenerateHashFromScratch();
     }
 
     public void DestroyVisualPiece(int index)

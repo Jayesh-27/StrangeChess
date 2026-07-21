@@ -57,6 +57,7 @@ public class Perft : MonoBehaviour
             // Backups (State memory for unmaking)
             int savedCastling = Chess.Instance.castlingRights;
             int savedEP = Chess.Instance.enPassantTarget;
+            ulong savedHash = Chess.Instance.currentZobristKey;
             pieceType originalPiece = Board.Instance.boardSquares[fromIndex];
             pieceType capturedPiece = Board.Instance.boardSquares[toIndex]; 
 
@@ -93,6 +94,7 @@ public class Perft : MonoBehaviour
             Chess.Instance.unmakeMove(fromSquare, toSquare, capturedPiece, originalPiece);
             Chess.Instance.castlingRights = savedCastling;
             Chess.Instance.enPassantTarget = savedEP;
+            Chess.Instance.currentZobristKey = savedHash;
         }
 
         return nodes;

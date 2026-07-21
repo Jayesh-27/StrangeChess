@@ -46,6 +46,9 @@ public class Chess : MonoBehaviour
     public int halfmoveClock = 0;
     public int fullmoveNumber = 1;
 
+    // zobirst hashing
+    public ulong currentZobristKey = 0;
+
     private void Awake()
     {
         if (Instance == null)
@@ -319,6 +322,31 @@ public class Chess : MonoBehaviour
             epCaptureIndex = targetIndex + 8; 
         }
 
+        // ==========================================
+        // --- ZOBRIST: ERASING THE OLD STATE ---
+        // ==========================================
+        
+        // A. Erase the old Castling Rights and old En Passant target from the hash
+        currentZobristKey ^= Zobrist.castlingRightsArray[castlingRights];
+        int oldEpIndex = enPassantTarget == -1 ? 64 : enPassantTarget;
+        currentZobristKey ^= Zobrist.enPassantArray[oldEpIndex];
+
+        // B. Erase the moving piece from its starting square
+        currentZobristKey ^= Zobrist.piecesArray[(int)originalPiece, startIndex];
+        
+        // C. Erase the captured piece (if any) from the target square
+        if (capturedPiece != pieceType.none)
+        {
+            currentZobristKey ^= Zobrist.piecesArray[(int)capturedPiece, targetIndex];
+        }
+
+        // D. Erase the victim pawn if this was an En Passant capture
+        if (isEnPassant)
+        {
+            pieceType epVictim = isWhiteMoving ? pieceType.blackPawn : pieceType.whitePawn;
+            currentZobristKey ^= Zobrist.piecesArray[(int)epVictim, epCaptureIndex];
+        }
+
         // --- 3. STANDARD CAPTURE UPDATE ---
         if(capturedPiece != pieceType.none)
         {
@@ -332,6 +360,13 @@ public class Chess : MonoBehaviour
         Board.Instance.pieceBitboards[(int)originalPiece] &= ~startSquare; 
         Board.Instance.pieceBitboards[(int)movingPiece] |= targetSquare;   
 
+        // ==========================================
+        // --- ZOBRIST: WRITING NEW PIECE POSITIONS ---
+        // ==========================================
+        
+        // E. Add the moving piece (or promoted piece) to its new target square
+        currentZobristKey ^= Zobrist.piecesArray[(int)movingPiece, targetIndex];
+
         // --- 5. EN PASSANT EXECUTION ---
         if (isEnPassant)
         {
@@ -340,16 +375,52 @@ public class Chess : MonoBehaviour
             Board.Instance.pieceBitboards[(int)epVictim] &= ~(1UL << epCaptureIndex);
         }
 
-        // --- 6. CASTLING EXECUTION (FIXED: Added startSquare validation) ---
+        // --- 6. CASTLING EXECUTION (REWRITTEN: NO RECURSION) ---
         if (originalPiece == pieceType.whiteKing && startSquare == (1UL << 4))
         {
-            if (targetSquare == (1UL << 6)) movePiece(1UL << 7, 1UL << 5); // Kingside
-            else if (targetSquare == (1UL << 2)) movePiece(1UL << 0, 1UL << 3); // Queenside
+            if (targetSquare == (1UL << 6)) // Kingside
+            {
+                Board.Instance.boardSquares[7] = pieceType.none;
+                Board.Instance.boardSquares[5] = pieceType.whiteRook;
+                Board.Instance.pieceBitboards[(int)pieceType.whiteRook] &= ~(1UL << 7);
+                Board.Instance.pieceBitboards[(int)pieceType.whiteRook] |= (1UL << 5);
+                
+                currentZobristKey ^= Zobrist.piecesArray[(int)pieceType.whiteRook, 7]; // Remove Rook from h1
+                currentZobristKey ^= Zobrist.piecesArray[(int)pieceType.whiteRook, 5]; // Add Rook to f1
+            }
+            else if (targetSquare == (1UL << 2)) // Queenside
+            {
+                Board.Instance.boardSquares[0] = pieceType.none;
+                Board.Instance.boardSquares[3] = pieceType.whiteRook;
+                Board.Instance.pieceBitboards[(int)pieceType.whiteRook] &= ~(1UL << 0);
+                Board.Instance.pieceBitboards[(int)pieceType.whiteRook] |= (1UL << 3);
+
+                currentZobristKey ^= Zobrist.piecesArray[(int)pieceType.whiteRook, 0]; // Remove Rook from a1
+                currentZobristKey ^= Zobrist.piecesArray[(int)pieceType.whiteRook, 3]; // Add Rook to d1
+            }
         }
         else if (originalPiece == pieceType.blackKing && startSquare == (1UL << 60))
         {
-            if (targetSquare == (1UL << 62)) movePiece(1UL << 63, 1UL << 61); // Kingside
-            else if (targetSquare == (1UL << 58)) movePiece(1UL << 56, 1UL << 59); // Queenside
+            if (targetSquare == (1UL << 62)) // Kingside
+            {
+                Board.Instance.boardSquares[63] = pieceType.none;
+                Board.Instance.boardSquares[61] = pieceType.blackRook;
+                Board.Instance.pieceBitboards[(int)pieceType.blackRook] &= ~(1UL << 63);
+                Board.Instance.pieceBitboards[(int)pieceType.blackRook] |= (1UL << 61);
+
+                currentZobristKey ^= Zobrist.piecesArray[(int)pieceType.blackRook, 63]; // Remove Rook from h8
+                currentZobristKey ^= Zobrist.piecesArray[(int)pieceType.blackRook, 61]; // Add Rook to f8
+            }
+            else if (targetSquare == (1UL << 58)) // Queenside
+            {
+                Board.Instance.boardSquares[56] = pieceType.none;
+                Board.Instance.boardSquares[59] = pieceType.blackRook;
+                Board.Instance.pieceBitboards[(int)pieceType.blackRook] &= ~(1UL << 56);
+                Board.Instance.pieceBitboards[(int)pieceType.blackRook] |= (1UL << 59);
+
+                currentZobristKey ^= Zobrist.piecesArray[(int)pieceType.blackRook, 56]; // Remove Rook from a8
+                currentZobristKey ^= Zobrist.piecesArray[(int)pieceType.blackRook, 59]; // Add Rook to d8
+            }
         }
 
         // Castling rights checks
@@ -369,6 +440,18 @@ public class Chess : MonoBehaviour
         else
             enPassantTarget = -1; 
 
+        // ==========================================
+        // --- ZOBRIST: WRITING THE NEW STATE ---
+        // ==========================================
+        
+        // F. Add the NEW Castling Rights and En Passant target back into the hash
+        currentZobristKey ^= Zobrist.castlingRightsArray[castlingRights];
+        int newEpIndex = enPassantTarget == -1 ? 64 : enPassantTarget;
+        currentZobristKey ^= Zobrist.enPassantArray[newEpIndex];
+
+        // G. Swap the turn inside the hash
+        currentZobristKey ^= Zobrist.sideToMove;
+
         // --- 8. INCREMENTAL EXTRA BITBOARDS ---
         ulong moveMask = startSquare | targetSquare;
         if (isWhiteMoving)
@@ -376,12 +459,26 @@ public class Chess : MonoBehaviour
             Board.Instance.whitePieces ^= moveMask;
             if (capturedPiece != pieceType.none) Board.Instance.blackPieces ^= targetSquare;
             if (isEnPassant) Board.Instance.blackPieces &= ~(1UL << epCaptureIndex);
+            
+            // Castling Extra Bitboard Logic
+            if (originalPiece == pieceType.whiteKing && startSquare == (1UL << 4))
+            {
+                if (targetSquare == (1UL << 6)) { Board.Instance.whitePieces &= ~(1UL << 7); Board.Instance.whitePieces |= (1UL << 5); }
+                else if (targetSquare == (1UL << 2)) { Board.Instance.whitePieces &= ~(1UL << 0); Board.Instance.whitePieces |= (1UL << 3); }
+            }
         }
         else
         {
             Board.Instance.blackPieces ^= moveMask;
             if (capturedPiece != pieceType.none) Board.Instance.whitePieces ^= targetSquare;
             if (isEnPassant) Board.Instance.whitePieces &= ~(1UL << epCaptureIndex); 
+            
+            // Castling Extra Bitboard Logic
+            if (originalPiece == pieceType.blackKing && startSquare == (1UL << 60))
+            {
+                if (targetSquare == (1UL << 62)) { Board.Instance.blackPieces &= ~(1UL << 63); Board.Instance.blackPieces |= (1UL << 61); }
+                else if (targetSquare == (1UL << 58)) { Board.Instance.blackPieces &= ~(1UL << 56); Board.Instance.blackPieces |= (1UL << 59); }
+            }
         }        
         
         Board.Instance.CalculateExtraBitboards();
@@ -400,7 +497,8 @@ public class Chess : MonoBehaviour
             pieceType capturedPiece = Board.Instance.bitboardToPiece(targetSquare);
 
             int castlingRightsTemp = castlingRights;
-            int enPassantTargetTemp = enPassantTarget; // Save EP state
+            int enPassantTargetTemp = enPassantTarget; 
+            ulong savedHash = currentZobristKey; // <-- 1. TAKE SNAPSHOT
 
             movePiece(startSquare, targetSquare);
             
@@ -408,9 +506,10 @@ public class Chess : MonoBehaviour
             if(isSquareSafe(SquareToCheck))
                 legalMoves |= targetSquare;
                 
-            unmakeMove(startSquare, targetSquare, capturedPiece, originalPiece); // Pass it here
+            unmakeMove(startSquare, targetSquare, capturedPiece, originalPiece); 
             castlingRights = castlingRightsTemp;
-            enPassantTarget = enPassantTargetTemp; // Restore EP state
+            enPassantTarget = enPassantTargetTemp; 
+            currentZobristKey = savedHash; // <-- 2. RESTORE SNAPSHOT
 
             moves &= moves - 1;
         }
@@ -493,54 +592,69 @@ public class Chess : MonoBehaviour
             Board.Instance.pieceBitboards[(int)capturedPiece] |= targetSquare;
         }
 
-        // 5. Undo Castling Rooks (FIXED: Added startSquare validation)
+        // 5. Undo Castling Rooks (REWRITTEN: NO RECURSION)
         if (originalMovedPiece == pieceType.whiteKing && startSquare == (1UL << 4)) 
         {
             if (targetSquare == (1UL << 6)) // White Kingside
             {
-                Board.Instance.pieceBitboards[(int)pieceType.whiteRook] |= (1UL << 7);
-                Board.Instance.pieceBitboards[(int)pieceType.whiteRook] &= ~(1UL << 5);
                 Board.Instance.boardSquares[7] = pieceType.whiteRook; // h1
                 Board.Instance.boardSquares[5] = pieceType.none;      // f1
+                Board.Instance.pieceBitboards[(int)pieceType.whiteRook] |= (1UL << 7);
+                Board.Instance.pieceBitboards[(int)pieceType.whiteRook] &= ~(1UL << 5);
             }
             else if (targetSquare == (1UL << 2)) // White Queenside
             {
-                Board.Instance.pieceBitboards[(int)pieceType.whiteRook] |= (1UL << 0);
-                Board.Instance.pieceBitboards[(int)pieceType.whiteRook] &= ~(1UL << 3);
                 Board.Instance.boardSquares[0] = pieceType.whiteRook; // a1
                 Board.Instance.boardSquares[3] = pieceType.none;      // d1
+                Board.Instance.pieceBitboards[(int)pieceType.whiteRook] |= (1UL << 0);
+                Board.Instance.pieceBitboards[(int)pieceType.whiteRook] &= ~(1UL << 3);
             }
         }
         else if (originalMovedPiece == pieceType.blackKing && startSquare == (1UL << 60)) 
         {
             if (targetSquare == (1UL << 62)) // Black Kingside
             {
-                Board.Instance.pieceBitboards[(int)pieceType.blackRook] |= (1UL << 63);
-                Board.Instance.pieceBitboards[(int)pieceType.blackRook] &= ~(1UL << 61);
                 Board.Instance.boardSquares[63] = pieceType.blackRook; // h8
                 Board.Instance.boardSquares[61] = pieceType.none;      // f8
+                Board.Instance.pieceBitboards[(int)pieceType.blackRook] |= (1UL << 63);
+                Board.Instance.pieceBitboards[(int)pieceType.blackRook] &= ~(1UL << 61);
             }
             else if (targetSquare == (1UL << 58)) // Black Queenside
             {
-                Board.Instance.pieceBitboards[(int)pieceType.blackRook] |= (1UL << 56);
-                Board.Instance.pieceBitboards[(int)pieceType.blackRook] &= ~(1UL << 59);
                 Board.Instance.boardSquares[56] = pieceType.blackRook; // a8
                 Board.Instance.boardSquares[59] = pieceType.none;      // d8
+                Board.Instance.pieceBitboards[(int)pieceType.blackRook] |= (1UL << 56);
+                Board.Instance.pieceBitboards[(int)pieceType.blackRook] &= ~(1UL << 59);
             }
         }
 
         // --- INCREMENTAL BITBOARD REVERSAL ---
         ulong moveMask = startSquare | targetSquare;
         bool isWhiteMoving = originalMovedPiece >= pieceType.whitePawn && originalMovedPiece <= pieceType.whiteKing;
+        
         if (isWhiteMoving)
         {
             Board.Instance.whitePieces ^= moveMask;
             if (capturedPiece != pieceType.none) Board.Instance.blackPieces ^= targetSquare; 
+            
+            // Castling Extra Bitboard Reversal
+            if (originalMovedPiece == pieceType.whiteKing && startSquare == (1UL << 4))
+            {
+                if (targetSquare == (1UL << 6)) { Board.Instance.whitePieces |= (1UL << 7); Board.Instance.whitePieces &= ~(1UL << 5); }
+                else if (targetSquare == (1UL << 2)) { Board.Instance.whitePieces |= (1UL << 0); Board.Instance.whitePieces &= ~(1UL << 3); }
+            }
         }
         else
         {
             Board.Instance.blackPieces ^= moveMask;
             if (capturedPiece != pieceType.none) Board.Instance.whitePieces ^= targetSquare; 
+            
+            // Castling Extra Bitboard Reversal
+            if (originalMovedPiece == pieceType.blackKing && startSquare == (1UL << 60))
+            {
+                if (targetSquare == (1UL << 62)) { Board.Instance.blackPieces |= (1UL << 63); Board.Instance.blackPieces &= ~(1UL << 61); }
+                else if (targetSquare == (1UL << 58)) { Board.Instance.blackPieces |= (1UL << 56); Board.Instance.blackPieces &= ~(1UL << 59); }
+            }
         }
 
         // --- EN PASSANT RESTORATION ---
@@ -692,7 +806,36 @@ public class Chess : MonoBehaviour
         }
     }
 
-    // Helper Functions
+    public ulong GenerateHashFromScratch()
+    {
+        ulong hash = 0;
+
+        // 1. Pieces
+        for (int i = 0; i < 64; i++)
+        {
+            pieceType piece = Board.Instance.boardSquares[i];
+            if (piece != pieceType.none)
+            {
+                hash ^= Zobrist.piecesArray[(int)piece, i];
+            }
+        }
+
+        // 2. Castling Rights (Using your existing castlingRights int)
+        hash ^= Zobrist.castlingRightsArray[castlingRights];
+
+        // 3. En Passant
+        int epIndex = enPassantTarget == -1 ? 64 : enPassantTarget;
+        hash ^= Zobrist.enPassantArray[epIndex];
+
+        // 4. Side to Move
+        if (!ClickDetector.Instance.isWhiteTurn)
+        {
+            hash ^= Zobrist.sideToMove;
+        }
+
+        return hash;
+    }
+
     public ushort PackMove(int startSquare, int targetSquare, moveFlag flag)
     {
         return (ushort)(startSquare | (targetSquare << 6) | ((ushort)flag << 12));

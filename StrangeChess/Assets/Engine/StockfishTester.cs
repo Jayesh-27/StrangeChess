@@ -6,7 +6,7 @@ using System.Collections.Concurrent;
 
 public class StockfishTester : MonoBehaviour
 {
-    public static StockfishTester Instance; // Added Singleton for easy access!
+    public static StockfishTester Instance;
 
     [SerializeField] private bool canStockfishPlay = false;
     public string stockfishEvalString = "0.00";
