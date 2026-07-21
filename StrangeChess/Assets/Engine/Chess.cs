@@ -518,8 +518,9 @@ public class Chess : MonoBehaviour
 
     public bool isSquareSafe(ulong king)
     {
+        if (king == 0) return false; // THE FIX: Prevent crash if the King is ever missing
+        
         bool isWhiteTurn = ClickDetector.Instance.isWhiteTurn;
-        //king = isWhiteTurn ? Board.Instance.pieceBitboards[(int)pieceType.whiteKing] : Board.Instance.pieceBitboards[(int)pieceType.blackKing];
         int kingIndex = Board.Instance.GetBitboardIndex(king);
 
         // 1. Get enemy bitboards

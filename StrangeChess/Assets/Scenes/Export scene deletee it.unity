@@ -26211,11 +26211,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startTournament: 1
-  startingElo: 1400
+  startingElo: 1500
   eloStep: 100
   gamesPerMatch: 2
   myEngineTimeMs: 1000
-  stockfishTimeMs: 1000
+  stockfishTimeMs: 500
   currentElo: 0
   matchGameCount: 0
   matchScore: 0
