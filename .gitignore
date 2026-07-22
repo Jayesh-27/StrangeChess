@@ -64,3 +64,10 @@ Builds/
 *_BurstDebugInformation_DoNotShip/
 MonoBleedingEdge/
 StrangeChess_clone_0/
+.vscode/
+.vsconfig
+WebGL Builds/
+WebGL*/
+gen.cs
+magics.txt
+test.cs
