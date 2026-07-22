@@ -28,6 +28,8 @@ public class Board : MonoBehaviour
     [SerializeField] public GameObject blackQueenPrefab;
     
     [SerializeField] private GameObject[] visualPieces = new GameObject[64];
+    private GameObject[] initialVisualPieces = new GameObject[64];
+    private List<GameObject> spawnedPieces = new List<GameObject>();
     [SerializeField] public ulong[] pieceBitboards = new ulong[13];     // main bitboards
     [SerializeField] public ulong whitePieces;
     [SerializeField] public ulong blackPieces;
@@ -136,6 +138,11 @@ public class Board : MonoBehaviour
             Instance = this;
         }
 
+        for (int i = 0; i < 64; i++)
+        {
+            initialVisualPieces[i] = visualPieces[i];
+        }
+
         boardSquares[0]  = pieceType.whiteRook;
         boardSquares[1]  = pieceType.whiteKnight;
         boardSquares[2]  = pieceType.whiteBishop;
@@ -212,10 +219,10 @@ public class Board : MonoBehaviour
     {
         int fromIndex = GetBitboardIndex(from);
         int toIndex = GetBitboardIndex(to);
-        Debug.Log("Moving Piece from " + fromIndex + " to " + toIndex);
+        //Debug.Log("Moving Piece from " + fromIndex + " to " + toIndex);
         if(visualPieces[toIndex] != null)
         {
-            Destroy(visualPieces[toIndex]);
+            visualPieces[toIndex].SetActive(false);
             //Debug.Log("Destoryed a Piece");
         }
         visualPieces[fromIndex].transform.localPosition = sockets[toIndex].transform.localPosition + visualPiecesPositionOffset;
@@ -620,13 +627,15 @@ public class Board : MonoBehaviour
         }
 
         Chess.Instance.currentZobristKey = Chess.Instance.GenerateHashFromScratch();
+        Chess.Instance.positionHistory[0] = Chess.Instance.currentZobristKey;
+        Chess.Instance.historyPly = 1;
     }
 
     public void DestroyVisualPiece(int index)
     {
         if (visualPieces[index] != null)
         {
-            Destroy(visualPieces[index]);
+            visualPieces[index].SetActive(false);
             visualPieces[index] = null;
         }
     }
@@ -644,8 +653,29 @@ public class Board : MonoBehaviour
         GameObject prefab = isWhite ? whiteQueenPrefab : blackQueenPrefab;
         GameObject newQueen = Instantiate(prefab, pieceParent);
         
+        spawnedPieces.Add(newQueen);
+
         // 4. Assign and position it
         visualPieces[toIndex] = newQueen;
         newQueen.transform.localPosition = sockets[toIndex].transform.localPosition + visualPiecesPositionOffset;
+    }
+
+    public void ResetVisualBoard()
+    {
+        foreach (var p in spawnedPieces)
+        {
+            if (p != null) Destroy(p);
+        }
+        spawnedPieces.Clear();
+
+        for (int i = 0; i < 64; i++)
+        {
+            visualPieces[i] = initialVisualPieces[i];
+            if (visualPieces[i] != null)
+            {
+                visualPieces[i].SetActive(true);
+                visualPieces[i].transform.localPosition = sockets[i].transform.localPosition + visualPiecesPositionOffset;
+            }
+        }
     }
 }
