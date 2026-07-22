@@ -1,10 +1,12 @@
 # StrangeChess
 Custom Chess Engine (~1900 Elo) written in C# for Unity, which is built completely from scratch without using existing chess engine libraries.
+Try it out yourself - https://jayesh27.itch.io/strangechess
 
 ## Description - Overview
 I started this as a hobby project. My first implementation made many mistakes example, using mailbox board representation so had to rewrite the entire engine again while learning and implementing topics like bitboards, magic bitboards, minimax, alpha beta pruning, negamax, Zobrist hashing, bitwise operations, evaluation design, and many more.
 
-Since the engine is built from scratch, it can be extended with custom pieces and rules. I used this flexibility in my hackathon project RPG Chess, where I added a custom piece called the Dragon. - https://github.com/Jayesh-27/RPG-CHESS.
+Since the engine is built from scratch, it can be extended with custom pieces and rules. I used this flexibility in my hackathon project RPG Chess, where I added a custom piece called the Dragon.
+https://github.com/Jayesh-27/RPG-CHESS.
 
 ## Performance
 
