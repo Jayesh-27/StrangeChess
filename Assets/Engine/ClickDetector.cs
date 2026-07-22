@@ -20,16 +20,13 @@ public class ClickDetector : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            Debug.Log("Left Click Pressed");
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
 
             if (Physics.Raycast(ray, out hit))
             {
-                Debug.Log("Raycast nikal gayi");
                 if (hit.collider.GetComponent<SocketTracker>() != null) // detecting Square; NOT Piece
                 {
-                    Debug.Log("collided with SocketTracker");
                     int Index = hit.collider.GetComponent<SocketTracker>().Square;
                     //Debug.Log(Board.Instance.BitboardToBoardString(Board.Instance.rookBlockersMasks[Index]));
                     //  index of which Square clicked on, in BITBOARD
