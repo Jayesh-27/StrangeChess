@@ -3,7 +3,6 @@ using System.Diagnostics;
 public class Perft
 {
     public int searchDepth = 3; // Start at Depth 3 (Should output 8902 nodes for the starting position)
-    public bool runOnStart = true;
 
     public void RunTest()
     {

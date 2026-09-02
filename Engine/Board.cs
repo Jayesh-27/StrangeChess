@@ -21,8 +21,6 @@ public class Board
 {
     public static Board Instance = new Board();
     
-    public ulong availableMoves = 0; 
-    public bool isSelected = false;
 
     public bool isWhiteTurn = true;
     
@@ -41,9 +39,6 @@ public class Board
     public ulong[] bishopMasks = new ulong[64];
     public ulong[] bishopBlockersMasks = new ulong[64];
     public ulong[][] bishopAttackTable = new ulong[64][];
-
-    private bool displayBitboardBool = false;
-    private ulong bitboardToDisplay = 0;
 
     public pieceType[] boardSquares = new pieceType[64];
     
@@ -190,26 +185,12 @@ public class Board
 
         LoadFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     }
-    
-    void Update()
-    {
-        if(displayBitboardBool)
-        {
-            displayBitboardBool = false;
-        }
-        //CalculateExtraBitboards();
-    }
 
     public int GetBitboardIndex(ulong bitboard)
     {
         if (bitboard == 0) return -1;
         // Isolate the least significant 1 bit, multiply by De Bruijn magic, and shift
         return DeBruijnIndex[((bitboard & (ulong)-(long)bitboard) * 0x03f79d71b4cb0a89UL) >> 58];
-    }
-
-    public string displayBitboard(ulong bitboard)
-    {
-        return System.Convert.ToString((long)bitboard, 2).PadLeft(64, '0');
     }
 
     public void CalculateExtraBitboards()

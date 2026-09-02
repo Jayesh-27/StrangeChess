@@ -22,8 +22,6 @@ public class Chess
 {    
     public static Chess Instance = new Chess();
     
-    public ulong whiteAttacks = 280375465082880;
-    public ulong blackAttacks = 16711680;
     public int castlingRights = 15;
     ulong wKing  = 1UL << 4;
     ulong bKing  = 1UL << 60;
@@ -757,5 +755,27 @@ public class Chess
     public ushort PackMove(int startSquare, int targetSquare, moveFlag flag)
     {
         return (ushort)(startSquare | (targetSquare << 6) | ((ushort)flag << 12));
+    }
+
+    public string FormatUciMove(ushort move)
+    {
+        int fromIndex = move & 0x3F;
+        int toIndex = (move >> 6) & 0x3F;
+        int flag = move >> 12;
+
+        int fromFile = fromIndex % 8;
+        int fromRank = fromIndex / 8;
+        int toFile = toIndex % 8;
+        int toRank = toIndex / 8;
+
+        string uci = $"{(char)('a' + fromFile)}{fromRank + 1}{(char)('a' + toFile)}{toRank + 1}";
+
+        // Add promotion piece character if applicable
+        if (flag == 8 || flag == 12) uci += "n";
+        else if (flag == 9 || flag == 13) uci += "b";
+        else if (flag == 10 || flag == 14) uci += "r";
+        else if (flag == 11 || flag == 15) uci += "q";
+
+        return uci;
     }
 }

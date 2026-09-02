@@ -19,7 +19,6 @@ public class AI
     const int bishopValue = 320;
     const int rookValue = 500;
     const int queenValue = 900;
-    private int depth = 32;
     public long timeLimitMs = 1000;
     private Stopwatch searchTimer = new Stopwatch();
     private bool isTimeUp = false;
@@ -131,30 +130,6 @@ public class AI
 
     const int positiveInfinity = 9999999;
     const int negativeInfinity = -9999999;
-
-    public void PlayBestMove(int depth)
-    {
-        ushort bestMove = GetBestMove(depth);
-        
-        if (bestMove == 0) 
-        {
-            return;
-        }
-
-        int fromIndex = bestMove & 0x3F;
-        int toIndex = (bestMove >> 6) & 0x3F;
-        ulong fromSquare = 1UL << fromIndex;
-        ulong toSquare = 1UL << toIndex;
-
-        pieceType movingPiece = Board.Instance.boardSquares[fromIndex];
-        pieceType targetPiece = Board.Instance.boardSquares[toIndex];
-        
-        Chess.Instance.movePiece(fromSquare, toSquare);
-        
-        Board.Instance.isWhiteTurn = !Board.Instance.isWhiteTurn;
-        Board.Instance.availableMoves = 0;
-        Board.Instance.isSelected = false;
-    }
 
     public ushort GetBestMove(int maxDepth)
     {
