@@ -1,5 +1,5 @@
 # StrangeChess
-Custom Chess Engine (~1900 Elo) written in C# for Unity, which is built completely from scratch without using existing chess engine libraries.
+Custom Chess Engine (~2000 Elo) written in C# for Unity, which is built completely from scratch without using existing chess engine libraries.
 
 Try it out yourself - https://jayesh27.itch.io/strangechess
 
