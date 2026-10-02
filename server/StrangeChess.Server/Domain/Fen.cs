@@ -5,7 +5,7 @@ using System.Text;
 /// </summary>
 public static class FenHelper
 {
-    public const string StartFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    public const string StartFen = "1k6/ppp5/8/8/8/8/4P1PP/6K1 w - - 0 1";
 
     /// <summary>Builds a standard 6-field FEN from the GameState board + metadata.</summary>
     public static string ToFen(GameState state)
@@ -63,16 +63,16 @@ public static class FenHelper
             HalfmoveClock = int.Parse(parts[4]),
             Fullmove  = int.Parse(parts[5]),
             TurnNumber = template?.TurnNumber ?? 0,
-            Points    = template?.Points ?? new Dictionary<string, int> { ["white"] = 0, ["black"] = 0 },
-            History   = template?.History ?? new List<HistoryEntry>(),
-            Events    = template?.Events ?? new List<GameEvent>(),
+            Points    = template != null ? new Dictionary<string, int>(template.Points) : new Dictionary<string, int> { ["white"] = 0, ["black"] = 0 },
+            History   = template != null ? new List<HistoryEntry>(template.History) : new List<HistoryEntry>(),
+            Events    = template != null ? new List<GameEvent>(template.Events) : new List<GameEvent>(),
         };
     }
 
     /// <summary>Creates the starting board for a new game.</summary>
     public static PieceInfo?[] StartingBoard()
     {
-        return ParseBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
+        return ParseBoard("1k6/ppp5/8/8/8/8/4P1PP/6K1");
     }
 
     private static PieceInfo?[] ParseBoard(string placement)

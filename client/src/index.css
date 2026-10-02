@@ -22,7 +22,7 @@ body {
 }
 
 #root {
-  max-width: 1280px;
+  max-width: 100%;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
@@ -58,18 +58,11 @@ button:focus-visible {
 }
 
 /* Board Styles */
-.board-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-}
-
 .board {
   display: grid;
   grid-template-columns: repeat(8, 1fr);
   grid-template-rows: repeat(8, 1fr);
-  width: min(92vw, 640px);
+  width: 100%;
   aspect-ratio: 1;
   border: 4px solid #333;
   border-radius: 4px;
@@ -128,11 +121,7 @@ button:focus-visible {
 }
 
 .piece {
-  /* Ensure piece glyphs look crisp */
   text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-  /* The white pieces usually have a white color inside, black have black. 
-     Using unicode characters, color applies to the character itself. 
-     Let's style white and black specifically. */
 }
 .piece.white {
   color: white;
@@ -140,32 +129,118 @@ button:focus-visible {
 }
 .piece.black {
   color: black;
-  /* subtle glow/outline to separate from dark squares */
   text-shadow: 0 0 2px rgba(255,255,255,0.3);
+}
+
+/* Variant UI Styles */
+.piece-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: #333;
+  color: white;
+  border-radius: 50%;
+  width: 1.5em;
+  height: 1.5em;
+  font-size: 0.25em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid white;
+  font-family: sans-serif;
+  font-weight: bold;
+  z-index: 2;
+}
+
+.piece-badge.warning {
+  background-color: #ff9800;
+}
+
+.piece-badge.flash {
+  background-color: #f44336;
+  animation: flash 0.5s infinite alternate;
+}
+
+@keyframes flash {
+  from { opacity: 1; }
+  to { opacity: 0.5; }
+}
+
+.shop-items {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.shop-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.5rem;
+  border-radius: 4px;
+  background: #333;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+.shop-btn.affordable:hover { background: #444; }
+.shop-btn.selected { border-color: #4caf50; background: #444; }
+.shop-btn.disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Layout */
+.main-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+  width: 100%;
+}
+
+.panel {
+  width: min(92vw, 640px);
+  box-sizing: border-box;
+}
+
+.board-area {
+  width: min(92vw, 640px);
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1rem;
 }
 
 .status-panel {
   display: flex;
   justify-content: space-between;
-  width: min(92vw, 640px);
   padding: 1rem;
   background-color: #1a1a1a;
   border-radius: 8px;
   font-size: 1.1em;
-  box-sizing: border-box;
 }
 
-.controls {
+.shop-panel {
   display: flex;
-  justify-content: center;
-  gap: 1rem;
-  margin-top: 1rem;
-  margin-bottom: 1.5rem;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: #1a1a1a;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.event-log {
+  text-align: left;
+  background: #2a1b1b;
+  padding: 1rem;
+  border-radius: 4px;
+  max-height: 100px;
+  overflow-y: auto;
+  font-size: 0.9em;
 }
 
 .history {
-  margin-top: 1rem;
-  width: min(92vw, 640px);
   text-align: left;
   font-family: monospace;
   background: #111;
@@ -173,5 +248,64 @@ button:focus-visible {
   border-radius: 4px;
   max-height: 150px;
   overflow-y: auto;
-  box-sizing: border-box;
+}
+
+.rules-panel {
+  text-align: left;
+  background: #1a1a1a;
+  padding: 1rem;
+  border-radius: 8px;
+}
+.rules-panel label {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+/* Mobile Order */
+.controls { order: 1; }
+.board-area { order: 2; }
+.shop-panel { order: 3; }
+.status-panel { order: 4; }
+.history { order: 5; }
+.event-log { order: 6; }
+
+@media (min-width: 900px) {
+  .main-layout {
+    display: grid;
+    grid-template-columns: 280px min(60vw, 640px) 280px;
+    grid-template-rows: auto auto auto;
+    gap: 1.5rem;
+    max-width: 1240px;
+    margin: 0 auto;
+    align-items: start;
+    justify-content: center;
+  }
+  
+  .panel {
+    width: 100%;
+  }
+  
+  .board-area {
+    width: 100%;
+  }
+
+  .square {
+    font-size: min(8vw, 70px);
+  }
+
+  /* Assign to grid areas */
+  .controls { grid-column: 1; grid-row: 1; }
+  .status-panel { grid-column: 1; grid-row: 2; }
+  .rules-panel { grid-column: 1; grid-row: 3; }
+  
+  .board-area { grid-column: 2; grid-row: 1 / span 3; }
+  
+  .shop-panel { grid-column: 3; grid-row: 1; }
+  .event-log { grid-column: 3; grid-row: 2; }
+  
+  .history { 
+    grid-column: 3; 
+    grid-row: 3; 
+    max-height: calc(min(60vw, 640px) - 200px); /* Fill remaining space safely */
+  }
 }

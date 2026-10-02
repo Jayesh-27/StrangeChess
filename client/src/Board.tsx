@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import type { GameState, GameSettings } from './types';
 import { PIECE_GLYPHS, squareName, squareIndex } from './types';
 
@@ -6,14 +6,14 @@ interface BoardProps {
   state: GameState;
   settings: GameSettings;
   onMove: (uci: string) => void;
+  onDrop?: (square: string) => void;
+  dropPiece?: string | null;
   disabled: boolean;
 }
 
-export const Board: React.FC<BoardProps> = ({ state, settings, onMove, disabled }) => {
+export const Board = ({ state, settings, onMove, onDrop, dropPiece, disabled }: BoardProps) => {
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
 
-  // We want to draw rank 8 at the top, rank 1 at the bottom.
-  // If player is black, flip the board (rank 1 at top).
   const isFlipped = settings.playerColor === 'black';
 
   const squares = useMemo(() => {
@@ -23,18 +23,22 @@ export const Board: React.FC<BoardProps> = ({ state, settings, onMove, disabled 
         sqs.push(r * 8 + f);
       }
     }
-    if (isFlipped) {
-      sqs.reverse();
-    }
+    if (isFlipped) sqs.reverse();
     return sqs;
   }, [isFlipped]);
 
   const handleSquareClick = (idx: number) => {
     if (disabled) return;
 
+    if (dropPiece && onDrop) {
+      const sq = squareName(idx);
+      if (state.legalDrops[dropPiece]?.includes(sq)) {
+        onDrop(sq);
+      }
+      return;
+    }
+
     if (selectedIdx === null) {
-      // Select a piece if it belongs to the player whose turn it is
-      // and it's actually their piece.
       const piece = state.board[idx];
       if (piece) {
         const isWhitePiece = piece.p === piece.p.toUpperCase();
@@ -44,13 +48,11 @@ export const Board: React.FC<BoardProps> = ({ state, settings, onMove, disabled 
         }
       }
     } else {
-      // If clicking the same square, deselect
       if (selectedIdx === idx) {
         setSelectedIdx(null);
         return;
       }
 
-      // If clicking another of own pieces, change selection
       const piece = state.board[idx];
       if (piece) {
         const isWhitePiece = piece.p === piece.p.toUpperCase();
@@ -61,17 +63,13 @@ export const Board: React.FC<BoardProps> = ({ state, settings, onMove, disabled 
         }
       }
 
-      // Try to move
       const fromSq = squareName(selectedIdx);
       const toSq = squareName(idx);
       
-      // Look for the move in legal moves. It might be a promotion.
-      // Auto-queen for now if promotion is available.
       let moveUci = `${fromSq}${toSq}`;
       let isLegal = state.legalMoves.includes(moveUci);
       
       if (!isLegal) {
-        // Check if there is a promotion move
         if (state.legalMoves.includes(`${moveUci}q`)) {
           moveUci = `${moveUci}q`;
           isLegal = true;
@@ -82,30 +80,35 @@ export const Board: React.FC<BoardProps> = ({ state, settings, onMove, disabled 
         onMove(moveUci);
         setSelectedIdx(null);
       } else {
-        setSelectedIdx(null); // Invalid move, deselect
+        setSelectedIdx(null);
       }
     }
   };
 
-  const getLegalDestinations = () => {
-    if (selectedIdx === null) return new Set<number>();
-    const fromSq = squareName(selectedIdx);
+  const legalDestinations = useMemo(() => {
     const dests = new Set<number>();
-    for (const move of state.legalMoves) {
-      if (move.startsWith(fromSq)) {
-        const toSq = move.substring(2, 4);
-        dests.add(squareIndex(toSq));
+    if (dropPiece) {
+      const dropSqs = state.legalDrops[dropPiece] || [];
+      dropSqs.forEach(sq => dests.add(squareIndex(sq)));
+      return dests;
+    }
+
+    if (selectedIdx !== null) {
+      const fromSq = squareName(selectedIdx);
+      for (const move of state.legalMoves) {
+        if (move.startsWith(fromSq)) {
+          dests.add(squareIndex(move.substring(2, 4)));
+        }
       }
     }
     return dests;
-  };
+  }, [selectedIdx, state.legalMoves, dropPiece, state.legalDrops]);
 
-  const legalDestinations = getLegalDestinations();
-  const lastMove = state.history.length > 0 ? state.history[state.history.length - 1].uci : null;
-  const lastMoveFrom = lastMove ? squareIndex(lastMove.substring(0, 2)) : null;
-  const lastMoveTo = lastMove ? squareIndex(lastMove.substring(2, 4)) : null;
+  const lastMove = state.history.length > 0 ? state.history[state.history.length - 1] : null;
+  const lastMoveFrom = lastMove?.type === 'move' && lastMove.uci ? squareIndex(lastMove.uci.substring(0, 2)) : null;
+  const lastMoveTo = lastMove?.type === 'move' && lastMove.uci ? squareIndex(lastMove.uci.substring(2, 4)) : 
+                     lastMove?.type === 'drop' && lastMove.square ? squareIndex(lastMove.square) : null;
 
-  // Find king position for check indicator
   const kingIndex = state.board.findIndex(p => p && p.p === (state.turn === 'white' ? 'K' : 'k'));
 
   return (
@@ -136,6 +139,11 @@ export const Board: React.FC<BoardProps> = ({ state, settings, onMove, disabled 
             {piece && (
               <span className={`piece ${isWhitePiece ? 'white' : 'black'}`}>
                 {PIECE_GLYPHS[piece.p] || piece.p}
+                {state.mode === 'variant' && piece.left !== null && (
+                  <div className={`piece-badge ${piece.left <= 2 ? 'warning flash' : ''}`}>
+                    {piece.left}
+                  </div>
+                )}
               </span>
             )}
           </div>

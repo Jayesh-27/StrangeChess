@@ -33,6 +33,10 @@ export async function makeMove(state: GameState, uci: string): Promise<GameState
   return request<GameState>('/api/move', { state, uci });
 }
 
+export async function makeDrop(state: GameState, piece: string, square: string): Promise<GameState> {
+  return request<GameState>('/api/drop', { state, piece, square });
+}
+
 export async function botMove(
   state: GameState,
   preset: { depth: number; timeMs: number },

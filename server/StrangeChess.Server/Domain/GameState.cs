@@ -36,11 +36,11 @@ public record GameEvent(string Type, string? Square = null, string? Piece = null
 /// </summary>
 public class VariantConfig
 {
-    public int PointsPerTurn { get; set; } = 10;
+    public int PointsPerTurn { get; set; } = 30;
     public int StartingPoints { get; set; } = 0;
     public Dictionary<string, int> Lifetimes { get; set; } = new()
     {
-        ["pawn"] = 10, ["knight"] = 7, ["bishop"] = 7, ["rook"] = 5, ["queen"] = 2
+        ["pawn"] = 15, ["knight"] = 10, ["bishop"] = 10, ["rook"] = 8, ["queen"] = 5
     };
     public Dictionary<string, int> Costs { get; set; } = new()
     {

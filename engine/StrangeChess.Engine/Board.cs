@@ -175,7 +175,6 @@ public class Board
         CalculateExtraBitboards();
     }
 
-    
     public void Initialize()
     {
         calculateKnightAttacks();
@@ -183,7 +182,7 @@ public class Board
         calculateRookAttacks();
         calculateBishopAttacks();
 
-        LoadFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+        LoadFEN("1k6/ppp5/8/8/8/8/4P1PP/6K1 w - - 0 1");
     }
 
     public int GetBitboardIndex(ulong bitboard)

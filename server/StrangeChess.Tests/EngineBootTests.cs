@@ -16,29 +16,23 @@ public class EngineBootTests
         // Side to move
         Assert.True(Board.Instance.isWhiteTurn);
 
-        // Corner pieces
-        Assert.Equal(pieceType.whiteRook, Board.Instance.boardSquares[0]);   // a1
-        Assert.Equal(pieceType.whiteRook, Board.Instance.boardSquares[7]);   // h1
-        Assert.Equal(pieceType.blackRook, Board.Instance.boardSquares[56]);  // a8
-        Assert.Equal(pieceType.blackRook, Board.Instance.boardSquares[63]);  // h8
-
         // Kings
-        Assert.Equal(pieceType.whiteKing, Board.Instance.boardSquares[4]);   // e1
-        Assert.Equal(pieceType.blackKing, Board.Instance.boardSquares[60]);  // e8
+        Assert.Equal(pieceType.whiteKing, Board.Instance.boardSquares[6]);   // g1
+        Assert.Equal(pieceType.blackKing, Board.Instance.boardSquares[57]);  // b8
 
-        // Queens
-        Assert.Equal(pieceType.whiteQueen, Board.Instance.boardSquares[3]);  // d1
-        Assert.Equal(pieceType.blackQueen, Board.Instance.boardSquares[59]); // d8
-
-        // A white pawn and a black pawn
-        Assert.Equal(pieceType.whitePawn, Board.Instance.boardSquares[8]);   // a2
+        // Pawns
+        Assert.Equal(pieceType.whitePawn, Board.Instance.boardSquares[12]);  // e2
+        Assert.Equal(pieceType.whitePawn, Board.Instance.boardSquares[14]);  // g2
+        Assert.Equal(pieceType.whitePawn, Board.Instance.boardSquares[15]);  // h2
         Assert.Equal(pieceType.blackPawn, Board.Instance.boardSquares[48]);  // a7
+        Assert.Equal(pieceType.blackPawn, Board.Instance.boardSquares[49]);  // b7
+        Assert.Equal(pieceType.blackPawn, Board.Instance.boardSquares[50]);  // c7
 
         // Empty square in the middle
         Assert.Equal(pieceType.none, Board.Instance.boardSquares[28]);       // e4
 
-        // Castling rights: all four
-        Assert.Equal(15, Chess.Instance.castlingRights);
+        // No castling rights
+        Assert.Equal(0, Chess.Instance.castlingRights);
 
         // No en passant
         Assert.Equal(-1, Chess.Instance.enPassantTarget);
@@ -77,7 +71,7 @@ public class EngineBootTests
 
         Chess.Instance.GenerateAllMoves(0);
 
-        // Start position: 16 pawn moves + 4 knight moves = 20 (all are also legal)
-        Assert.Equal(20, Chess.Instance.moveCount[0]);
+        // Start position with 1 king and 3 pawns: 9 moves
+        Assert.Equal(9, Chess.Instance.moveCount[0]);
     }
 }
