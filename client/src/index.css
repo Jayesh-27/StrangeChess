@@ -1,0 +1,177 @@
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+  width: 100%;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+  margin-bottom: 0.5em;
+  background: -webkit-linear-gradient(45deg, #fe6b8b 30%, #ff8e53 90%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+button:hover {
+  border-color: #646cff;
+}
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+/* Board Styles */
+.board-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  width: min(92vw, 640px);
+  aspect-ratio: 1;
+  border: 4px solid #333;
+  border-radius: 4px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  user-select: none;
+}
+
+.square {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: min(11vw, 70px);
+  cursor: pointer;
+  position: relative;
+  transition: background-color 0.1s ease;
+}
+
+.square.light {
+  background-color: #f0d9b5;
+}
+.square.dark {
+  background-color: #b58863;
+}
+.square.selected {
+  background-color: #a9a250;
+}
+.square.legal-move::after {
+  content: '';
+  width: 25%;
+  height: 25%;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.2);
+  position: absolute;
+}
+.square.legal-move.has-piece::after {
+  width: 90%;
+  height: 90%;
+  background-color: transparent;
+  border: 4px solid rgba(0, 0, 0, 0.2);
+}
+.square.last-move::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: rgba(255, 235, 59, 0.45);
+  pointer-events: none;
+}
+.square.in-check {
+  background: radial-gradient(circle, rgba(255,0,0,0.8) 0%, transparent 70%);
+}
+
+.piece {
+  /* Ensure piece glyphs look crisp */
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+  /* The white pieces usually have a white color inside, black have black. 
+     Using unicode characters, color applies to the character itself. 
+     Let's style white and black specifically. */
+}
+.piece.white {
+  color: white;
+  -webkit-text-stroke: 1px black;
+}
+.piece.black {
+  color: black;
+  /* subtle glow/outline to separate from dark squares */
+  text-shadow: 0 0 2px rgba(255,255,255,0.3);
+}
+
+.status-panel {
+  display: flex;
+  justify-content: space-between;
+  width: min(92vw, 640px);
+  padding: 1rem;
+  background-color: #1a1a1a;
+  border-radius: 8px;
+  font-size: 1.1em;
+  box-sizing: border-box;
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.history {
+  margin-top: 1rem;
+  width: min(92vw, 640px);
+  text-align: left;
+  font-family: monospace;
+  background: #111;
+  padding: 1rem;
+  border-radius: 4px;
+  max-height: 150px;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
