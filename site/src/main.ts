@@ -29,6 +29,13 @@ setupReplay($('replay-board'), $('replay-caption'), {
 const count = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
 $('m-headline').textContent = `${count(match.wins, 'win', 'wins')}, ${count(match.draws, 'draw', 'draws')} and ${count(match.losses, 'loss', 'losses')} against Stockfish at 2000 Elo`;
 $('m-games').textContent = String(match.games);
+{
+  const r = match.replay;
+  const color = r.black === 'StrangeChess' ? 'black' : 'white';
+  const last = r.plies[r.plies.length - 1].san;
+  const piece = ({ K: 'king', Q: 'queen', R: 'rook', B: 'bishop', N: 'knight' } as Record<string, string>)[last[0]] ?? 'pawn';
+  $('replay-note').textContent = `This replay is one of the ${match.wins} wins. StrangeChess plays ${color} and finishes with a ${piece} checkmate.`;
+}
 $('m-wins').textContent = String(match.wins);
 $('m-draws').textContent = String(match.draws);
 $('m-losses').textContent = String(match.losses);
