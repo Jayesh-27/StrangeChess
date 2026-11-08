@@ -269,3 +269,16 @@ select { background: #0d131c; color: var(--text); border: 1px solid var(--line-2
   .reveal { opacity: 1; transform: none; transition: none; }
   * { transition: none !important; }
 }
+
+/* bitboard readout: 64-bit rows */
+.bb-out .bb-legend { margin: 0 0 4px; font-size: 11.5px; color: var(--muted); line-height: 1.5; }
+.bb-out .bb-row { display: block; }
+.bb-out .bb-row span { display: block; margin-bottom: 3px; font-size: 11.5px; }
+.bb-out .bb-row span b { color: var(--text); font-weight: 600; }
+.bb-out .bb-row code { display: block; font-size: 11px; letter-spacing: 0.02em; white-space: normal; overflow-wrap: anywhere; }
+.bb-out .bb-row code i { font-style: normal; }
+.bb-out .bb-row code i.b0 { color: #3a4658; }
+.bb-out .bb-row code i.b1 { color: var(--text); }
+.bb-out .bb-res code i.b1 { color: var(--accent); }
+.bb-out .bb-row code i.flip { background: rgba(255, 92, 122, 0.35); color: #fff; border-radius: 2px; }
+.bb-out .bb-num { color: var(--text); }

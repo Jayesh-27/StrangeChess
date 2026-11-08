@@ -38,9 +38,9 @@
     </section>
 
     <section class="stats" aria-label="Engine numbers">
-      <div class="stat reveal"><b data-count="18.4" data-decimals="1" data-suffix="M">0</b><span>perft nodes / sec</span><small>move generator, depth 6 · Ryzen 5 5600G, 1 thread</small></div>
-      <div class="stat reveal"><b data-count="2.2" data-decimals="1" data-suffix="M">0</b><span>search nodes / sec</span><small>alpha-beta, 4 positions at 5 s each · Ryzen 5 5600G, 1 thread</small></div>
-      <div class="stat stat-live reveal"><b data-count="200" data-prefix="+">0</b><span>Elo vs Stockfish 2000</span><small>100 games, ± 79 (cutechess)</small></div>
+      <div class="stat reveal"><b data-count="18.4" data-decimals="1" data-suffix="M">0</b><span>perft nodes / sec</span><small>move generator, depth 6 · Ryzen 5 5600G</small></div>
+      <div class="stat reveal"><b data-count="2.2" data-decimals="1" data-suffix="M">0</b><span>search nodes / sec</span><small>alpha-beta, 4 positions at 5 s each · Ryzen 5 5600G</small></div>
+      <div class="stat stat-live reveal"><b data-count="200" data-prefix="+">0</b><span>Elo stronger than Stockfish 2000</span><small>from 100 games · likely range +122 to +279</small></div>
       <div class="stat reveal"><b data-count="119060324">0</b><span>perft(6) nodes</span><small>matches the known count exactly</small></div>
       <div class="stat reveal"><b data-count="1048576">0</b><span>transposition table slots</span><small>Zobrist-hashed</small></div>
       <div class="stat reveal"><b data-count="2632">0</b><span>lines of C#</span><small>6 files</small></div>
@@ -110,8 +110,8 @@
       <div class="feature feature-flip reveal">
         <div class="feature-text">
           <h3>Magic bitboards</h3>
-          <p>The board is stored as 64-bit integers, one bit per square. For a rook, the pieces in its way are masked, multiplied by a precomputed "magic" number and shifted. The result indexes a table that already holds every square the rook can reach.</p>
-          <p class="hint">Click squares to add or remove blockers. The magic number and shift are the engine's own values for a rook on d4.</p>
+          <p>The board is stored as 64-bit integers, one bit per square. To find where a queen can go, the engine does two lookups, one for its rook moves and one for its bishop moves. Each time, the pieces in the way are masked, multiplied by a precomputed "magic" number and shifted. The result indexes a table that already holds every square the piece can reach.</p>
+          <p class="hint">Click squares to add or remove blockers. The magic numbers, shifts and variable names are the engine's own, for a queen on d4.</p>
           <div id="bb-out" class="bb-out mono"></div>
         </div>
         <div id="bb-host" class="feature-visual"></div>
@@ -151,7 +151,7 @@
       <div class="section-head reveal">
         <p class="eyebrow">Testing</p>
         <h2 id="m-headline">Against Stockfish</h2>
-        <p>The latest run was <b id="m-games"></b> games against <span id="m-opponent"></span>, with <span id="m-tc"></span>, played with cutechess-cli, 4 games at a time and no opening book. Stockfish's Elo limit is calibrated at that time control. cutechess-cli puts the Elo difference at +200 ± 79.</p>
+        <p>The latest run was <b id="m-games"></b> games against <span id="m-opponent"></span>, with <span id="m-tc"></span>, played with cutechess-cli, 4 games at a time and no opening book. Stockfish's Elo limit is calibrated at that time control. From that score, cutechess-cli estimates StrangeChess at about 200 Elo above this Stockfish, so roughly 2200, with a likely range of +122 to +279.</p>
       </div>
       <div class="results reveal">
         <div class="score">

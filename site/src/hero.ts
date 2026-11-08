@@ -25,10 +25,27 @@ const PROFILES: Record<string, [number, number][]> = {
   k: [[0, 0], [0.4, 0], [0.4, 0.1], [0.28, 0.16], [0.17, 0.62], [0.27, 0.68], [0.17, 0.74], [0.26, 1.06], [0.12, 1.12], [0, 1.12]],
 };
 
-// A middlegame-looking setup: [type, file, rank, white?]
+// Knight: a turned base with a blocky head and muzzle on top.
+function knight(material: THREE.Material) {
+  const g = new THREE.Group();
+  g.add(lathe([[0, 0], [0.36, 0], [0.36, 0.08], [0.26, 0.14], [0.2, 0.36], [0, 0.36]], material));
+  const neck = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.5, 0.3), material);
+  neck.position.set(0, 0.58, 0.02); neck.rotation.x = -0.25;
+  const muzzle = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.2, 0.42), material);
+  muzzle.position.set(0, 0.76, 0.16); muzzle.rotation.x = 0.35;
+  for (const m of [neck, muzzle]) { m.castShadow = true; g.add(m); }
+  return g;
+}
+
+// Fool's mate, the shortest checkmate: 1. f3 e5 2. g4 Qh4#. [type, file, rank, white?]
+const BACK = ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'];
 const SETUP: [string, number, number, boolean][] = [
-  ['k', 6, 0, true], ['r', 5, 0, true], ['q', 3, 2, true], ['b', 2, 3, true], ['p', 4, 3, true], ['p', 3, 1, true], ['p', 5, 1, true], ['p', 6, 1, true], ['p', 7, 2, true],
-  ['k', 6, 7, false], ['r', 3, 7, false], ['q', 1, 5, false], ['b', 4, 6, false], ['p', 4, 4, false], ['p', 5, 6, false], ['p', 6, 6, false], ['p', 7, 5, false], ['p', 0, 5, false],
+  ...BACK.map((t, f) => [t, f, 0, true] as [string, number, number, boolean]),
+  ...[0, 1, 2, 3, 4, 7].map((f) => ['p', f, 1, true] as [string, number, number, boolean]),
+  ['p', 5, 2, true], ['p', 6, 3, true],
+  ...BACK.map((t, f) => (t === 'q' ? ['q', 7, 3, false] : [t, f, 7, false]) as [string, number, number, boolean]),
+  ...[0, 1, 2, 3, 5, 6, 7].map((f) => ['p', f, 6, false] as [string, number, number, boolean]),
+  ['p', 4, 4, false],
 ];
 
 type Tree = { lines: THREE.LineSegments; nodes: THREE.Points; total: number; born: number };
@@ -87,10 +104,12 @@ export function setupHero(canvas: HTMLCanvasElement) {
 
   // Pieces
   const whiteMat = new THREE.MeshStandardMaterial({ color: '#e9eef6', metalness: 0.25, roughness: 0.25 });
-  const blackMat = new THREE.MeshStandardMaterial({ color: '#121722', metalness: 0.8, roughness: 0.22, emissive: '#0b2c33', emissiveIntensity: 0.4 });
+  const blackMat = new THREE.MeshStandardMaterial({ color: '#3a4a5e', metalness: 0.55, roughness: 0.3, emissive: '#11707f', emissiveIntensity: 0.55 });
   const squares: THREE.Vector3[] = [];
   for (const [type, f, r, white] of SETUP) {
-    const m = lathe(PROFILES[type], white ? whiteMat : blackMat);
+    const mat = white ? whiteMat : blackMat;
+    const m = type === 'n' ? knight(mat) : lathe(PROFILES[type], mat);
+    if (type === 'n') m.rotation.y = white ? Math.PI : 0; // knights face the opponent
     m.position.set(f - 3.5, 0, 3.5 - r);
     world.add(m);
     squares.push(m.position.clone());

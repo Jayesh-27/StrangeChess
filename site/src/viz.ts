@@ -144,26 +144,32 @@ export function setupAlphaBeta(host: HTMLElement, caption: HTMLElement) {
 
 // ---------------------------------------------------------------- magic bitboards
 
+// A queen on d4 is a rook lookup plus a bishop lookup, the same as Chess.queenMoves in the engine.
 const M64 = (1n << 64n) - 1n;
-const ROOK_SQ = 27; // d4
-const ROOK_MAGIC = 0x20c100180080280n; // Board.rookMagics[27] in the engine
+const SQ = 27; // d4
+const ROOK_MAGIC = 0x20c100180080280n; // Board.rookMagics[27]
 const ROOK_BITS = 10; // Board.rookBlockerBitCounts[27]
-const DIRS = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+const BISHOP_MAGIC = 0x808008020002n; // Board.bishopMagics[27]
+const BISHOP_BITS = 9; // Board.bishopBlockerBitCounts[27]
+const ROOK_DIRS = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+const BISHOP_DIRS = [[1, 1], [1, -1], [-1, 1], [-1, -1]];
 
-function rookMask(sq: number): bigint {
+// Squares a slider could be blocked on, leaving out the board edge.
+function blockerMask(sq: number, dirs: number[][]): bigint {
   let m = 0n;
   const f0 = sq % 8, r0 = Math.floor(sq / 8);
-  for (const [df, dr] of DIRS) {
+  for (const [df, dr] of dirs) {
     let f = f0 + df, r = r0 + dr;
     while (f + df >= 0 && f + df <= 7 && r + dr >= 0 && r + dr <= 7) { m |= 1n << BigInt(r * 8 + f); f += df; r += dr; }
   }
   return m;
 }
 
-function rookAttacks(sq: number, occ: bigint): bigint {
+// What the engine's precomputed table holds for this blocker set.
+function slide(sq: number, occ: bigint, dirs: number[][]): bigint {
   let a = 0n;
   const f0 = sq % 8, r0 = Math.floor(sq / 8);
-  for (const [df, dr] of DIRS) {
+  for (const [df, dr] of dirs) {
     let f = f0 + df, r = r0 + dr;
     while (f >= 0 && f <= 7 && r >= 0 && r <= 7) {
       const b = 1n << BigInt(r * 8 + f);
@@ -175,11 +181,24 @@ function rookAttacks(sq: number, occ: bigint): bigint {
   return a;
 }
 
-const hex = (b: bigint) => '0x' + b.toString(16).toUpperCase().padStart(16, '0');
+// 64 bits, bit 63 (h8) first, split into ranks. Bits that changed on the last click are marked.
+function bits(v: bigint, prev: bigint | undefined): string {
+  let s = '';
+  for (let i = 63; i >= 0; i--) {
+    const on = (v >> BigInt(i)) & 1n;
+    const flipped = prev !== undefined && ((prev >> BigInt(i)) & 1n) !== on;
+    s += `<i class="${on ? 'b1' : 'b0'}${flipped ? ' flip' : ''}">${on}</i>`;
+    if (i % 8 === 0 && i > 0) s += ' ';
+  }
+  return s;
+}
 
 export function setupBitboard(host: HTMLElement, out: HTMLElement) {
-  const mask = rookMask(ROOK_SQ);
-  let occ = (1n << 51n) | (1n << 25n) | (1n << 13n) | (1n << 30n); // d7, b4, f2, g4
+  const rookMask = blockerMask(SQ, ROOK_DIRS);
+  const bishopMask = blockerMask(SQ, BISHOP_DIRS);
+  // d7, b4, g4, f2, f6, b2
+  let allPieces = (1n << 51n) | (1n << 25n) | (1n << 30n) | (1n << 13n) | (1n << 45n) | (1n << 9n);
+  let prev: Record<string, bigint> = {};
   const grid = document.createElement('div');
   grid.className = 'bb-grid';
   const cells: HTMLButtonElement[] = [];
@@ -190,8 +209,8 @@ export function setupBitboard(host: HTMLElement, out: HTMLElement) {
     b.dataset.idx = String(idx);
     b.setAttribute('aria-label', 'abcdefgh'[idx % 8] + (Math.floor(idx / 8) + 1));
     b.onclick = () => {
-      if (idx === ROOK_SQ) return;
-      occ ^= 1n << BigInt(idx);
+      if (idx === SQ) return;
+      allPieces ^= 1n << BigInt(idx);
       draw();
     };
     cells.push(b);
@@ -200,24 +219,41 @@ export function setupBitboard(host: HTMLElement, out: HTMLElement) {
   host.append(grid);
 
   function draw() {
-    const attacks = rookAttacks(ROOK_SQ, occ);
-    const relevant = occ & mask;
-    const index = Number((((relevant * ROOK_MAGIC) & M64) >> BigInt(64 - ROOK_BITS)));
+    const rBlockers = allPieces & rookMask;
+    const rMagicIndex = Number(((rBlockers * ROOK_MAGIC) & M64) >> BigInt(64 - ROOK_BITS));
+    const rookAttacks = slide(SQ, allPieces, ROOK_DIRS);
+    const bBlockers = allPieces & bishopMask;
+    const bMagicIndex = Number(((bBlockers * BISHOP_MAGIC) & M64) >> BigInt(64 - BISHOP_BITS));
+    const bishopAttacks = slide(SQ, allPieces, BISHOP_DIRS);
+    const attacks = rookAttacks | bishopAttacks;
+
     for (const b of cells) {
       const idx = Number(b.dataset.idx);
       const bit = 1n << BigInt(idx);
       b.className = 'bb-cell';
-      if (idx === ROOK_SQ) { b.classList.add('bb-rook'); b.textContent = 'R'; continue; }
-      b.textContent = occ & bit ? '●' : attacks & bit ? '1' : '0';
+      if (idx === SQ) { b.classList.add('bb-rook'); b.textContent = 'Q'; continue; }
+      b.textContent = allPieces & bit ? '●' : attacks & bit ? '1' : '0';
       if (attacks & bit) b.classList.add('bb-att');
-      if (occ & bit) b.classList.add('bb-occ');
-      if (mask & bit) b.classList.add('bb-mask');
+      if (allPieces & bit) b.classList.add('bb-occ');
+      if ((rookMask | bishopMask) & bit) b.classList.add('bb-mask');
     }
+
+    const now: Record<string, bigint> = { allPieces, rBlockers, rookAttacks, bBlockers, bishopAttacks, attacks };
+    const row = (name: string, expr: string, cls = '') =>
+      `<div class="bb-row ${cls}"><span><b>${name}</b> ${expr}</span><code>${bits(now[name], prev[name])}</code></div>`;
+    const num = (name: string, expr: string, v: number) =>
+      `<div class="bb-row"><span><b>${name}</b> ${expr}</span><code class="bb-num">${v}</code></div>`;
     out.innerHTML =
-      `<div><span>blockers &amp; mask</span><code>${hex(relevant)}</code></div>` +
-      `<div><span>× magic</span><code>${hex(ROOK_MAGIC)}</code></div>` +
-      `<div><span>&gt;&gt; ${64 - ROOK_BITS} → table index</span><code>${index}</code></div>` +
-      `<div class="bb-res"><span>attacks (one lookup)</span><code>${hex(attacks)}</code></div>`;
+      `<p class="bb-legend">bit 63 (h8) on the left, bit 0 (a1) on the right, one group per rank. Bits that changed on your last click are highlighted.</p>` +
+      row('allPieces', '= every occupied square') +
+      row('rBlockers', '= allPieces &amp; rookBlockersMasks[d4]') +
+      num('rMagicIndex', `= (rBlockers × rookMagics[d4]) &gt;&gt; ${64 - ROOK_BITS}`, rMagicIndex) +
+      row('rookAttacks', '= rookAttackTable[d4][rMagicIndex]') +
+      row('bBlockers', '= allPieces &amp; bishopBlockersMasks[d4]') +
+      num('bMagicIndex', `= (bBlockers × bishopMagics[d4]) &gt;&gt; ${64 - BISHOP_BITS}`, bMagicIndex) +
+      row('bishopAttacks', '= bishopAttackTable[d4][bMagicIndex]') +
+      row('attacks', '= rookAttacks | bishopAttacks', 'bb-res');
+    prev = now;
   }
   draw();
 }
