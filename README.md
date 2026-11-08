@@ -1,8 +1,18 @@
 # StrangeChess
 
-A chess engine written from scratch in C# (.NET 10), with no chess libraries. It speaks UCI, so it runs in any UCI chess GUI.
+A chess engine written from scratch in C# (.NET 10), with no chess libraries. It speaks UCI, so it works with UCI chess GUIs such as cutechess.
 
 **Play it in your browser: [strangechess.vercel.app](https://strangechess.vercel.app)**. The site runs this same engine compiled to WebAssembly.
+
+![StrangeChess website](docs/screenshots/hero.png)
+
+| Play the engine in your browser | Results against Stockfish 2000 |
+| --- | --- |
+| ![Playing StrangeChess in the browser, with the live search console](docs/screenshots/play.png) | ![8 wins, 1 draw and 4 losses against Stockfish at 2000 Elo, with a game replay](docs/screenshots/results.png) |
+
+![Alpha-beta pruning animation from the website](docs/screenshots/alpha-beta.png)
+
+The website's source is on the [`site`](https://github.com/Jayesh-27/StrangeChess/tree/site) branch.
 
 ## Description - Overview
 I started this as a hobby project. My first implementation made many mistakes, for example using a mailbox board representation, so I had to rewrite the entire engine while learning and implementing bitboards, magic bitboards, minimax, alpha-beta pruning, negamax, Zobrist hashing, bitwise operations, evaluation design and more.
