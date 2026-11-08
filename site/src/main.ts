@@ -1,6 +1,6 @@
 import './styles.css';
 import { setupHero } from './hero';
-import { setupPlay, fmtNps } from './play';
+import { setupPlay } from './play';
 import { setupAlphaBeta, setupBitboard } from './viz';
 import { setupReplay, match } from './replay';
 
@@ -8,14 +8,7 @@ const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as 
 
 setupHero($<HTMLCanvasElement>('hero-canvas'));
 
-// Peak browser NPS seen this visit, shown in the stats strip.
-let peak = 0;
-setupPlay((nps) => {
-  if (nps > peak) {
-    peak = nps;
-    $('stat-browser-nps').textContent = fmtNps(peak);
-  }
-});
+setupPlay(() => {});
 
 setupAlphaBeta($('ab-host'), $('ab-caption'));
 setupBitboard($('bb-host'), $('bb-out'));
@@ -57,12 +50,13 @@ const io = new IntersectionObserver((entries) => {
     if (!Number.isNaN(target) && t.dataset.count !== undefined) {
       const decimals = Number(t.dataset.decimals ?? 0);
       const suffix = t.dataset.suffix ?? '';
-      if (reduced) { t.textContent = target.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals }) + suffix; continue; }
+      const prefix = t.dataset.prefix ?? '';
+      if (reduced) { t.textContent = prefix + target.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals }) + suffix; continue; }
       const t0 = performance.now();
       const step = (now: number) => {
         const k = Math.min(1, (now - t0) / 1400);
         const v = target * (1 - Math.pow(1 - k, 3));
-        t.textContent = v.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals }) + suffix;
+        t.textContent = prefix + v.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals }) + suffix;
         if (k < 1) requestAnimationFrame(step);
       };
       requestAnimationFrame(step);

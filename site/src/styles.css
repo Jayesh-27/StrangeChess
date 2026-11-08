@@ -95,7 +95,7 @@ h1 span { color: transparent; -webkit-text-stroke: 1.5px var(--accent); text-sha
   background: var(--line); border-block: 1px solid var(--line);
 }
 .stat { background: var(--bg); padding: 28px clamp(16px, 2vw, 28px); display: flex; flex-direction: column; gap: 4px; }
-.stat b { font: 600 clamp(22px, 3vw, 36px)/1.1 var(--mono); color: var(--text); letter-spacing: -0.03em; overflow-wrap: anywhere; }
+.stat b { font: 600 clamp(19px, 2.8vw, 36px)/1.1 var(--mono); color: var(--text); letter-spacing: -0.03em; white-space: nowrap; }
 .stat span { font-size: 14px; }
 .stat small { font: 12px var(--mono); color: var(--muted); }
 .stat-live b { color: var(--accent); text-shadow: 0 0 20px rgba(92, 242, 255, 0.4); }
@@ -247,7 +247,7 @@ select { background: #0d131c; color: var(--text); border: 1px solid var(--line-2
   border-top: 1px solid var(--line); padding: 32px clamp(16px, 5vw, 64px);
   display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; font: 13px var(--mono); color: var(--muted);
 }
-.footer p { margin: 0; }
+.footer p { margin: 0; max-width: 760px; }
 .footer a { color: var(--accent); text-decoration: none; }
 
 /* ---------------------------------------------------------------- responsive */

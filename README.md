@@ -6,16 +6,22 @@ Visitors play the real C# engine in the browser. The engine source is compiled t
 
 ![StrangeChess site hero](docs/screenshots/hero.png)
 
+## Who built what
+
+About 90% of the engine is my own code and 10% came from AI. The website and deployment are the other way round: about 90% AI and 10% me.
+
 ## What's on the page
 
 | Section | What it shows |
 | --- | --- |
 | Hero | A three.js board where search trees grow out of the pieces: bright branches are kept, dim ones pruned |
-| Numbers | Perft and search speed (native), live nodes/sec measured in the visitor's browser, transposition table size, lines of C# |
+| Numbers | Perft and search speed (native, Ryzen 5 5600G, one thread), Elo difference against Stockfish 2000, perft(6) node count, transposition table size, lines of C# |
 | Play | A board backed by the WebAssembly engine, with a live console of the search (depth, score, nodes, nodes/sec), an eval bar, think time, undo and play as black |
 | Inside the engine | An animated alpha-beta pruning tree, an interactive magic-bitboard lookup using the engine's real rook magic for d4, and cards for each search and evaluation technique |
 | Build pipeline | How the C# source becomes WebAssembly in the browser |
-| Results | The latest logged match against Stockfish 18 limited to 2000 Elo, with a replay of a win |
+| Results | The latest logged match against Stockfish 18 limited to 2000 Elo (100 games: 73 wins, 6 draws, 21 losses), with a replay of a win |
+
+![Engine numbers](docs/screenshots/stats.png)
 
 ![Playing the engine in the browser](docs/screenshots/play.png)
 

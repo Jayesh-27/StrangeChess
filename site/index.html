@@ -38,13 +38,13 @@
     </section>
 
     <section class="stats" aria-label="Engine numbers">
-      <div class="stat reveal"><b data-count="18.4" data-decimals="1" data-suffix="M">0</b><span>perft nodes / sec</span><small>move generator, depth 6</small></div>
-      <div class="stat reveal"><b data-count="2.2" data-decimals="1" data-suffix="M">0</b><span>search nodes / sec</span><small>alpha-beta, average of 4 positions at 5 s each</small></div>
-      <div class="stat stat-live reveal"><b id="stat-browser-nps">—</b><span>nodes / sec in your browser</span><small>peak this visit · make a move</small></div>
+      <div class="stat reveal"><b data-count="18.4" data-decimals="1" data-suffix="M">0</b><span>perft nodes / sec</span><small>move generator, depth 6 · Ryzen 5 5600G, 1 thread</small></div>
+      <div class="stat reveal"><b data-count="2.2" data-decimals="1" data-suffix="M">0</b><span>search nodes / sec</span><small>alpha-beta, 4 positions at 5 s each · Ryzen 5 5600G, 1 thread</small></div>
+      <div class="stat stat-live reveal"><b data-count="200" data-prefix="+">0</b><span>Elo vs Stockfish 2000</span><small>100 games, ± 79 (cutechess)</small></div>
       <div class="stat reveal"><b data-count="119060324">0</b><span>perft(6) nodes</span><small>matches the known count exactly</small></div>
       <div class="stat reveal"><b data-count="1048576">0</b><span>transposition table slots</span><small>Zobrist-hashed</small></div>
       <div class="stat reveal"><b data-count="2632">0</b><span>lines of C#</span><small>6 files</small></div>
-      <p class="stats-note">Native numbers come from one thread, a .NET 10 Release build and an AMD Ryzen 5 5600G. Your own device measures the browser figure live; on the author's machine it is about 0.8–1.0M nodes/s.</p>
+      <p class="stats-note">Speeds are from the native .NET 10 Release build on one thread of an AMD Ryzen 5 5600G. The WebAssembly build in the play section runs at about 0.8–1.0M nodes/s on the same machine.</p>
     </section>
 
     <section id="play" class="section play">
@@ -151,7 +151,7 @@
       <div class="section-head reveal">
         <p class="eyebrow">Testing</p>
         <h2 id="m-headline">Against Stockfish</h2>
-        <p>The latest run was <b id="m-games"></b> games against <span id="m-opponent"></span>, with <span id="m-tc"></span>, played with cutechess-cli, 4 games at a time and no opening book. Stockfish's Elo limit is calibrated at that time control. It's a small sample, so more games are next.</p>
+        <p>The latest run was <b id="m-games"></b> games against <span id="m-opponent"></span>, with <span id="m-tc"></span>, played with cutechess-cli, 4 games at a time and no opening book. Stockfish's Elo limit is calibrated at that time control. cutechess-cli puts the Elo difference at +200 ± 79.</p>
       </div>
       <div class="results reveal">
         <div class="score">
@@ -189,7 +189,7 @@
   </main>
 
   <footer class="footer">
-    <p>StrangeChess, written by Jayesh.</p>
+    <p>StrangeChess by Jayesh. About 90% of the engine is my own code and 10% came from AI. The website and deployment are the other way round: about 90% AI and 10% me.</p>
     <a href="https://github.com/Jayesh-27/StrangeChess" target="_blank" rel="noopener">github.com/Jayesh-27/StrangeChess</a>
   </footer>
 
