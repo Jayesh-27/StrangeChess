@@ -8,11 +8,15 @@ A chess engine written from scratch in C# (.NET 10), with no chess libraries. It
 
 | Play the engine in your browser | Results against Stockfish 2000 |
 | --- | --- |
-| ![Playing StrangeChess in the browser, with the live search console](docs/screenshots/play.png) | ![8 wins, 1 draw and 4 losses against Stockfish at 2000 Elo, with a game replay](docs/screenshots/results.png) |
+| ![Playing StrangeChess in the browser, with the live search console](docs/screenshots/play.png) | ![73 wins, 6 draws and 21 losses against Stockfish at 2000 Elo, with a game replay](docs/screenshots/results.png) |
 
 ![Alpha-beta pruning animation from the website](docs/screenshots/alpha-beta.png)
 
 The website's source is on the [`site`](https://github.com/Jayesh-27/StrangeChess/tree/site) branch.
+
+## Who built what
+
+About 90% of the engine is my own code and 10% came from AI. The website and deployment are the other way round: about 90% AI and 10% me.
 
 ## Description - Overview
 I started this as a hobby project. My first implementation made many mistakes, for example using a mailbox board representation, so I had to rewrite the entire engine while learning and implementing bitboards, magic bitboards, minimax, alpha-beta pruning, negamax, Zobrist hashing, bitwise operations, evaluation design and more.
@@ -33,9 +37,9 @@ Against Stockfish 18 limited to 2000 Elo (`UCI_LimitStrength`, `UCI_Elo 2000`, 1
 
 | Games | Wins | Draws | Losses |
 | --- | --- | --- | --- |
-| 13 | 8 | 1 | 4 |
+| 100 | 73 | 6 | 21 |
 
-That's a small sample, so more games are next.
+cutechess-cli puts the Elo difference at **+200 ± 79**. As White it scored 41 wins, 3 draws and 6 losses; as Black, 32 wins, 3 draws and 15 losses.
 
 ## Performance
 
@@ -70,7 +74,7 @@ go movetime 1000
 With [cutechess-cli](https://github.com/cutechess/cutechess/releases) and a [Stockfish](https://stockfishchess.org/download/) binary, replace the two paths and run:
 
 ```bash
-cutechess-cli -engine name=StrangeChess cmd=path/to/Engine.exe -engine name=Stockfish-2000 cmd=path/to/stockfish.exe option.UCI_LimitStrength=true option.UCI_Elo=2000 option.Threads=1 -each proto=uci tc=60+0.6 -games 2 -rounds 20 -repeat -concurrency 4 -recover -pgnout results.pgn
+cutechess-cli -engine name=StrangeChess cmd=path/to/Engine.exe -engine name=Stockfish-2000 cmd=path/to/stockfish.exe option.UCI_LimitStrength=true option.UCI_Elo=2000 option.Threads=1 -each proto=uci tc=60+0.6 -games 2 -rounds 50 -repeat -concurrency 4 -recover -pgnout results.pgn
 ```
 
 Stockfish's Elo limit is calibrated at 60+0.6, so use that time control. Much faster ones understate StrangeChess.
