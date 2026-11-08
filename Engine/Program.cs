@@ -77,20 +77,42 @@ class Program
     static void HandleGo(string[] tokens)
     {
         int searchDepth = 63;
-        AI.Instance.timeLimitMs = 1000;
+        
+        // Default fallback
+        AI.Instance.timeLimitMs = 1000; 
+
+        long timeLeft = 0;
+        long increment = 0;
+        bool isTimeSet = false;
 
         for (int i = 1; i < tokens.Length; i++)
         {
             if (tokens[i] == "depth" && i + 1 < tokens.Length)
                 searchDepth = int.Parse(tokens[i + 1]);
             
-            // Standard time control checks: wtime, btime, movetime
             if (tokens[i] == "movetime" && i + 1 < tokens.Length)
+            {
                 AI.Instance.timeLimitMs = long.Parse(tokens[i + 1]);
-            else if (Board.Instance.isWhiteTurn && tokens[i] == "wtime" && i + 1 < tokens.Length)
-                AI.Instance.timeLimitMs = Math.Max(50, long.Parse(tokens[i + 1]) / 50);
-            else if (!Board.Instance.isWhiteTurn && tokens[i] == "btime" && i + 1 < tokens.Length)
-                AI.Instance.timeLimitMs = Math.Max(50, long.Parse(tokens[i + 1]) / 50);
+                isTimeSet = true;
+            }
+            else if (Board.Instance.isWhiteTurn)
+            {
+                if (tokens[i] == "wtime" && i + 1 < tokens.Length) timeLeft = long.Parse(tokens[i + 1]);
+                if (tokens[i] == "winc" && i + 1 < tokens.Length) increment = long.Parse(tokens[i + 1]);
+            }
+            else if (!Board.Instance.isWhiteTurn)
+            {
+                if (tokens[i] == "btime" && i + 1 < tokens.Length) timeLeft = long.Parse(tokens[i + 1]);
+                if (tokens[i] == "binc" && i + 1 < tokens.Length) increment = long.Parse(tokens[i + 1]);
+            }
+        }
+
+        // Only apply standard calculation if movetime wasn't explicitly forced
+        if (!isTimeSet && timeLeft > 0)
+        {
+            // Allocate a fraction of the remaining time (e.g., 1/40th for a standard game phase) 
+            // plus a safe percentage of the increment so we don't bleed the clock dry.
+            AI.Instance.timeLimitMs = Math.Max(50, (timeLeft / 40) + (increment * 3 / 4));
         }
 
         ushort bestMove = AI.Instance.GetBestMove(searchDepth);

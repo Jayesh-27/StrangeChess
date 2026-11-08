@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 public struct TTEntry
 {
@@ -23,6 +23,11 @@ public class AI
     private Stopwatch searchTimer = new Stopwatch();
     private bool isTimeUp = false;
     private int nodesSinceTimerCheck = 0;
+
+    // Search statistics (read by the web build and benchmarks)
+    public long nodesSearched = 0;
+    public int completedDepth = 0;
+    public int completedScore = 0;
 
     // Transposition Table
     public TTEntry[] transpositionTable = new TTEntry[1048576]; 
@@ -136,6 +141,8 @@ public class AI
         searchTimer.Restart();
         isTimeUp = false;
         nodesSinceTimerCheck = 0;
+        nodesSearched = 0;
+        completedDepth = 0;
         
         killerMoves = new ushort[64, 2];
         
@@ -260,6 +267,8 @@ public class AI
 
             absoluteBestMove = bestMoveThisDepth;
             previousScore = bestScoreThisDepth;
+            completedDepth = currentDepth;
+            completedScore = bestScoreThisDepth;
             OrderMoves(0, currentMoveCount, absoluteBestMove);
         }
 
@@ -910,6 +919,7 @@ public class AI
     private void CheckTime()
     {
         nodesSinceTimerCheck++;
+        nodesSearched++;
         if (nodesSinceTimerCheck > 2048) 
         {
             nodesSinceTimerCheck = 0;

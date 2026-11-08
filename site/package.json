@@ -1,0 +1,21 @@
+{
+  "name": "strangechess-site",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "replay": "node scripts/make-replay.mjs"
+  },
+  "dependencies": {
+    "three": "^0.170.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.170.0",
+    "chess.js": "^1.0.0",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.7"
+  }
+}

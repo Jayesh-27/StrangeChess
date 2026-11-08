@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StrangeChess · a C# chess engine</title>
+  <meta name="description" content="StrangeChess is a chess engine written from scratch in C#. Play it in your browser, compiled to WebAssembly." />
+  <meta name="theme-color" content="#05070a" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <header class="nav">
+    <a class="brand" href="#top"><span class="brand-mark" aria-hidden="true"></span>StrangeChess</a>
+    <nav>
+      <a href="#play">Play</a>
+      <a href="#inside">Inside</a>
+      <a href="#results">Results</a>
+      <a href="https://github.com/Jayesh-27/StrangeChess" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <canvas id="hero-canvas" aria-hidden="true"></canvas>
+      <div class="hero-copy">
+        <p class="eyebrow">C# · .NET 10 · WebAssembly</p>
+        <h1>Strange<span>Chess</span></h1>
+        <p class="lede">A chess engine written from scratch in C#. It uses magic bitboards, alpha-beta search and a tapered evaluation, with no chess libraries. The same code runs on this page, compiled to WebAssembly, so you can play it below.</p>
+        <div class="cta">
+          <a class="btn btn-primary" href="#play">Play the engine</a>
+          <a class="btn" href="https://github.com/Jayesh-27/StrangeChess" target="_blank" rel="noopener">Source on GitHub</a>
+        </div>
+      </div>
+      <p class="hero-legend"><span class="dot dot-pv"></span>line it keeps <span class="dot dot-cut"></span>line it prunes</p>
+    </section>
+
+    <section class="stats" aria-label="Engine numbers">
+      <div class="stat reveal"><b data-count="18.4" data-decimals="1" data-suffix="M">0</b><span>perft nodes / sec</span><small>move generator, depth 6</small></div>
+      <div class="stat reveal"><b data-count="1.8" data-decimals="1" data-suffix="M">0</b><span>search nodes / sec</span><small>alpha-beta, average of 4 positions at 5 s each</small></div>
+      <div class="stat stat-live reveal"><b id="stat-browser-nps">—</b><span>nodes / sec in your browser</span><small>peak this visit · make a move</small></div>
+      <div class="stat reveal"><b data-count="119060324">0</b><span>perft(6) nodes</span><small>matches the known count exactly</small></div>
+      <div class="stat reveal"><b data-count="1048576">0</b><span>transposition table slots</span><small>Zobrist-hashed</small></div>
+      <div class="stat reveal"><b data-count="2632">0</b><span>lines of C#</span><small>6 files</small></div>
+      <p class="stats-note">Native numbers come from one thread, a .NET 10 Release build and an AMD Ryzen 5 5600G. Your own device measures the browser figure live; on the author's machine it is about 0.8–1.0M nodes/s.</p>
+    </section>
+
+    <section id="play" class="section play">
+      <div class="section-head reveal">
+        <p class="eyebrow">Live</p>
+        <h2>Play the engine in your browser</h2>
+        <p>This board runs the same C# engine, compiled to WebAssembly and running in a Web Worker. Legal moves, check detection and the search all come from the engine.</p>
+      </div>
+
+      <div class="play-grid">
+        <div class="board-wrap">
+          <div class="board-row">
+            <div class="eval" aria-hidden="true"><div id="eval-fill" class="eval-fill"></div></div>
+            <div id="play-board"></div>
+          </div>
+          <p id="play-status" class="status" aria-live="polite"></p>
+        </div>
+        <aside class="panel">
+          <p id="engine-badge" class="badge">Loading the engine…</p>
+          <div class="readouts">
+            <div class="ro ro-big"><span>nodes / sec</span><b id="nps-live">—</b></div>
+            <div class="ro"><span>depth</span><b id="depth-live">—</b></div>
+            <div class="ro"><span>nodes</span><b id="nodes-live">—</b></div>
+            <div class="ro"><span>eval (white)</span><b id="eval-live">—</b></div>
+          </div>
+          <div class="controls">
+            <label>Think time
+              <select id="think-ms">
+                <option value="500">0.5 s</option>
+                <option value="1000" selected>1 s</option>
+                <option value="2000">2 s</option>
+                <option value="5000">5 s</option>
+              </select>
+            </label>
+            <button id="btn-new" class="btn btn-sm" type="button">New game</button>
+            <button id="btn-undo" class="btn btn-sm" type="button">Undo</button>
+            <button id="btn-side" class="btn btn-sm" type="button">Play as black</button>
+          </div>
+          <div id="console" class="console" aria-label="Engine output"></div>
+          <ol id="moves" class="moves" aria-label="Moves"></ol>
+          <p class="fine">Pawns always promote to a queen. The engine doesn't underpromote yet.</p>
+        </aside>
+      </div>
+    </section>
+
+    <section id="inside" class="section">
+      <div class="section-head reveal">
+        <p class="eyebrow">Inside the engine</p>
+        <h2>Alpha-beta search, magic bitboards and a tapered evaluation</h2>
+        <p>What happens between your move and its reply.</p>
+      </div>
+
+      <div class="feature reveal">
+        <div class="feature-text">
+          <h3>Alpha-beta pruning, step by step</h3>
+          <p>The engine looks ahead through a tree of moves. Squares are positions where it picks the best score for itself; circles are where the opponent picks the worst. Once a branch provably can't change the answer, it stops looking at it.</p>
+          <p id="ab-caption" class="mono caption" aria-live="off"></p>
+        </div>
+        <div id="ab-host" class="feature-visual"></div>
+      </div>
+
+      <div class="feature feature-flip reveal">
+        <div class="feature-text">
+          <h3>Magic bitboards</h3>
+          <p>The board is stored as 64-bit integers, one bit per square. For a rook, the pieces in its way are masked, multiplied by a precomputed "magic" number and shifted. The result indexes a table that already holds every square the rook can reach.</p>
+          <p class="hint">Click squares to add or remove blockers. The magic number and shift are the engine's own values for a rook on d4.</p>
+          <div id="bb-out" class="bb-out mono"></div>
+        </div>
+        <div id="bb-host" class="feature-visual"></div>
+      </div>
+
+      <div class="cards">
+        <article class="card reveal"><h4>Negamax with alpha-beta</h4><p>One search function for both sides: a position's score for one player is the negative of the other's.</p></article>
+        <article class="card reveal"><h4>Iterative deepening</h4><p>It searches to depth 1, then 2, then 3 and so on until time runs out, so there is always a finished answer to play. From depth 3, each search starts in a ±50 centipawn window around the last score and widens only if the score lands outside it.</p></article>
+        <article class="card reveal"><h4>Transposition table</h4><p>1,048,576 slots keyed by a Zobrist hash. A position reached by a different move order is looked up instead of searched again, and its stored best move is tried first.</p></article>
+        <article class="card reveal"><h4>Null-move pruning</h4><p>The engine gives the opponent a free move. If the position still beats the cutoff, the real search is skipped. It's turned off in check and when the side to move has only pawns left, where passing can be the best move.</p></article>
+        <article class="card reveal"><h4>Late move reductions</h4><p>Quiet moves after the first four are searched 1 to 2 plies shallower. If one scores better than expected, it gets a full-depth re-search.</p></article>
+        <article class="card reveal"><h4>Move ordering</h4><p>The move stored in the transposition table goes first, then captures sorted by most valuable victim and least valuable attacker, then two killer moves per ply. Better order means earlier cutoffs.</p></article>
+        <article class="card reveal"><h4>Quiescence search</h4><p>At the end of the main search it keeps following captures and promotions, so it doesn't stop scoring halfway through a trade.</p></article>
+        <article class="card reveal"><h4>Tapered evaluation</h4><p>Separate middlegame and endgame piece-square tables, blended by the material left on the board. The king shelters early and walks to the centre late.</p></article>
+        <article class="card reveal"><h4>Positional terms</h4><p>Bishop pair, rooks on open files and the seventh rank, doubled, isolated and passed pawns, the king's pawn shield, development and castling.</p></article>
+        <article class="card reveal"><h4>Mop-up evaluation</h4><p>When it's ahead in an endgame, it pushes the losing king to the edge and brings its own king closer, to help turn winning positions into mates.</p></article>
+        <article class="card reveal"><h4>Repetition detection</h4><p>A history of Zobrist keys spots repeated positions inside the search and scores them as draws.</p></article>
+        <article class="card reveal"><h4>UCI protocol</h4><p>It speaks the Universal Chess Interface, so it works with UCI chess GUIs such as cutechess. The console next to the board shows the same kind of output.</p></article>
+      </div>
+    </section>
+
+    <section class="section pipeline-section">
+      <div class="section-head reveal">
+        <p class="eyebrow">Build pipeline</p>
+        <h2>From C# source to WebAssembly in your browser</h2>
+      </div>
+      <ol class="pipeline reveal">
+        <li><b>Engine/*.cs</b><span>Board, move generator, search, evaluation</span></li>
+        <li><b>.NET 10 + Mono AOT</b><span>compiled ahead of time with the wasm-tools workload</span></li>
+        <li><b>WebAssembly</b><span>about 1.3 MB with Brotli compression (5.5 MB raw)</span></li>
+        <li><b>Web Worker</b><span>searches off the main thread, so the page stays responsive while it thinks</span></li>
+        <li><b>This board</b><span>TypeScript UI talking to the engine through JSExport</span></li>
+      </ol>
+    </section>
+
+    <section id="results" class="section">
+      <div class="section-head reveal">
+        <p class="eyebrow">Testing</p>
+        <h2 id="m-headline">Against Stockfish</h2>
+        <p>The first logged run was <b id="m-games"></b> games against <span id="m-opponent"></span>, with <span id="m-tc"></span>, played with cutechess-cli, 4 games at a time and no opening book. That's a fast time control and a small sample, so more games at longer time controls are next.</p>
+      </div>
+      <div class="results reveal">
+        <div class="score">
+          <div class="score-nums">
+            <div><b id="m-wins"></b><span>wins</span></div>
+            <div><b id="m-draws"></b><span>draws</span></div>
+            <div><b id="m-losses"></b><span>losses</span></div>
+          </div>
+          <div class="score-bar" aria-hidden="true">
+            <i id="bar-wins" class="w"></i><i id="bar-draws" class="d"></i><i id="bar-losses" class="l"></i>
+          </div>
+          <p class="replay-note">This replay is one of the five wins. StrangeChess plays black and finishes with a knight checkmate.</p>
+        </div>
+        <div class="replay">
+          <div id="replay-board"></div>
+          <div class="replay-bar">
+            <button id="replay-prev" class="btn btn-sm" type="button" aria-label="Previous move">←</button>
+            <button id="replay-play" class="btn btn-sm" type="button">Play</button>
+            <button id="replay-next" class="btn btn-sm" type="button" aria-label="Next move">→</button>
+            <span id="replay-caption" class="mono"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head reveal">
+        <p class="eyebrow">Stack</p>
+        <h2>Engine in C# and .NET 10, site in TypeScript on Vercel</h2>
+      </div>
+      <ul class="chips reveal">
+        <li>C#</li><li>.NET 10</li><li>Mono AOT</li><li>WebAssembly</li><li>Web Workers</li><li>TypeScript</li><li>three.js</li><li>Vite</li><li>Vercel</li><li>cutechess-cli</li><li>UCI</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>StrangeChess, written by Jayesh.</p>
+    <a href="https://github.com/Jayesh-27/StrangeChess" target="_blank" rel="noopener">github.com/Jayesh-27/StrangeChess</a>
+  </footer>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
