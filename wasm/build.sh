@@ -5,6 +5,8 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
+# Start from an empty publish folder, otherwise files from older builds pile up next to the new ones.
+rm -rf bin/Release/net10.0/publish
 dotnet publish -c Release
 out=bin/Release/net10.0/publish/wwwroot/_framework
 dest=../site/public/engine/_framework
