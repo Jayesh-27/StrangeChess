@@ -39,7 +39,7 @@
 
     <section class="stats" aria-label="Engine numbers">
       <div class="stat reveal"><b data-count="18.4" data-decimals="1" data-suffix="M">0</b><span>perft nodes / sec</span><small>move generator, depth 6</small></div>
-      <div class="stat reveal"><b data-count="1.8" data-decimals="1" data-suffix="M">0</b><span>search nodes / sec</span><small>alpha-beta, average of 4 positions at 5 s each</small></div>
+      <div class="stat reveal"><b data-count="2.2" data-decimals="1" data-suffix="M">0</b><span>search nodes / sec</span><small>alpha-beta, average of 4 positions at 5 s each</small></div>
       <div class="stat stat-live reveal"><b id="stat-browser-nps">—</b><span>nodes / sec in your browser</span><small>peak this visit · make a move</small></div>
       <div class="stat reveal"><b data-count="119060324">0</b><span>perft(6) nodes</span><small>matches the known count exactly</small></div>
       <div class="stat reveal"><b data-count="1048576">0</b><span>transposition table slots</span><small>Zobrist-hashed</small></div>
@@ -74,8 +74,9 @@
             <label>Think time
               <select id="think-ms">
                 <option value="500">0.5 s</option>
-                <option value="1000" selected>1 s</option>
+                <option value="1000">1 s</option>
                 <option value="2000">2 s</option>
+                <option value="3000" selected>3 s</option>
                 <option value="5000">5 s</option>
               </select>
             </label>
@@ -150,7 +151,7 @@
       <div class="section-head reveal">
         <p class="eyebrow">Testing</p>
         <h2 id="m-headline">Against Stockfish</h2>
-        <p>The first logged run was <b id="m-games"></b> games against <span id="m-opponent"></span>, with <span id="m-tc"></span>, played with cutechess-cli, 4 games at a time and no opening book. That's a fast time control and a small sample, so more games at longer time controls are next.</p>
+        <p>The latest run was <b id="m-games"></b> games against <span id="m-opponent"></span>, with <span id="m-tc"></span>, played with cutechess-cli, 4 games at a time and no opening book. Stockfish's Elo limit is calibrated at that time control. It's a small sample, so more games are next.</p>
       </div>
       <div class="results reveal">
         <div class="score">
@@ -162,7 +163,7 @@
           <div class="score-bar" aria-hidden="true">
             <i id="bar-wins" class="w"></i><i id="bar-draws" class="d"></i><i id="bar-losses" class="l"></i>
           </div>
-          <p class="replay-note">This replay is one of the five wins. StrangeChess plays black and finishes with a knight checkmate.</p>
+          <p class="replay-note">This replay is one of the five wins. StrangeChess plays black and finishes with a rook checkmate.</p>
         </div>
         <div class="replay">
           <div id="replay-board"></div>

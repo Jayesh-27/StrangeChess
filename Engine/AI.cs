@@ -681,7 +681,7 @@ public class AI
             if (piece == pieceType.none) continue;
 
             bool isWhite = piece >= pieceType.whitePawn && piece <= pieceType.whiteKing;
-            int pstIndex = isWhite ? i : i ^ 56; 
+            int pstIndex = isWhite ? i ^ 56 : i; // tables are laid out rank 8 first; squares are a1 = 0
             int pstValue = 0;
 
             switch (piece)
@@ -708,7 +708,7 @@ public class AI
             if (piece == pieceType.none) continue;
 
             bool isWhite = piece >= pieceType.whitePawn && piece <= pieceType.whiteKing;
-            int pstIndex = isWhite ? i : i ^ 56; 
+            int pstIndex = isWhite ? i ^ 56 : i; // tables are laid out rank 8 first; squares are a1 = 0
             int pstValue = 0;
 
             switch (piece)

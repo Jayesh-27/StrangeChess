@@ -26,7 +26,8 @@ setupReplay($('replay-board'), $('replay-caption'), {
 });
 
 // Match numbers come straight from the generated match.json.
-$('m-headline').textContent = `${match.wins} wins, ${match.draws} draws and ${match.losses} losses against Stockfish at 2000 Elo`;
+const count = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
+$('m-headline').textContent = `${count(match.wins, 'win', 'wins')}, ${count(match.draws, 'draw', 'draws')} and ${count(match.losses, 'loss', 'losses')} against Stockfish at 2000 Elo`;
 $('m-games').textContent = String(match.games);
 $('m-wins').textContent = String(match.wins);
 $('m-draws').textContent = String(match.draws);
