@@ -39,7 +39,7 @@ Against Stockfish 18 limited to 2000 Elo (`UCI_LimitStrength`, `UCI_Elo 2000`, 1
 | --- | --- | --- | --- |
 | 100 | 73 | 6 | 21 |
 
-cutechess-cli puts the Elo difference at **+200 ± 79**. As White it scored 41 wins, 3 draws and 6 losses; as Black, 32 wins, 3 draws and 15 losses.
+From that score, cutechess-cli estimates StrangeChess at about **200 Elo above** this Stockfish (roughly 2200), with a likely range of +122 to +279. As White it scored 41 wins, 3 draws and 6 losses; as Black, 32 wins, 3 draws and 15 losses.
 
 ## Performance
 
